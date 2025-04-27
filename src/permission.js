@@ -1,3 +1,11 @@
+/*
+ * @Author: chenyourong
+ * @Date: 2021-11-18 23:21:54
+ * @LastEditors: chenyourong
+ * @LastEditTime: 2025-04-27 16:21:23
+ * @Description: 
+ * @FilePath: /vue-admin-template-master/src/permission.js
+ */
 import router from './router'
 import store from './store'
 import { Message } from 'element-ui'

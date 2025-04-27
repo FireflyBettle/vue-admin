@@ -1,3 +1,11 @@
+/*
+ * @Author: chenyourong
+ * @Date: 2025-04-25 17:19:39
+ * @LastEditors: chenyourong
+ * @LastEditTime: 2025-04-27 15:51:45
+ * @Description: 
+ * @FilePath: /vue-admin-template-master/src/store/modules/permission.js
+ */
 import {
   asyncRoutes,
   constantRoutes
@@ -45,6 +53,7 @@ const mutations = {
   SET_ROUTES: (state, routes) => {
       state.addRoutes = routes
       state.routes = constantRoutes.concat(routes)
+      console.log("🚀 ~ state.routes:", state.routes)
   }
 }
 

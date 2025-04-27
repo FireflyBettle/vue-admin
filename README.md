@@ -60,6 +60,9 @@ npm run lint
 
 # code format check and auto fix
 npm run lint -- --fix
+
+#去掉eslint方法:
+https://blog.csdn.net/qq_51580852/article/details/127100661
 ```
 
 Refer to [Documentation](https://panjiachen.github.io/vue-element-admin-site/guide/essentials/deploy.html) for more information

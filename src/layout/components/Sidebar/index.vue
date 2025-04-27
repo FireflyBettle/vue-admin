@@ -1,3 +1,11 @@
+<!--
+ * @Author: chenyourong
+ * @Date: 2021-11-18 23:21:54
+ * @LastEditors: chenyourong
+ * @LastEditTime: 2025-04-27 16:25:44
+ * @Description: 
+ * @FilePath: /vue-admin-template-master/src/layout/components/Sidebar/index.vue
+-->
 <template>
   <div :class="{'has-logo':showLogo}">
     <logo v-if="showLogo" :collapse="isCollapse" />
@@ -12,7 +20,7 @@
         :collapse-transition="false"
         mode="vertical"
       >
-        <sidebar-item v-for="route in routes" :key="route.path" :item="route" :base-path="route.path" />
+        <sidebar-item v-for="route in permission_routers" :key="route.path" :item="route" :base-path="route.path" />
       </el-menu>
     </el-scrollbar>
   </div>
@@ -28,11 +36,9 @@ export default {
   components: { SidebarItem, Logo },
   computed: {
     ...mapGetters([
-      'sidebar'
+      'sidebar',
+      'permission_routers'
     ]),
-    routes() {
-      return this.$router.options.routes
-    },
     activeMenu() {
       const route = this.$route
       const { meta, path } = route
