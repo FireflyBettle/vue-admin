@@ -3,7 +3,8 @@
     <div class="title-container">
       <div class="title">
         <img src="@/assets/logo.png" alt="" />
-        <h3>数据中台系统</h3>
+        <h3>测试</h3>
+        <!-- <h3>测试数据中台系统</h3> -->
       </div>
     </div>
     <el-form
@@ -62,51 +63,21 @@
         >登录</el-button
       >
     </el-form>
-    <!-- 忘记密码 -->
-    <div class="forgetPassword">
-      <div class="des">找回密码</div>
-      <div>1</div>
-      <el-form-item prop="username">
-        <el-input
-          ref="username"
-          v-model="loginForm.username"
-          placeholder="请输入手机号或邮箱"
-          name="username"
-          type="text"
-          tabindex="1"
-          auto-complete="on"
-          prefix-icon="el-icon-user"
-        />
-      </el-form-item>
-
-      <el-form-item prop="password">
-        <el-input
-          :key="passwordType"
-          ref="password"
-          v-model="loginForm.password"
-          :type="passwordType"
-          placeholder="请输入密码"
-          name="password"
-          tabindex="2"
-          auto-complete="on"
-          prefix-icon="el-icon-lock"
-          @keyup.enter.native="handleLogin"
-        />
-        <span class="show-pwd" @click="showPwd">
-          <svg-icon
-            :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
-          />
-        </span>
-      </el-form-item>
-    </div>
+    <forget></forget>
+    
   </div>
 </template>
 
 <script>
 import { validUsername } from "@/utils/validate";
+import forget from './forget.vue'
+console.log("🚀 ~ forget:", forget)
 
 export default {
   name: "Login",
+  components: {
+    forget,
+  },
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
@@ -139,7 +110,7 @@ export default {
       passwordType: "password",
       redirect: undefined,
       isRememberTheAccount: false,
-      isLogin: true,
+      isLogin: false,
     };
   },
   watch: {
@@ -201,14 +172,17 @@ $cursor: #fff;
 /* reset element-ui css */
 .login-container {
   .el-form-item__content {
-    background: #fff;
-    border: 1px solid #d9d9d9;
-    height: inherit;
+    display: flex;
+    // background: #fff;
+    // border: 1px solid #d9d9d9;
+    // height: inherit;
   }
   .el-input {
     display: inline-block;
     height: 40px;
-    width: 85%;
+    background: #fff;
+    border: 1px solid #d9d9d9;
+    // height: inherit;
     .el-input__inner {
       height: 40px;
       line-height: 40px;
@@ -228,7 +202,6 @@ $cursor: #fff;
       padding: 12px 5px 12px 33px;
       color: #333;
       height: 47px;
-      caret-color: $cursor;
 
       &:-webkit-autofill {
         box-shadow: 0 0 0px 1000px $bg inset !important;
@@ -236,14 +209,19 @@ $cursor: #fff;
       }
     }
   }
+  .getCode {
+    input {
+      width: 235px;
+    }
+  }
 
   .el-form-item {
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.1);
     border-radius: 5px;
     color: #454545;
     margin-bottom: 28px;
     .el-input__prefix .el-icon-user,
+    .el-input__prefix .el-icon-mobile,
+    .el-input__prefix .el-icon-message,
     .el-input__prefix .el-icon-lock {
       color: #1890ff; /* 图标颜色 */
       font-size: 14px; /* 图标大小 */
@@ -257,6 +235,10 @@ $cursor: #fff;
       font-family: Roboto;
       font-size: 14px;
     }
+  }
+  .el-button {
+    border: 1px solid #d9d9d9;
+    border-radius: 0px;
   }
 }
 </style>
@@ -278,9 +260,10 @@ $light_gray: #eee;
   background-color: $bg;
   overflow: hidden;
 
-  .login-form, .forgetPassword {
+  .login-form,
+  .forgetPassword {
     position: relative;
-    width: 520px;
+    width: 360px;
     max-width: 100%;
     margin: 0 auto;
     overflow: hidden;
@@ -359,6 +342,9 @@ $light_gray: #eee;
   }
   .login {
     height: 40px;
+  }
+  .next {
+    display: flex;
   }
 }
 </style>
