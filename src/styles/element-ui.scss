@@ -3,6 +3,17 @@
 .el-breadcrumb__inner,
 .el-breadcrumb__inner a {
   font-weight: 400 !important;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+/* 在全局样式文件或组件样式中添加 */
+.el-breadcrumb__item {
+  transition: none !important;
+}
+ 
+/* 如果需要更精确控制，可以指定面包屑项 */
+.el-breadcrumb .el-breadcrumb__item {
+  transition: none !important;
 }
 
 .el-upload {

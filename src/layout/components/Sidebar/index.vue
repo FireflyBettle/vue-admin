@@ -60,6 +60,9 @@ export default {
 }
 </script>
 <style lang="scss">
+.el-menu-item {
+  padding-left: 19px!important;
+}
 .el-menu-item.is-active  { 
   background-color: #E6F7FF!important; /* 替换为你想要的背景颜色，例如 #e5f6ff */ 
 } 

@@ -32,6 +32,89 @@ const asyncRoutes = [
       }
     ]
   },
+  {
+    path: '/distribute',
+    component: Layout,
+    redirect: '/distribute',
+    meta: {
+      title: '渠道管理',
+      icon: 'el-icon-wallet'
+    },
+    children: [
+      {
+        path: '/distribute/businessList',
+        component: () => import('@/views/businessManage/businessList/index'),
+        name: 'businessList',
+        meta: { title: '渠道列表', icon: 'edit' }
+      },
+      {
+        path: '/business/shopList',
+      }
+    ]
+  },
+  {
+    path: '/channel',
+    component: Layout,
+    redirect: '/channel',
+    meta: {
+      title: '分发管理',
+      icon: 'el-icon-monitor'
+    },
+    children: [
+      {
+        path: '/channel/businessList',
+        component: () => import('@/views/businessManage/businessList/index'),
+        name: 'businessList',
+        meta: { title: '分发列表', icon: 'edit' }
+      },
+      {
+        path: '/channel/shopList',
+      }
+    ]
+  },
+  {
+    path: '/order',
+    component: Layout,
+    redirect: '/order',
+    meta: {
+      title: '订单管理',
+      icon: 'el-icon-news'
+    },
+    children: [
+      {
+        path: '/order/businessList',
+        component: () => import('@/views/businessManage/businessList/index'),
+        name: 'businessList',
+        meta: { title: '订单列表', icon: 'edit' }
+      },
+      {
+        path: '/order/shopList',
+      }
+    ]
+  },
+  {
+    path: '/bill',
+    component: Layout,
+    redirect: '/bill',
+    meta: {
+      title: '账单流水统计',
+      icon: 'el-icon-discount'
+    },
+    children: [
+      {
+        path: '/bill/businessList',
+        component: () => import('@/views/businessManage/businessList/index'),
+        name: 'businessList',
+        meta: { title: '账单记录', icon: 'edit' }
+      },
+      {
+        path: '/bill/shopList',
+        component: () => import('@/views/businessManage/shopList/index'),
+        name: 'shopList',
+        meta: { title: '流水记录', icon: 'list' }
+      }
+    ]
+  },
 
   {
     path: '/form',
@@ -42,9 +125,10 @@ const asyncRoutes = [
         name: 'Form',
         component: () => import('@/views/form/index'),
         meta: { title: 'Form', icon: 'form' }
-      }
+      },
     ]
   },
+  
 
   {
     path: '/nested',
@@ -53,7 +137,7 @@ const asyncRoutes = [
     name: 'Nested',
     meta: {
       title: 'Nested',
-      icon: 'nested'
+      icon: 'el-icon-setting'
     },
     children: [
       {

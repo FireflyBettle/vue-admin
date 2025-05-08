@@ -59,7 +59,7 @@
     }
 
     .sub-el-icon {
-      margin-right: 12px;
+      margin-right: 10px;
       margin-left: -2px;
     }
 
@@ -193,7 +193,7 @@
       margin-right: 16px;
     }
     .sub-el-icon {
-      margin-right: 12px;
+      margin-right: 10px;
       margin-left: -2px;
     }
   }
@@ -223,5 +223,90 @@
       background: #99a9bf;
       border-radius: 20px;
     }
+  }
+}
+.el-icon-school:before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background: url(~@/assets/icon/shop.png)  no-repeat center;
+  background-size: contain;
+}
+.el-icon-wallet:before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background: url(~@/assets/icon/channel.png)  no-repeat center;
+  background-size: contain;
+}
+.el-icon-monitor:before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background: url(~@/assets/icon/distribute.png)  no-repeat center;
+  background-size: contain;
+}
+.el-icon-news:before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background: url(~@/assets/icon/order.png)  no-repeat center;
+  background-size: contain;
+}
+.el-icon-discount:before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background: url(~@/assets/icon/bill.png)  no-repeat center;
+  background-size: contain;
+}
+.el-icon-setting.sub-el-icon {
+  font-size: 16px!important;
+}
+.is-active {
+  .el-icon-school:before {
+    content: "";
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    background: url(~@/assets/icon/shop_active.png)  no-repeat center;
+    background-size: contain;
+  }
+  .el-icon-wallet:before {
+    content: "";
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    background: url(~@/assets/icon/distribute_active.png)  no-repeat center;
+    background-size: contain;
+  }
+  .el-icon-monitor:before {
+    content: "";
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    background: url(~@/assets/icon/distribute_active.png)  no-repeat center;
+    background-size: contain;
+  }
+  .el-icon-news:before {
+    content: "";
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    background: url(~@/assets/icon/order_active.png)  no-repeat center;
+    background-size: contain;
+  }
+  .el-icon-discount:before {
+    content: "";
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    background: url(~@/assets/icon/bill_active.png)  no-repeat center;
+    background-size: contain;
   }
 }
