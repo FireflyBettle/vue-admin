@@ -1,3 +1,11 @@
+<!--
+ * @Author: chenyourong
+ * @Date: 2021-11-18 23:21:54
+ * @LastEditors: chenyourong
+ * @LastEditTime: 2025-05-08 15:44:40
+ * @Description: 
+ * @FilePath: /vue-admin-template-master/src/layout/components/Sidebar/Logo.vue
+-->
 <template>
   <div class="sidebar-logo-container" :class="{'collapse':collapse}">
     <transition name="sidebarLogoFade">
@@ -14,6 +22,7 @@
 </template>
 
 <script>
+import logo from '@/assets/index_logo.png'
 export default {
   name: 'SidebarLogo',
   props: {
@@ -24,8 +33,9 @@ export default {
   },
   data() {
     return {
-      title: 'Vue Admin Template',
-      logo: 'https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png'
+      title: '数据中台系统',
+      logo,
+      // logo: 'https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png'
     }
   }
 }
@@ -44,9 +54,9 @@ export default {
 .sidebar-logo-container {
   position: relative;
   width: 100%;
-  height: 50px;
-  line-height: 50px;
-  background: #2b2f3a;
+  height: 48px;
+  line-height: 48px;
+  background: #001529;
   text-align: center;
   overflow: hidden;
 

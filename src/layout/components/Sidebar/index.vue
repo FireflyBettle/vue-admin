@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2021-11-18 23:21:54
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-04-27 16:25:44
+ * @LastEditTime: 2025-05-08 16:45:36
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/layout/components/Sidebar/index.vue
 -->
@@ -13,7 +13,6 @@
       <el-menu
         :default-active="activeMenu"
         :collapse="isCollapse"
-        :background-color="variables.menuBg"
         :text-color="variables.menuText"
         :unique-opened="false"
         :active-text-color="variables.menuActiveText"
@@ -60,3 +59,8 @@ export default {
   }
 }
 </script>
+<style lang="scss">
+.el-menu-item.is-active  { 
+  background-color: #E6F7FF!important; /* 替换为你想要的背景颜色，例如 #e5f6ff */ 
+} 
+</style>

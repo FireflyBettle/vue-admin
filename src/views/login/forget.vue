@@ -66,34 +66,34 @@
     <!-- 重置密码 -->
     <el-form
       v-if="isReset"
-      ref="forgetForm"
-      :model="forgetForm"
-      :rules="forgetRules"
+      ref="resetForm"
+      :model="resetForm"
+      :rules="resetRules"
       class="login-form"
       auto-complete="on"
       label-position="left"
     >
       <div class="des">重置密码</div>
-      <el-form-item prop="username">
+      <el-form-item prop="password">
         <el-input
-          ref="username"
-          v-model="loginForm.username"
+          ref="password"
+          v-model="resetForm.password"
           placeholder="请输入密码(至少6位字符)"
-          name="username"
+          name="password"
           type="text"
           tabindex="1"
           auto-complete="on"
         />
       </el-form-item>
 
-      <el-form-item prop="password">
+      <el-form-item prop="resetPassword">
         <el-input
-          :key="passwordType"
-          ref="password"
-          v-model="loginForm.password"
-          :type="passwordType"
+          :key="resetPasswordType"
+          ref="resetPassword"
+          v-model="resetForm.resetPassword"
+          :type="resetPasswordType"
           placeholder="确认密码"
-          name="password"
+          name="resetPassword"
           tabindex="2"
           auto-complete="on"
           @keyup.enter.native="handleLogin"
@@ -112,7 +112,7 @@
           type="primary"
           class="login"
           style="width: 100%"
-          @click.native.prevent="submitNext"
+          @click.native.prevent="sure"
           >确认</el-button
         >
       </div>
@@ -125,8 +125,8 @@ export default {
   name: "forget",
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
-        callback(new Error("请输入手机号或邮箱"));
+      if (value.length < 6) {
+        callback(new Error("请输入密码"));
       } else {
         callback();
       }
@@ -153,23 +153,24 @@ export default {
       }
     };
     return {
-      loginForm: {
-        username: "",
+      resetForm: {
         password: "",
+        resetPassword: "",
       },
-      loginRules: {
-        username: [
+      resetRules: {
+        password: [
           { required: true, trigger: "blur", validator: validateUsername },
         ],
-        password: [
+        resetPassword: [
           { required: true, trigger: "blur", validator: validatePassword },
         ],
       },
       loading: false,
-      passwordType: "password",
+      resetPasswordType: "password",
       redirect: undefined,
       isRememberTheAccount: false,
       isReset: true,
+
 
       forgetForm: {
         phone: "",
@@ -194,21 +195,22 @@ export default {
   },
   methods: {
     showPwd() {
-      if (this.passwordType === "password") {
-        this.passwordType = "";
+      if (this.resetPasswordType === "password") {
+        this.resetPasswordType = "";
       } else {
-        this.passwordType = "password";
+        this.resetPasswordType = "password";
       }
       this.$nextTick(() => {
-        this.$refs.password.focus();
+        this.$refs.resetPassword.focus();
       });
     },
-    handleLogin() {
-      this.$refs.loginForm.validate((valid) => {
+    sure() {
+      this.$refs.resetForm.validate((valid) => {
+        console.log("🚀 ~ this.$refs.resetForm.validate ~ valid:", valid)
         if (valid) {
           this.loading = true;
           this.$store
-            .dispatch("user/login", this.loginForm)
+            .dispatch("user/login", this.resetForm)
             .then(() => {
               this.$router.push({ path: this.redirect || "/" });
               this.loading = false;

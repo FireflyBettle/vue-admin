@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-04-25 16:44:47
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-04-25 17:14:46
+ * @LastEditTime: 2025-05-08 18:13:19
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/router/auth.js
  */
@@ -10,23 +10,25 @@ import Layout from '@/layout'
 
 const asyncRoutes = [
   {
-    path: '/example',
+    path: '/business',
     component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'el-icon-s-help', roles: ['editor'] },
+    redirect: '/business',
+    meta: {
+      title: '商户管理',
+      icon: 'el-icon-school'
+    },
     children: [
       {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
+        path: '/business/businessList',
+        component: () => import('@/views/businessManage/businessList/index'),
+        name: 'businessList',
+        meta: { title: '商户列表', icon: 'edit' }
       },
       {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
+        path: '/business/shopList',
+        component: () => import('@/views/businessManage/shopList/index'),
+        name: 'shopList',
+        meta: { title: '门店列表', icon: 'list' }
       }
     ]
   },
@@ -102,17 +104,6 @@ const asyncRoutes = [
       }
     ]
   },
-
-  {
-    path: 'external-link',
-    component: Layout,
-    children: [
-      {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
-      }
-    ]
-  }
 ];
 
 export default asyncRoutes

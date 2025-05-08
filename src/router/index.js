@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2021-11-18 23:21:54
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-04-25 18:14:01
+ * @LastEditTime: 2025-05-08 17:25:35
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/router/index.js
  */
@@ -63,27 +63,6 @@ export const constantRoutes = [
       meta: { title: 'Dashboard', icon: 'dashboard' }
     }]
   },
-  {
-    path: '/example',
-    component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'el-icon-s-help', roles: ['editor'] },
-    children: [
-      {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
-      },
-      {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
-      }
-    ]
-  }
 ]
 
 export const asyncRoutes = [

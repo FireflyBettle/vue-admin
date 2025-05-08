@@ -1,9 +1,20 @@
+<!--
+ * @Author: chenyourong
+ * @Date: 2021-11-18 23:21:54
+ * @LastEditors: chenyourong
+ * @LastEditTime: 2025-05-08 17:48:18
+ * @Description: 
+ * @FilePath: /vue-admin-template-master/src/layout/components/Sidebar/SidebarItem.vue
+-->
 <template>
   <div v-if="!item.hidden">
     <template v-if="hasOneShowingChild(item.children,item) && (!onlyOneChild.children||onlyOneChild.noShowingChildren)&&!item.alwaysShow">
       <app-link v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path)">
         <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{'submenu-title-noDropdown':!isNest}">
-          <item :icon="onlyOneChild.meta.icon||(item.meta&&item.meta.icon)" :title="onlyOneChild.meta.title" />
+          <item :icon="onlyOneChild.meta.icon||(item.meta&&item.meta.icon)" :title="onlyOneChild.meta.title">
+            <img src="@/assets/logo.png" alt="">
+            <span>111</span>
+          </item>
         </el-menu-item>
       </app-link>
     </template>
