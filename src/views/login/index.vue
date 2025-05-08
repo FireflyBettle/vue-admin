@@ -110,7 +110,7 @@ export default {
       passwordType: "password",
       redirect: undefined,
       isRememberTheAccount: false,
-      isLogin: false,
+      isLogin: true,
     };
   },
   watch: {

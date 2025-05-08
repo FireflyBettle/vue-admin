@@ -169,7 +169,7 @@ export default {
       resetPasswordType: "password",
       redirect: undefined,
       isRememberTheAccount: false,
-      isReset: true,
+      isReset: false,
 
 
       forgetForm: {
