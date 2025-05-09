@@ -58,3 +58,11 @@
 .el-range-separator {
   box-sizing: content-box;
 }
+
+/* 设置按钮的圆角为 2px */ 
+.el-button,.el-select .el-input__inner { 
+  border-radius: 2px; 
+} 
+.el-table th {
+  background-color: #FAFAFA;
+}

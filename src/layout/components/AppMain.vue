@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2021-11-18 23:21:54
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-08 18:30:31
+ * @LastEditTime: 2025-05-09 15:24:10
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/layout/components/AppMain.vue
 -->
@@ -28,12 +28,12 @@ export default {
 <style scoped>
 .app-main {
   /*50 = navbar  */
-  min-height: calc(100vh - 170px);
+  min-height: calc(100vh - 150px);
   width: 100%;
   position: relative;
   overflow: hidden;
-  background: #fff;
-  margin-top: 20px;
+  background: #f0f2f5;
+  padding: 20px;
 }
 .fixed-header+.app-main {
   padding-top: 50px;

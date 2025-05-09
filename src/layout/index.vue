@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2021-11-18 23:21:54
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-08 18:21:22
+ * @LastEditTime: 2025-05-09 15:21:43
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/layout/index.vue
 -->
@@ -68,7 +68,6 @@ export default {
     position: relative;
     // height: 100%;
     width: 100%;
-    background: #f0f2f5;
     &.mobile.openSidebar{
       position: fixed;
       top: 0;

@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2021-11-18 23:21:54
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-08 16:45:36
+ * @LastEditTime: 2025-05-09 15:15:46
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/layout/components/Sidebar/index.vue
 -->
@@ -65,5 +65,6 @@ export default {
 }
 .el-menu-item.is-active  { 
   background-color: #E6F7FF!important; /* 替换为你想要的背景颜色，例如 #e5f6ff */ 
+  border-right: 2px solid #2593fc;
 } 
 </style>
