@@ -30,130 +30,53 @@
         </el-input>
       </div>
       <div class="filter-container__right">
-        <el-button type="primary">添加商户</el-button>
-        <el-button type="info" plain>删除商户</el-button>
+        <el-button type="primary" @click="dialogFormVisible = true"
+          >添加商户</el-button
+        >
+        <!-- <el-button type="info" plain @click="deleteShopDialogVisible = true"
+          >删除商户</el-button> -->
+          <el-button type="info" plain @click="deleteShopDialog">删除商户</el-button>
       </div>
     </div>
-    <div class="main">
-      <el-table
-        ref="multipleTable"
-        :data="tableData"
-        tooltip-effect="dark"
-        style="width: 100%"
-        @selection-change="handleSelectionChange"
-      >
-        <el-table-column type="selection" width="42"></el-table-column>
-        <el-table-column prop="id" label="ID" width="59"></el-table-column>
-        <el-table-column
-          prop="name"
-          label="商户名称"
-          width="90"
-        ></el-table-column>
-        <el-table-column
-          prop="des"
-          label="商户描述"
-          width="180"
-          show-overflow-tooltip
-        ></el-table-column>
-        <el-table-column
-          prop="shopName"
-          label="商户ID"
-          width="120"
-          show-overflow-tooltip
-        ></el-table-column>
-        <el-table-column
-          prop="rate"
-          label="折扣率"
-          width="70"
-        ></el-table-column>
-        <el-table-column
-          prop="storeNumber"
-          label="门店数"
-          width="70"
-        ></el-table-column>
-        <el-table-column
-          prop="contactPerson"
-          label="联系人"
-          width="80"
-        ></el-table-column>
-        <el-table-column
-          prop="phoneNumber"
-          label="手机号"
-          width="70"
-          show-overflow-tooltip
-        ></el-table-column>
-        <el-table-column
-          prop="email"
-          label="邮箱"
-          width="90"
-          show-overflow-tooltip
-        ></el-table-column>
-        <el-table-column
-          prop="status"
-          label="状态"
-          width="70"
-        ></el-table-column>
-        <el-table-column prop="operation" label="操作" width="160">
-          <template slot-scope="scope">
-            <span class="operation" @click="handleEdit(scope.$index, scope.row)"
-              >查看</span
-            >
-            <span class="operation" @click="handleEdit(scope.$index, scope.row)"
-              >编辑</span
-            >
-            <span
-              class="operation"
-              @click="handleDelete(scope.$index, scope.row)"
-              >删除</span
-            >
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-pagination
-        background
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page.sync="currentPage"
-        :page-sizes="[100, 200, 300, 400]"
-        :page-size="100"
-        layout="sizes, prev, pager, next,jumper"
-        :total="1000"
-      >
-      </el-pagination>
-    </div>
+    <Table :tableData="tableData"></Table>
+    <Dialog
+      @changeDialogFormVisible="changeDialogFormVisible"
+      :dialogFormVisible.sync="dialogFormVisible"
+      :table-data="shopForm"
+      @submitForm="submitForm"
+    />
+    <!-- 删除商户 -->
+    <el-dialog
+      title=""
+      :visible.sync="deleteShopDialogVisible"
+      width="30%"
+      :show-close="false"
+      class="deleteShopDialog"
+    >
+      <i class="el-icon-warning-outline"></i>
+      <span>确认删除商户名称?</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="deleteShopDialogVisible = false">否</el-button>
+        <el-button type="primary" @click="deleteShopDialogVisible = false"
+          >是</el-button
+        >
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import Dialog from "@/components/Dialog/index.vue";
+import Table from "@/components/Table/index.vue";
+
 export default {
   name: "businessList",
+  components: {
+    Dialog,
+    Table,
+  },
   data() {
     return {
-      options: [
-        {
-          value: "选项1",
-          label: "黄金糕",
-        },
-        {
-          value: "选项2",
-          label: "双皮奶",
-        },
-        {
-          value: "选项3",
-          label: "蚵仔煎",
-        },
-        {
-          value: "选项4",
-          label: "龙须面",
-        },
-        {
-          value: "选项5",
-          label: "北京烤鸭",
-        },
-      ],
-      value: "",
-      input: "",
-
       tableData: [
         {
           id: "1",
@@ -192,11 +115,65 @@ export default {
           status: "已启用",
         },
       ],
-      multipleSelection: [],
-      currentPage: 5,
+      options: [
+        {
+          value: "选项1",
+          label: "黄金糕",
+        },
+        {
+          value: "选项2",
+          label: "双皮奶",
+        },
+        {
+          value: "选项3",
+          label: "蚵仔煎",
+        },
+        {
+          value: "选项4",
+          label: "龙须面",
+        },
+        {
+          value: "选项5",
+          label: "北京烤鸭",
+        },
+      ],
+      value: "",
+      input: "",
+      dialogFormVisible: false,
+      deleteShopDialogVisible: false,
+      shopForm: {
+        name: "",
+        des: "",
+        logo: "",
+        des: "",
+        shopName: "",
+        rate: "",
+        contactPerson: "",
+        phoneNumber: "",
+        email: "",
+        status: "",
+        password: "",
+      },
     };
   },
   methods: {
+    deleteShopDialog() {
+      this.$confirm("确定删除吗?", "", {
+        type: "warning",
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+      })
+        .then(async () => {
+          this.$message.success(" 删除成功");
+        })
+        .catch(() => {
+          this.$message.info(" 已取消删除");
+        });
+    },
+    changeDialogFormVisible(val) {
+      this.dialogFormVisible = val;
+    },
+    showAddShop() {},
     handleFilter(val) {
       console.log("🚀 ~ handleFilter ~ val:", val);
     },
@@ -214,6 +191,9 @@ export default {
     },
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
+    },
+    submitForm(formName) {
+      alert("submit!");
     },
   },
 };
@@ -259,19 +239,22 @@ export default {
     }
   }
 }
-.main {
-  .el-pagination {
-    text-align: right;
-    margin-top: 16px;
+.deleteShopDialog {
+  .el-dialog__header {
+    display: none;
   }
-  .el-pagination.is-background .btn-next, .el-pagination.is-background .btn-prev, .el-pagination.is-background .el-pager li {
-    background: #fff;
-    border: 1px solid #D9D9D9;
+  .el-dialog__body {
+    display: flex;
+    align-items: center;
+    border: none;
   }
-  .el-pagination.is-background .el-pager li:not(.disabled).active {
-    background-color: #fff;
-    color: #1890FF;
-    border: 1px solid #1890FF;
+  .el-icon-warning-outline {
+    font-size: 22px;
+    color: #faad14;
+    margin-right: 16px;
+  }
+  .el-dialog__footer {
+    padding: 0px 20px 20px;
   }
 }
 </style>
@@ -287,18 +270,25 @@ export default {
     height: 80px;
     background: #fff;
   }
-  .main {
-    width: 100%;
-    height: 400px;
-    background: #fff;
-    margin-top: 20px;
-    padding: 20px;
-    .operation {
-      cursor: pointer;
-      color: #1890ff;
-      margin-right: 16px;
-      font-size: 14px;
-    }
+  .show-pwd {
+    position: absolute;
+    right: 60px;
+    top: 0;
+    font-size: 16px;
+    color: #000;
+    cursor: pointer;
+    user-select: none;
+  }
+  .char-count {
+    text-align: right;
+    color: #666;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  .limit-reached {
+    color: #f56c6c;
+    font-weight: bold;
   }
 }
 </style>

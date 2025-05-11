@@ -1,30 +1,60 @@
-<!--
- * @Author: chenyourong
- * @Date: 2025-05-08 18:06:50
- * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-09 15:35:39
- * @Description: 
- * @FilePath: /vue-admin-template-master/src/views/businessManage/shopList/index.vue
--->
 <template>
-  <div class="shop-list">
-    <el-row>
-      <el-col :span="24"
-        ><div class="grid-content bg-purple-dark">qqqq</div
-      ></el-col>
-    </el-row>
+  <div class="shopList">
+    <Table :tableData="tableData"></Table>
   </div>
 </template>
 
 <script>
+import Table from "@/components/Table/index.vue";
 export default {
   name: "shopList",
+  components: {
+    Table,
+  },
+  data() {
+    return {
+      tableData: [
+        {
+          id: "1",
+          name: "麦当劳",
+          des: "这里是商户描述",
+          shopName: "022A15EFC727DCAD",
+          rate: "10%",
+          storeNumber: "10",
+          contactPerson: "麦当劳",
+          phoneNumber: "19538383838",
+          email: "1403939393@qq.com",
+          status: "已启用",
+        },
+        {
+          id: "1",
+          name: "麦当劳",
+          des: "这里是商户描述",
+          shopName: "022A15EFC727DCAD",
+          rate: "10%",
+          storeNumber: "10",
+          contactPerson: "麦当劳",
+          phoneNumber: "19538383838",
+          email: "1403939393@qq.com",
+          status: "已启用",
+        },
+        {
+          id: "1",
+          name: "麦当劳",
+          des: "这里是商户描述",
+          shopName: "022A15EFC727DCAD",
+          rate: "10%",
+          storeNumber: "10",
+          contactPerson: "麦当劳",
+          phoneNumber: "19538383838",
+          email: "1403939393@qq.com",
+          status: "已启用",
+        },
+      ],
+    }
+  }
 };
 </script>
 
-<style lang="scss" scoped>
-.shop-list  {
-  background: #fff;
-}
-
+<style lang="scss">
 </style>
