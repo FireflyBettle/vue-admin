@@ -1,13 +1,21 @@
 <template>
   <div>
-    <!-- <Search></Search> -->
+    <Search v-bind="filterAttrs" v-on="filterEvent"></Search>
     <app-table :list-query-params.sync="listQueryParams" v-bind="tableAttrs" v-on="tableEvent" />
+    <Dialog
+      @changeDialogFormVisible="changeDialogFormVisible"
+      :dialogFormVisible.sync="dialogFormVisible"
+      :table-data="shopForm"
+      @submitForm="submitForm"
+    />
   </div>
 </template>
 
 <script>
 import AppTable from '@/components/AppTable/index.vue'
-import Search from "@/components/Dialog/index.vue";
+import Search from "@/components/Search/index.vue";
+import Dialog from "@/components/Dialog/index.vue";
+
 // 定义的接口根据自己项目更换
 // import TalentServe from '@/api/talent'
 import testData from './data.json'
@@ -22,7 +30,8 @@ export default {
   name: 'distributeList',
   components: {
     AppTable,
-    Search
+    Search,
+    Dialog
   },
   data() {
     return {
@@ -34,7 +43,7 @@ export default {
       tableConfig: [
         {
           label: 'ID',
-          width: '59',
+          width: '60',
           prop: 'id',
         },
         {
@@ -44,39 +53,40 @@ export default {
         },
         {
           label: '商户描述',
-          width: '120px',
-          prop: 'des'
+          width: '267px',
+          prop: 'des',
+          flex: 1,
         },
         {
           label: '商户ID',
-          width: '120px',
+          width: '168px',
           prop: 'shopName'
         },
         {
           label: '折扣率',
-          width: '70',
+          width: '90',
           prop: 'rate'
         },
         {
           label: '门店数',
-          width: '70',
+          width: '80',
           prop: 'storeNumber'
         },
         {
           label: '联系人',
-          width: '80',
+          width: '70',
           prop: 'contactPerson',
           // 显示时间
           // format: 'timestamp'
         },
         {
           label: '手机号',
-          width: '70',
+          width: '80',
           prop: 'phoneNumber'
         },
         {
           label: '邮箱',
-          width: '90',
+          width: '80',
           prop: 'email',
           format: 'email'
         },
@@ -102,7 +112,50 @@ export default {
       // 选择数据
       selectData: [],
       // 操作数据
-      operationalData: {}
+      operationalData: {},
+      filterButtonText: [
+        {
+          label: '添加商户',
+          type: 'primary',
+        },
+        {
+          label: '删除商户',
+          type: 'info',
+        }
+      ],
+      filterOptions:[
+        {
+          type: 'multiSelect',
+          placeholder: '商户名称',
+          inputValue: '',
+          isSearch: true,
+          inputWidth: '264px',
+          options: [
+          {
+          value: "选项1",
+          label: "黄金糕",
+        },
+        {
+          value: "选项2",
+          label: "双皮奶",
+        },
+          ],
+        },
+      ],
+      dialogFormVisible: false,
+      shopForm: {
+        name: "",
+        des: "",
+        logo: "",
+        des: "",
+        shopName: "",
+        rate: "",
+        contactPerson: "",
+        phoneNumber: "",
+        email: "",
+        status: "",
+        password: "",
+      },
     }
   },
   computed: {
@@ -123,6 +176,13 @@ export default {
         isSelection: true
       }
     },
+    filterAttrs() {
+      return {
+        // 按钮名称
+        filterButtonText: this.filterButtonText,
+        filterOptions: this.filterOptions,
+      }
+    },
     // 表格事件
     tableEvent() {
       return {
@@ -133,12 +193,47 @@ export default {
         // 表格数据选择
         subSelected: this.handleSelectionChange
       }
+    },
+    filterEvent() {
+      return {
+        // 选择数据回调
+        handleFilterButton: this.handleFilterButton,
+        clickSearch: this.clickSearch,
+      }
     }
   },
   created() {
     this.getList()
   },
   methods: {
+    clickSearch(){
+      console.log("🚀 ~ clickSearch ~ val:", "clickSearch")
+    },
+    changeDialogFormVisible(val) {
+      this.dialogFormVisible = val;
+    },
+    submitForm(formName) {
+      alert("submit!");
+    },
+    handleFilterButton(val) {
+      console.log("🚀 ~ handleFilterButton ~ val:", val)
+      if (val === '添加商户') {
+        this.dialogFormVisible = true;
+      }
+      if (val === '删除商户') {
+        this.$confirm("确定删除吗?", "", {
+        type: "warning",
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+      })
+        .then(async () => {
+          this.$message.success(" 删除成功")
+        })
+        .catch(() => {
+          this.$message.info(" 已取消删除")
+        });
+      }
+    },
     // 获取列表
      getList() {
       try {

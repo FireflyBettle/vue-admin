@@ -34,8 +34,8 @@
         :key="index"
         :prop="item.prop"
         :label="item.label"
-        :width="item.width"
-        :min-width="item.minWidth"
+        :fit="true"
+        :min-width="item.width"
         :show-overflow-tooltip="true"
       >
         <template slot-scope="scope">
@@ -285,6 +285,7 @@ export default {
 <style lang="scss" scoped>
 .table {
   background: #fff;
+  padding: 20px;
 }
 .image-size {
   width: 30px;
