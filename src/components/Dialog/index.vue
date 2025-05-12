@@ -258,7 +258,7 @@ export default {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  max-height: calc(100% - 30px);
+  // max-height: calc(100% - 30px);
   max-width: calc(100% - 30px);
   .el-button {
     flex: 1;

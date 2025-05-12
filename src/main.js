@@ -1,3 +1,11 @@
+/*
+ * @Author: chenyourong
+ * @Date: 2025-05-12 09:51:02
+ * @LastEditors: chenyourong
+ * @LastEditTime: 2025-05-12 10:39:25
+ * @Description: 
+ * @FilePath: /vue-admin-template-master/src/main.js
+ */
 import Vue from 'vue'
 
 import 'normalize.css/normalize.css' // A modern alternative to CSS resets
@@ -27,6 +35,12 @@ if (process.env.NODE_ENV === 'production') {
   const { mockXHR } = require('../mock')
   mockXHR()
 }
+
+// main.js 
+import * as filters from '@/filters'
+Object.keys(filters).forEach(key  => {
+  Vue.filter(key,  filters[key])
+})
 
 
 // set ElementUI lang to EN

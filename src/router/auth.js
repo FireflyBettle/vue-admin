@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-04-25 16:44:47
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-08 18:13:19
+ * @LastEditTime: 2025-05-12 10:46:06
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/router/auth.js
  */
@@ -42,13 +42,13 @@ const asyncRoutes = [
     },
     children: [
       {
-        path: '/distribute/businessList',
-        component: () => import('@/views/businessManage/businessList/index'),
-        name: 'businessList',
+        path: '/distribute/distributeList',
+        component: () => import('@/views/distribute/distributeList/index'),
+        name: 'distribute',
         meta: { title: '渠道列表', icon: 'edit' }
       },
       {
-        path: '/business/shopList',
+        path: '/distribute/404',
       }
     ]
   },
