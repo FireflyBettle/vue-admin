@@ -34,7 +34,6 @@
         :key="index"
         :prop="item.prop"
         :label="item.label"
-        :fit="true"
         :min-width="item.width"
         :show-overflow-tooltip="true"
       >
