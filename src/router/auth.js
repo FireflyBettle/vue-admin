@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-04-25 16:44:47
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-12 10:46:06
+ * @LastEditTime: 2025-05-13 10:43:45
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/router/auth.js
  */
@@ -45,7 +45,14 @@ const asyncRoutes = [
         path: '/distribute/distributeList',
         component: () => import('@/views/distribute/distributeList/index'),
         name: 'distribute',
-        meta: { title: '渠道列表', icon: 'edit' }
+        meta: { title: '渠道列表', icon: 'edit' },
+      },
+      {
+        path: '/distribute/distributeList/:id',
+        component: () => import('@/views/distribute/distributeList/detail'),
+        name: 'distributeDetail',
+        meta: { title: '渠道详情', icon: 'edit' },
+        hidden: true
       },
       {
         path: '/distribute/404',
