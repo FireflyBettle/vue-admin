@@ -1,7 +1,7 @@
 <template>
   <!-- 添加商户 -->
   <el-dialog title="添加商户" :visible.sync="localDialogVisible" width="572px">
-    <el-form
+    <!-- <el-form
       :model="tableData"
       :rules="tableDataRules"
       ref="tableData"
@@ -147,7 +147,64 @@
           />
         </span>
       </el-form-item>
-    </el-form>
+    </el-form> -->
+    <el-form :model="tableData" :rules="tableDataRules" ref="tableData">
+        <el-form-item
+          v-for="(item, index) in tableFormAttrs"
+          :label="item.title"
+          :label-width="formLabelWidth"
+          :prop="item.required ? item.prop : ''"
+          :key="index"
+        >
+          <!-- 输入框 -->
+          <template v-if="item.type === 'input'">
+            <el-input
+              v-model="tableData[item.prop]"
+              autocomplete="off"
+              :disabled="item.disabled"
+              :placeholder="item.placeholder"
+            >
+              <template slot="append" v-if="item.slot">{{
+                item.slot
+              }}</template>
+              ></el-input
+            >
+          </template>
+          <!-- 上传 -->
+          <template v-if="item.type === 'upload'">
+            <el-upload
+              class="avatar-uploader"
+              action="https://jsonplaceholder.typicode.com/posts/"
+              :show-file-list="false"
+              :disabled="item.disabled"
+              :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img v-if="tableData[item.prop]" :src="imageUrl" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+          </template>
+          <!-- 多文本框 -->
+          <template v-if="item.type === 'textarea'">
+            <el-input
+              v-model="item.name"
+              type="textarea"
+              :autosize="{ minRows: 1, maxRows: 4 }"
+              maxlength="100"
+              :placeholder="item.placeholder"
+              :disabled="item.disabled"
+              show-word-limit
+              @input="handleInput(item)"
+            ></el-input>
+          </template>
+          <template v-if="item.type === 'radio'">
+            <el-radio-group v-model="tableData.status" :disabled="item.disabled">
+              <el-radio v-model="tableData[item.prop]" label="1">启用</el-radio>
+              <el-radio v-model="tableData[item.prop]" label="2">暂停</el-radio>
+            </el-radio-group>
+          </template>
+        </el-form-item>
+      </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="localDialogVisible = false">取 消</el-button>
       <el-button type="primary" @click="submitForm('tableData')"
@@ -162,6 +219,10 @@ export default {
   props: {
     tableData: {
       type: Object,
+      required: true,
+    },
+    tableFormAttrs: {
+      type: Array,
       required: true,
     },
     dialogFormVisible: {
@@ -268,7 +329,7 @@ export default {
     padding: 0;
   }
   .el-dialog__body {
-    padding: 30px 24px;
+    padding: 0 24px 24px;
     border-top: 1px solid #f0f0f0;
     border-bottom: 1px solid #f0f0f0;
   }

@@ -99,7 +99,13 @@
             :key="index"
             class="button-margin-left"
           >
-            <span
+          <template v-if="option === '查看'">
+            <router-link :to="`/distribute/distributeList/${scope.row.id}`"> 
+              <span>{{ option }}</span
+            >
+        </router-link>
+          </template>
+            <span v-else
               @click="
                 handleClickOption(scope.$index, scope.row, option, $event)
               "
