@@ -4,7 +4,8 @@
       <el-breadcrumb-item v-for="(item,index) in levelList" :key="item.path">
         <template v-if="item.redirect==='noRedirect'||index==levelList.length-1">
         <span class="no-redirect">{{ item.meta.title }}</span>
-        <span class="bigSize">{{ item.meta.title }}</span>
+        <span class="bigSize"><i v-if="$route.params.id" class="el-icon-back" @click="goBack" style="margin-right: 7px;"></i>{{ item.meta.title }}</span>
+        <!-- <span class="bigSize">{{ item.meta.title }}</span> -->
       </template>
         <a v-else @click.prevent="handleLink(item)">{{ item.meta.title }}</a>
       </el-breadcrumb-item>
@@ -30,6 +31,9 @@ export default {
     this.getBreadcrumb()
   },
   methods: {
+    goBack() {
+      this.$router.go(-1);
+    },
     getBreadcrumb() {
       // only show routes with meta.title
       let matched = this.$route.matched.filter(item => item.meta && item.meta.title)
@@ -82,6 +86,7 @@ export default {
     top: 41px;
     font-size: 20px;
     color: rgba(0, 0, 0, 0.85);
+    cursor: pointer;
   }
 }
 </style>

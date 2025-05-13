@@ -113,6 +113,7 @@ export default {
   methods: {
     handleAvatarSuccess(res, file) {
       this.imageUrl = URL.createObjectURL(file.raw);
+      this.tableData.logo = this.imageUrl;
     },
     handleInput(item) {
       // 检查是否达到限制

@@ -51,8 +51,8 @@ const asyncRoutes = [
         path: '/distribute/distributeList/:id',
         component: () => import('@/views/distribute/distributeList/detail'),
         name: 'distributeDetail',
-        meta: { title: '渠道详情', icon: 'edit' },
-        hidden: true
+        meta: { title: '渠道详情', icon: 'edit',activeMenu: '/distribute/distributeList' },
+        hidden: true,
       },
       {
         path: '/distribute/404',
