@@ -206,9 +206,9 @@
         </el-form-item>
       </el-form>
     <div slot="footer" class="dialog-footer">
-      <el-button @click="localDialogVisible = false">取 消</el-button>
+      <el-button @click="localDialogVisible = false">取消</el-button>
       <el-button type="primary" @click="submitForm('tableData')"
-        >添 加</el-button
+        >添加</el-button
       >
     </div>
   </el-dialog>
@@ -311,62 +311,62 @@ export default {
 </script>
 
 <style lang="scss">
-.el-dialog {
-  display: flex;
-  flex-direction: column;
-  margin: 0 !important;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  // max-height: calc(100% - 30px);
-  max-width: calc(100% - 30px);
-  .el-button {
-    flex: 1;
-    overflow: auto;
-    width: 60px;
-    height: 32px;
-    padding: 0;
-  }
-  .el-dialog__body {
-    padding: 0 24px 24px;
-    border-top: 1px solid #f0f0f0;
-    border-bottom: 1px solid #f0f0f0;
-  }
-  .avatar-uploader .el-upload {
-    border: 1px dashed #d9d9d9;
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-  }
-  .avatar-uploader .el-upload:hover {
-    border-color: #409eff;
-  }
-  .avatar-uploader-icon {
-    font-size: 15px;
-    color: #8c939d;
-    width: 32px;
-    height: 32px;
-    line-height: 32px;
-    text-align: center;
-  }
-  .avatar {
-    width: 32px;
-    height: 32px;
-    display: block;
-  }
-  .avatar-uploader {
-    line-height: 14px;
-  }
-  .el-input__count {
-    line-height: 1;
-    bottom: -17px;
-    right: 0px;
-  }
-  .el-input,
-  .el-textarea {
-    width: 348px;
-  }
-}
+// .el-dialog {
+//   display: flex;
+//   flex-direction: column;
+//   margin: 0 !important;
+//   position: absolute;
+//   top: 50%;
+//   left: 50%;
+//   transform: translate(-50%, -50%);
+//   // max-height: calc(100% - 30px);
+//   max-width: calc(100% - 30px);
+//   .el-button {
+//     flex: 1;
+//     overflow: auto;
+//     width: 60px;
+//     height: 32px;
+//     padding: 0;
+//   }
+//   .el-dialog__body {
+//     padding: 0 24px 24px;
+//     border-top: 1px solid #f0f0f0;
+//     border-bottom: 1px solid #f0f0f0;
+//   }
+//   .avatar-uploader .el-upload {
+//     border: 1px dashed #d9d9d9;
+//     border-radius: 6px;
+//     cursor: pointer;
+//     position: relative;
+//     overflow: hidden;
+//   }
+//   .avatar-uploader .el-upload:hover {
+//     border-color: #409eff;
+//   }
+//   .avatar-uploader-icon {
+//     font-size: 15px;
+//     color: #8c939d;
+//     width: 32px;
+//     height: 32px;
+//     line-height: 32px;
+//     text-align: center;
+//   }
+//   .avatar {
+//     width: 32px;
+//     height: 32px;
+//     display: block;
+//   }
+//   .avatar-uploader {
+//     line-height: 14px;
+//   }
+//   .el-input__count {
+//     line-height: 1;
+//     bottom: -17px;
+//     right: 0px;
+//   }
+//   .el-input,
+//   .el-textarea {
+//     width: 348px;
+//   }
+// }
 </style>

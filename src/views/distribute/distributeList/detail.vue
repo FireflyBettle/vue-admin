@@ -9,11 +9,11 @@
     >
       <template v-slot:="button">
         <template v-if="isEdit">
-          <el-button @click="cancel">取 消</el-button>
-          <el-button type="primary" @click="submitForm()">添 加</el-button>
+          <el-button @click="cancel">取消</el-button>
+          <el-button type="primary" @click="submitForm()">添加</el-button>
         </template>
         <template v-else>
-          <el-button type="primary" @click="edit()">编 辑</el-button>
+          <el-button type="primary" @click="edit()">编辑</el-button>
         </template>
       </template>
     </Detail>

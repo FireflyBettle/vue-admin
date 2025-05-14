@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-12 17:36:48
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-12 17:43:09
+ * @LastEditTime: 2025-05-14 10:25:38
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/components/Search/index.vue
 -->
@@ -21,6 +21,7 @@
             filterable
             :placeholder="item.placeholder"
             @change="handleFilter(item)"
+            :style="{width: item.selectWidth}"
           >
             <el-option
               v-for="item in item.options"
@@ -98,28 +99,6 @@ export default {
     return {
       value: "",
       input: "",
-      options: [
-        {
-          value: "选项1",
-          label: "黄金糕",
-        },
-        {
-          value: "选项2",
-          label: "双皮奶",
-        },
-        {
-          value: "选项3",
-          label: "蚵仔煎",
-        },
-        {
-          value: "选项4",
-          label: "龙须面",
-        },
-        {
-          value: "选项5",
-          label: "北京烤鸭",
-        },
-      ],
     };
   },
   methods: {
@@ -166,7 +145,7 @@ export default {
     }
     .el-button {
       height: 32px;
-      padding: 0px!important;
+      padding: 0px !important;
       width: 60px;
     }
   }
@@ -182,18 +161,21 @@ export default {
   .el-select {
     margin-right: 4px;
     .el-input {
-      width: 106px;
+      // width: 77px;
       .el-select__caret {
         color: #606266;
       }
       .el-input__suffix {
-        top: 3px;
+        top: 2px;
       }
     }
     .is-focus {
       .el-input__suffix {
-        top: 0px;
+        top: -1px;
       }
+    }
+    .el-input__inner {
+      padding-right: 15px;
     }
     .el-input__inner::placeholder {
       color: #606266; /* 默认灰色改为深灰色 */

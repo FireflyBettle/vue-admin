@@ -75,4 +75,10 @@
     line-height: 32px;
   }
 }
-
+.el-form-item__label, .el-form-item__content {
+  height: 32px;
+  line-height: 32px;
+}
+.el-table th:not(:last-child)>.cell {
+  border-right: 1px solid rgba(0, 0, 0, 0.06);
+}

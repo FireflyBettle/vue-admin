@@ -38,6 +38,21 @@
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
           </template>
+          <!-- 选择框 -->
+          <template v-if="item.type === 'select'">
+            <el-select
+              v-model="tableData[item.prop]"
+              :placeholder="item.placeholder"
+            >
+              <el-option
+                v-for="val in item.options"
+                :key="val.value"
+                :label="val.label"
+                :value="val.value"
+              >
+              </el-option>
+            </el-select>
+          </template>
           <!-- 多文本框 -->
           <template v-if="item.type === 'textarea'">
             <el-input
@@ -84,14 +99,17 @@ export default {
       type: Array,
       required: true,
     },
-    styleType:{
+    styleType: {
       type: String,
+    },
+    formLabelWidth: {
+      type: String,
+      default: "84px",
     },
   },
   data() {
     return {
       imageUrl: "",
-      formLabelWidth: "84px",
       tableDataRules: {
         name: [
           { required: true, message: "请输入商户名称", trigger: "blur" },
@@ -105,6 +123,15 @@ export default {
           { required: true, message: "请输入手机号", trigger: "blur" },
         ],
         email: [{ required: true, message: "请输入邮箱", trigger: "blur" }],
+        shopPerson: [
+          { required: true, message: "请选择券码类型", trigger: "blur" },
+        ],
+        couponType: [
+          { required: true, message: "请选择券码类型", trigger: "blur" },
+        ],
+        couponTime: [
+          { required: true, message: "请输入券码有效期", trigger: "blur" },
+        ],
       },
       isLimitReached: false,
       passwordType: "password",
@@ -170,6 +197,26 @@ export default {
     padding: 24px;
     border-top: 1px solid #f0f0f0;
     border-bottom: 1px solid #f0f0f0;
+  }
+  .el-select {
+    margin-right: 4px;
+    .el-input {
+      // width: 77px;
+      .el-select__caret {
+        color: #606266;
+      }
+      .el-input__suffix {
+        top: 3px;
+      }
+    }
+    .is-focus {
+      .el-input__suffix {
+        top: -6px;
+      }
+    }
+    .el-input__inner {
+      padding-right: 15px;
+    }
   }
   .avatar-uploader .el-upload {
     border: 1px dashed #d9d9d9;

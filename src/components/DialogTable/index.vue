@@ -1,5 +1,5 @@
 <template>
-  <div class="table">
+  <div class="dialog-table">
     <!-- 表头 -->
     <div v-if="title" class="table-title">{{ title }}</div>
 
@@ -7,19 +7,12 @@
     <el-table
       :ref="ref"
       v-loading="listLoading"
-      :data="tableData"
+      :data="dialogTableData"
       :element-loading-text="loadingText"
       :header-cell-style="{ backgroundColor: '#FAFAFA', color: '#333' }"
       empty-text="暂无数据"
       @selection-change="handleSelectionChange"
     >
-      <!-- 多选配置 -->
-      <el-table-column
-        v-if="isSelection"
-        type="selection"
-        width="55"
-      ></el-table-column>
-
       <!-- 表格索引 -->
       <el-table-column
         v-if="isShowNumber"
@@ -30,7 +23,7 @@
 
       <!-- 表格行  item.showOverflowTooltip 设置表格文字过长显示省略号 -->
       <el-table-column
-        v-for="(item, index) in config"
+        v-for="(item, index) in dialogTableConfig"
         :key="index"
         :prop="item.prop"
         :label="item.label"
@@ -83,44 +76,8 @@
           <span v-else>{{ scope.row[item.prop] }}</span>
         </template>
       </el-table-column>
-
-      <!-- 表格操作按钮栏 -->
-      <el-table-column
-        v-if="isHasButtons"
-        class="clearfix"
-        :width="optionColumnWidth + 'px'"
-        fixed="right"
-        label="操作"
-      >
-        <template slot-scope="scope">
-          <!-- 基本操作 -->
-          <span
-            v-for="(option, index) in getOptionsName(scope.row.buttonKey)"
-            :key="index"
-            class="button-margin-left"
-          >
-            <template v-if="option === '查看'">
-              <router-link :to="`/distribute/distributeList/${scope.row.id}`">
-                <span>{{ option }}</span>
-              </router-link>
-            </template>
-            <span
-              v-else
-              @click="
-                handleClickOption(scope.$index, scope.row, option, $event)
-              "
-              >{{ option }}</span
-            >
-            <!--  <el-button
-              size="small"
-              :type="index == 0 ? 'primary' : ''"
-              @click="handleClickOption(scope.$index, scope.row, option,$event)"
-            >
-              <span v-html="getButtonHtml(option)"></span>
-            </el-button> -->
-          </span>
-        </template>
-      </el-table-column>
+      <!-- 多选配置 -->
+      <el-table-column type="selection" width="55"></el-table-column>
     </el-table>
 
     <!-- 分页组件 -->
@@ -173,12 +130,12 @@ export default {
       type: String,
     },
     // 表格数据
-    tableData: {
+    dialogTableData: {
       type: Array,
       required: true,
     },
     // 表格配置信息
-    config: {
+    dialogTableConfig: {
       type: Array,
       required: true,
     },
@@ -288,7 +245,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.table {
+.dialog-table {
   background: #fff;
   padding: 20px;
 }
@@ -317,7 +274,7 @@ export default {
 </style>
 
  <style lang="scss" >
-.table {
+.dialog-table {
   .el-table {
     .el-table__empty-block {
       height: unset;
@@ -340,6 +297,9 @@ export default {
   }
   .el-table .cell {
     word-break: keep-all;
+  }
+  .el-table th:last-child>.cell {
+    margin-left: 3px;
   }
   .pagination-container {
     .el-pagination {
