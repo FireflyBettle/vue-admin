@@ -421,62 +421,64 @@ export default {
 };
 </script>
 <style lang="scss">
-.filter-container {
-  .el-input {
-    width: 265px;
-    input {
-      height: 32px;
-    }
-    .el-input__inner {
-      height: 32px;
-      line-height: 32px;
-    }
-  }
-  .el-select {
-    margin-right: 4px;
+.shop-list {
+  .filter-container {
     .el-input {
-      width: 106px;
+      width: 265px;
+      input {
+        height: 32px;
+      }
+      .el-input__inner {
+        height: 32px;
+        line-height: 32px;
+      }
     }
-  }
-  .el-input-group__append {
-    background: #fff;
-  }
-  .el-button {
-    padding: 12px;
-  }
-  .filter-container__right {
+    .el-select {
+      margin-right: 4px;
+      .el-input {
+        width: 106px;
+      }
+    }
+    .el-input-group__append {
+      background: #fff;
+    }
     .el-button {
-      width: 88px;
-      height: 32px;
-      line-height: 32px;
-      padding: 0;
-      font-size: 14px;
+      padding: 12px;
     }
-    .el-button--primary {
-      background: #1890ff;
+    .filter-container__right {
+      .el-button {
+        width: 88px;
+        height: 32px;
+        line-height: 32px;
+        padding: 0;
+        font-size: 14px;
+      }
+      .el-button--primary {
+        background: #1890ff;
+      }
+      .el-button--info {
+        background: #f5f5f5;
+        color: rgba(0, 0, 0, 0.25);
+      }
     }
-    .el-button--info {
-      background: #f5f5f5;
-      color: rgba(0, 0, 0, 0.25);
+  }
+  .deleteShopDialog {
+    .el-dialog__header {
+      display: none;
     }
-  }
-}
-.deleteShopDialog {
-  .el-dialog__header {
-    display: none;
-  }
-  .el-dialog__body {
-    display: flex;
-    align-items: center;
-    border: none;
-  }
-  .el-icon-warning-outline {
-    font-size: 22px;
-    color: #faad14;
-    margin-right: 16px;
-  }
-  .el-dialog__footer {
-    padding: 0px 20px 20px;
+    .el-dialog__body {
+      display: flex;
+      align-items: center;
+      border: none;
+    }
+    .el-icon-warning-outline {
+      font-size: 22px;
+      color: #faad14;
+      margin-right: 16px;
+    }
+    .el-dialog__footer {
+      padding: 0px 20px 20px;
+    }
   }
 }
 </style>

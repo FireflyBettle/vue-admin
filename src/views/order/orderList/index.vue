@@ -43,6 +43,7 @@ export default {
           inputValue: "",
           isSearch: true,
           inputWidth: "264px",
+          selectWidth: "105px",
           options: [
             {
               value: "选项1",
