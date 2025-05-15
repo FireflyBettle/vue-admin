@@ -10,9 +10,9 @@ import Layout from '@/layout'
 
 const asyncRoutes = [
   {
-    path: '/business',
+    path: '/',
     component: Layout,
-    redirect: '/business',
+    redirect: '/business/businessList',
     meta: {
       title: '商户管理',
       icon: 'el-icon-school'

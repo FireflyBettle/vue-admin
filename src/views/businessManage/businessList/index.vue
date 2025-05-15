@@ -40,18 +40,39 @@
         >
       </div>
     </div>
-    <Table :tableData="tableData"></Table>
+    <!-- <Table :tableData="tableData"></Table> -->
     <app-table
       :list-query-params.sync="listQueryParams"
       v-bind="tableAttrs"
       v-on="tableEvent"
     />
-    <Dialog
+    <!-- <Dialog
       @changeDialogFormVisible="changeDialogFormVisible"
       :dialogFormVisible.sync="dialogFormVisible"
       :table-data="shopForm"
       @submitForm="submitForm"
-    />
+    /> -->
+    <el-dialog
+      :title="title"
+      :visible.sync="dialogFormVisible"
+      width="572px"
+    >
+      <Detail
+        ref="getTable"
+        :title="title"
+        :styleType="styleType"
+        :tableData="shopForm"
+        :tableFormAttrs="tableFormAttrs"
+        @submitForm="submitForm"
+      >
+      </Detail>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="submitForm()"
+          >添加</el-button
+        >
+      </div>
+    </el-dialog>
     <!-- 删除商户 -->
     <el-dialog
       title=""
@@ -76,6 +97,9 @@
 import Dialog from "@/components/Dialog/index.vue";
 import Table from "@/components/Table/index.vue";
 import AppTable from "@/components/AppTable/index.vue";
+import Detail from "@/components/Detail/index.vue";
+
+import testData from "./data.json";
 
 const DefaultTableQuery = {
   page: 1,
@@ -88,50 +112,16 @@ export default {
   components: {
     Dialog,
     Table,
-    AppTable
+    AppTable,
+    Detail
   },
   data() {
     return {
+      title: "添加商户",
+      styleType: "dialog",
       // 参数
       listQueryParams: { ...DefaultTableQuery },
-      tableData: [
-        {
-          id: "1",
-          name: "麦当劳",
-          des: "这里是商户描述",
-          shopName: "022A15EFC727DCAD",
-          rate: "10%",
-          storeNumber: "10",
-          contactPerson: "麦当劳",
-          phoneNumber: "19538383838",
-          email: "1403939393@qq.com",
-          status: "已启用",
-        },
-        {
-          id: "1",
-          name: "麦当劳",
-          des: "这里是商户描述",
-          shopName: "022A15EFC727DCAD",
-          rate: "10%",
-          storeNumber: "10",
-          contactPerson: "麦当劳",
-          phoneNumber: "19538383838",
-          email: "1403939393@qq.com",
-          status: "已启用",
-        },
-        {
-          id: "1",
-          name: "麦当劳",
-          des: "这里是商户描述",
-          shopName: "022A15EFC727DCAD",
-          rate: "10%",
-          storeNumber: "10",
-          contactPerson: "麦当劳",
-          phoneNumber: "19538383838",
-          email: "1403939393@qq.com",
-          status: "已启用",
-        },
-      ],
+      tableData: [],
       tableConfig: [
         {
           label: "ID",
@@ -184,6 +174,74 @@ export default {
           prop: "status",
         },
       ],
+      tableFormAttrs: [
+        {
+          title: "商户名称:",
+          placeholder: "请输入商户名称",
+          type: "input",
+          prop: "name",
+          required: true,
+        },
+        {
+          title: "Logo:",
+          type: "upload",
+          prop: "logo",
+        },
+        {
+          title: "商户描述:",
+          placeholder: "请输入商户描述",
+          type: "textarea",
+          prop: "des",
+        },
+        {
+          title: "商户ID:",
+          placeholder: "系统自生成",
+          type: "input",
+          prop: "shopName",
+          disabled: true,
+        },
+        {
+          title: "折扣率:",
+          placeholder: "请输入折扣率",
+          type: "input",
+          slot: "%",
+          prop: "rate",
+          required: true,
+        },
+        {
+          title: "联系人:",
+          placeholder: "请输入联系人",
+          type: "input",
+          prop: "contactPerson",
+          required: true,
+        },
+        {
+          title: "手机号:",
+          placeholder: "请输入手机号",
+          type: "input",
+          prop: "phoneNumber",
+          required: true,
+        },
+        {
+          title: "邮箱:",
+          placeholder: "请输入邮箱",
+          type: "input",
+          prop: "email",
+          required: true,
+        },
+        {
+          title: "状态:",
+          placeholder: "请输入邮箱",
+          type: "radio",
+          prop: "status",
+        },
+        {
+          title: "密码:",
+          placeholder: "请输入密码",
+          type: "input",
+          prop: "password",
+        },
+      ],
       // 表格加载loading
       loadingStatus: false,
       buttonsName: ["查看", "编辑", "删除"],
@@ -227,6 +285,13 @@ export default {
         status: "",
         password: "",
       },
+      // url参数
+      params: {
+        pageInfo: {
+          pageSize: 10,
+          pageNo: 1,
+        },
+      },
     };
   },
   computed: {
@@ -259,7 +324,43 @@ export default {
       };
     },
   },
+  created() {
+    this.getList();
+  },
   methods: {
+    // 获取列表
+    getList() {
+      try {
+        // 表格加载loading
+        this.loadingStatus = true;
+        // 分页数据作为参数给服务端
+        this.params.pageInfo.pageSize = this.listQueryParams.limit;
+        this.params.pageInfo.pageNo = this.listQueryParams.page;
+        // 发送请求,请求到的数据格式见下文，
+        // const { data, cntData } = await TalentServe.getTalentList(this.params)
+        const { data, cntData } = testData;
+        console.log("🚀 ~ getList ~ testData:", testData);
+        const tableData = data || [];
+        // 分页组件显示  this.listQueryParams.total 值大于0才会出现
+        this.listQueryParams.total = cntData;
+        // 数据给表格
+        this.tableData = data;
+        this.loadingStatus = false;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    submitForm() {
+      this.$refs.getTable.getTableRef().validate((valid) => {
+      console.log("🔍 ~ submitForm ~ src/views/businessManage/businessList/index.vue:354 ~ valid:", valid)
+        if (valid) {
+          alert(1);
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
+    },
     deleteShopDialog() {
       this.$confirm("确定删除吗?", "", {
         type: "warning",
@@ -294,9 +395,6 @@ export default {
     },
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
-    },
-    submitForm(formName) {
-      alert("submit!");
     },
     // 表格操作功能 index：表格索引, row：表格行数据, option：按钮名称
     handleTableOption(index, row, option) {
