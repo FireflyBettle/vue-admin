@@ -100,7 +100,7 @@
             class="button-margin-left"
           >
             <template v-if="option === '查看'">
-              <router-link :to="`/distribute/distributeList/${scope.row.id}`">
+              <router-link :to="`${$route.path}/${scope.row.id}`">
                 <span>{{ option }}</span>
               </router-link>
             </template>

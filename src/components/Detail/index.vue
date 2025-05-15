@@ -42,6 +42,7 @@
           <template v-if="item.type === 'select'">
             <el-select
               v-model="tableData[item.prop]"
+              :disabled="item.disabled"
               :placeholder="item.placeholder"
             >
               <el-option
@@ -186,6 +187,7 @@ export default {
   flex-direction: column;
   background: #fff;
   padding-top: 24px;
+  padding-bottom: 26px;
   .el-button {
     flex: 1;
     overflow: auto;

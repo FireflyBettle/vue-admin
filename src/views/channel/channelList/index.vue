@@ -45,15 +45,24 @@
       <template v-if="createIndex === 1">
         <dialog-table
           :list-query-params.sync="listQueryParams"
-          :dialogTableConfig="dialogTableConfig"
-          :dialogTableData="dialogTableData"
+          :dialogTableConfig="dialogTableConfigSecond"
+          :dialogTableData="dialogTableDataSecond"
         />
-        <div class="operationButton">
-          <el-button class="previousButton">上一步</el-button>
-          <el-button class="nextButton" type="primary">下一步</el-button>
+        <div slot="footer" class="dialog-footer">
+          <el-button class="previousButton" @click="createIndex = 0">上一步</el-button>
+          <el-button class="nextButton" type="primary" @click="createIndex = 2">下一步</el-button>
         </div>
       </template>
-      <template v-if="createIndex === 2"></template>
+      <template v-if="createIndex === 2">
+        <dialog-table
+          :list-query-params.sync="listQueryParams"
+          :dialogTableConfig="dialogTableConfigThird"
+          :dialogTableData="dialogTableDataThird"
+        />
+        <div slot="footer" class="dialog-footer">
+          <el-button class="previousButton" @click="createIndex = 1">上一步</el-button>
+          <el-button class="nextButton" type="primary" @click="submitDialogForm">发布</el-button>
+        </div></template>
     </el-dialog>
   </div>
 </template>
@@ -87,7 +96,7 @@ export default {
   data() {
     return {
       title: "创建分发（1/3）",
-      createIndex: 1,
+      createIndex: 0,
       formLabelWidth: "97px",
       styleType: "dialog",
       // 表格加载loading
@@ -235,7 +244,7 @@ export default {
           prop: "des",
         },
       ],
-      dialogTableConfig: [
+      dialogTableConfigSecond: [
         {
           label: "ID",
           width: "60",
@@ -248,16 +257,44 @@ export default {
         },
         {
           label: "门店地址",
-          width: "230",
+          width: "225",
           prop: "storeAddress",
         },
         {
           label: "门店ID",
-          width: "230",
+          width: "225",
           prop: "storeId",
         },
       ],
-      dialogTableData: [
+      dialogTableConfigThird: [
+        {
+          label: "ID",
+          width: "60",
+          prop: "id",
+        },
+        {
+          label: "渠道",
+          width: "90",
+          prop: "store",
+        },
+        {
+          label: "渠道描述",
+          width: "150",
+          prop: "storeDes",
+        },
+        {
+          label: "门店ID",
+          width: "150",
+          prop: "storeId",
+        },
+        {
+          label: "佣金率",
+          width: "150",
+          prop: "commissionRate",
+          format: 'input'
+        },
+      ],
+      dialogTableDataSecond: [
         {
           id: "1",
           store: "麦当劳",
@@ -275,6 +312,29 @@ export default {
           store: "麦当劳",
           storeAddress: "这里是门店地址",
           storeId: "022A15EFC727DCAD",
+        },
+      ],
+      dialogTableDataThird: [
+        {
+          id: "1",
+          store: "麦当劳",
+          storeDes: "这里是渠道描述",
+          storeId: "022A15EFC727DCAD",
+          commissionRate: "",
+        },
+        {
+          id: "1",
+          store: "麦当劳",
+          storeDes: "这里是渠道描述",
+          storeId: "022A15EFC727DCAD",
+          commissionRate: "",
+        },
+        {
+          id: "1",
+          store: "麦当劳",
+          storeDes: "这里是渠道描述",
+          storeId: "022A15EFC727DCAD",
+          commissionRate: "",
         },
       ],
       shopForm: {
@@ -353,7 +413,7 @@ export default {
           type: "button",
         },
       ],
-      dialogFormVisible: true,
+      dialogFormVisible: false,
     };
   },
   computed: {
@@ -400,6 +460,15 @@ export default {
       };
     },
   },
+  watch: {
+    createIndex: {
+      handler: function(val, oldVal) {
+        const arr = ['创建分发（1/3）','创建分发（2/3）','创建分发（3/3）'];
+        return this.title = arr[val];
+      },
+      immediate: true
+    },
+  },
   created() {
     this.getList();
   },
@@ -408,12 +477,14 @@ export default {
       this.$refs.getTable.getTableRef().validate((valid) => {
         if (valid) {
           this.createIndex = 1;
-          this.title = "创建分发（2/3）";
         } else {
           console.log("error submit!!");
           return false;
         }
       });
+    },
+    submitDialogForm() {
+      console.log("🚀 ~ submitDialogForm ~ submitDialogForm:", "submitDialogForm")
     },
     clickSearch() {
       console.log("🚀 ~ clickSearch ~ val:", "clickSearch");
@@ -439,6 +510,7 @@ export default {
     },
     // 获取列表
     getList() {
+      console.log("🚀 ~ getList ~ getList:", this.$route.path)
       try {
         // 表格加载loading
         this.loadingStatus = true;
@@ -484,7 +556,7 @@ export default {
   },
 };
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 .channelList {
   .dialog-header {
     display: flex;
@@ -576,8 +648,11 @@ export default {
       }
     }
   }
-  .operationButton {
-    
+  .el-dialog__body {
+    padding: 0px 60px 20px;
+  }
+  .el-input-group__append {
+    padding: 0 10px;
   }
 }
 </style>

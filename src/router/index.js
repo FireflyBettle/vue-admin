@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2021-11-18 23:21:54
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-08 17:25:35
+ * @LastEditTime: 2025-05-15 18:09:15
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/router/index.js
  */
@@ -50,18 +50,6 @@ export const constantRoutes = [
     path: '/404',
     component: () => import('@/views/404'),
     hidden: true
-  },
-
-  {
-    path: '/',
-    component: Layout,
-    redirect: '/dashboard',
-    children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
-    }]
   },
 ]
 

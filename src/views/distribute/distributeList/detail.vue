@@ -1,6 +1,6 @@
 <template>
   <div class="distribute-detail">
-    <div class="header">渠道详情</div>
+    <div v-if="$route.meta" class="header">{{ $route.meta.title }}</div>
     <Detail
       ref="getTable"
       :tableData="tableForm"

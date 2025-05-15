@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-04-25 16:44:47
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-14 10:00:04
+ * @LastEditTime: 2025-05-15 18:12:34
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/router/auth.js
  */
@@ -69,13 +69,20 @@ const asyncRoutes = [
     },
     children: [
       {
-        path: '/channel/businessList',
+        path: '/channel/channelList',
         component: () => import('@/views/channel/channelList/index'),
         name: 'businessList',
         meta: { title: '分发列表', icon: 'edit' }
       },
       {
-        path: '/channel/channelList',
+        path: '/channel/channelList/:id',
+        component: () => import('@/views/channel/channelList/detail'),
+        name: 'orderDetail',
+        meta: { title: '分发详情', icon: 'edit',activeMenu: '/channel/channelList' },
+        hidden: true,
+      },
+      {
+        path: '/channel/404',
       }
     ]
   },
@@ -89,13 +96,13 @@ const asyncRoutes = [
     },
     children: [
       {
-        path: '/order/businessList',
-        component: () => import('@/views/businessManage/businessList/index'),
-        name: 'businessList',
+        path: '/order/orderList',
+        component: () => import('@/views/order/orderList/index'),
+        name: 'orderList',
         meta: { title: '订单列表', icon: 'edit' }
       },
       {
-        path: '/order/shopList',
+        path: '/order/404',
       }
     ]
   },
@@ -119,79 +126,6 @@ const asyncRoutes = [
         component: () => import('@/views/businessManage/shopList/index'),
         name: 'shopList',
         meta: { title: '流水记录', icon: 'list' }
-      }
-    ]
-  },
-
-  {
-    path: '/form',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
-      },
-    ]
-  },
-  
-
-  {
-    path: '/nested',
-    component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
-    meta: {
-      title: 'Nested',
-      icon: 'el-icon-setting'
-    },
-    children: [
-      {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: 'Menu1' },
-        children: [
-          {
-            path: 'menu1-1',
-            component: () => import('@/views/nested/menu1/menu1-1'),
-            name: 'Menu1-1',
-            meta: { title: 'Menu1-1' }
-          },
-          {
-            path: 'menu1-2',
-            component: () => import('@/views/nested/menu1/menu1-2'),
-            name: 'Menu1-2',
-            meta: { title: 'Menu1-2' },
-            children: [
-              {
-                path: 'menu1-2-1',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-                name: 'Menu1-2-1',
-                meta: { title: 'Menu1-2-1' }
-              },
-              {
-                path: 'menu1-2-2',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-                name: 'Menu1-2-2',
-                meta: { title: 'Menu1-2-2' }
-              }
-            ]
-          },
-          {
-            path: 'menu1-3',
-            component: () => import('@/views/nested/menu1/menu1-3'),
-            name: 'Menu1-3',
-            meta: { title: 'Menu1-3' }
-          }
-        ]
-      },
-      {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        name: 'Menu2',
-        meta: { title: 'menu2' }
       }
     ]
   },

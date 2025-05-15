@@ -56,6 +56,14 @@
             scope.row[item.prop] + "%"
           }}</span>
 
+          <span v-else-if="item.format === 'input'">
+            <el-input
+              v-model="scope.row[item.prop]"
+            >
+            <template slot="append">%</template>
+            </el-input>
+          </span>
+
           <!-- format = number, 显示数字-->
           <span v-else-if="item.format === 'number'">{{
             Number(scope.row[item.prop])
@@ -298,7 +306,7 @@ export default {
   .el-table .cell {
     word-break: keep-all;
   }
-  .el-table th:last-child>.cell {
+  .el-table th:last-child > .cell {
     margin-left: 3px;
   }
   .pagination-container {
