@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-04-25 16:44:47
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-15 18:12:34
+ * @LastEditTime: 2025-05-16 15:49:26
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/router/auth.js
  */
@@ -29,7 +29,14 @@ const asyncRoutes = [
         component: () => import('@/views/businessManage/shopList/index'),
         name: 'shopList',
         meta: { title: '门店列表', icon: 'list' }
-      }
+      },
+      {
+        path: '/business/businessList/:id',
+        component: () => import('@/views/businessManage/businessList/detail'),
+        name: 'businessDetail',
+        meta: { title: '商户详情', icon: 'edit',activeMenu: '/business/businessList' },
+        hidden: true,
+      },
     ]
   },
   {
@@ -54,9 +61,6 @@ const asyncRoutes = [
         meta: { title: '渠道详情', icon: 'edit',activeMenu: '/distribute/distributeList' },
         hidden: true,
       },
-      {
-        path: '/distribute/404',
-      }
     ]
   },
   {
@@ -80,9 +84,6 @@ const asyncRoutes = [
         name: 'orderDetail',
         meta: { title: '分发详情', icon: 'edit',activeMenu: '/channel/channelList' },
         hidden: true,
-      },
-      {
-        path: '/channel/404',
       }
     ]
   },
@@ -106,29 +107,29 @@ const asyncRoutes = [
       }
     ]
   },
-  {
-    path: '/bill',
-    component: Layout,
-    redirect: '/bill',
-    meta: {
-      title: '账单流水统计',
-      icon: 'el-icon-discount'
-    },
-    children: [
-      {
-        path: '/bill/businessList',
-        component: () => import('@/views/businessManage/businessList/index'),
-        name: 'businessList',
-        meta: { title: '账单记录', icon: 'edit' }
-      },
-      {
-        path: '/bill/shopList',
-        component: () => import('@/views/businessManage/shopList/index'),
-        name: 'shopList',
-        meta: { title: '流水记录', icon: 'list' }
-      }
-    ]
-  },
+  // {
+  //   path: '/bill',
+  //   component: Layout,
+  //   redirect: '/bill',
+  //   meta: {
+  //     title: '账单流水统计',
+  //     icon: 'el-icon-discount'
+  //   },
+  //   children: [
+  //     {
+  //       path: '/bill/businessList',
+  //       component: () => import('@/views/businessManage/businessList/index'),
+  //       name: 'businessList',
+  //       meta: { title: '账单记录', icon: 'edit' }
+  //     },
+  //     {
+  //       path: '/bill/shopList',
+  //       component: () => import('@/views/businessManage/shopList/index'),
+  //       name: 'shopList',
+  //       meta: { title: '流水记录', icon: 'list' }
+  //     }
+  //   ]
+  // },
 ];
 
 export default asyncRoutes

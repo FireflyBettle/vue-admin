@@ -1,3 +1,11 @@
+/*
+ * @Author: chenyourong
+ * @Date: 2025-05-09 15:07:11
+ * @LastEditors: chenyourong
+ * @LastEditTime: 2025-05-16 15:09:29
+ * @Description: 
+ * @FilePath: /vue-admin-template-master/src/utils/request.js
+ */
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
@@ -46,7 +54,7 @@ service.interceptors.response.use(
     const res = response.data
 
     // if the custom code is not 20000, it is judged as an error.
-    if (res.code !== 20000) {
+    if (res.code !== 0) {
       Message({
         message: res.message || 'Error',
         type: 'error',

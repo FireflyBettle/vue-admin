@@ -1,7 +1,7 @@
 <template>
   <div>
     <Search v-bind="filterAttrs" v-on="filterEvent"></Search>
-    <app-table
+    <Table
       :list-query-params.sync="listQueryParams"
       v-bind="tableAttrs"
       v-on="tableEvent"
@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import AppTable from "@/components/AppTable/index.vue";
+import Table from "@/components/Table/index.vue";
 import Search from "@/components/Search/index.vue";
 
 import XLSX from 'xlsx'; 
@@ -25,7 +25,7 @@ const DefaultTableQuery = {
 export default {
   name: "orderList",
   components: {
-    AppTable,
+    Table,
     Search,
   },
   data() {

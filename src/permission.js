@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2021-11-18 23:21:54
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-04-27 16:21:23
+ * @LastEditTime: 2025-05-16 14:23:34
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/permission.js
  */
@@ -41,7 +41,9 @@ router.beforeEach(async(to, from, next) => {
         try {
           // get user info
           // await store.dispatch('user/getInfo')
-          const { roles } = await store.dispatch('user/getInfo')
+          // 这里修改权限
+          // const { roles } = await store.dispatch('user/getInfo')
+          const roles = 'admin';
           const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
           console.log("🚀 ~ router.beforeEach ~ accessRoutes:", accessRoutes)
           router.addRoutes(accessRoutes)

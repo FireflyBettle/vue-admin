@@ -1,7 +1,7 @@
 <template>
   <div class="channelList">
     <Search v-bind="filterAttrs" v-on="filterEvent"></Search>
-    <app-table
+    <Table
       :list-query-params.sync="listQueryParams"
       v-bind="tableAttrs"
       v-on="tableEvent"
@@ -68,9 +68,8 @@
 </template>
 
 <script>
-import AppTable from "@/components/AppTable/index.vue";
+import Table from "@/components/Table/index.vue";
 import Search from "@/components/Search/index.vue";
-import Dialog from "@/components/Dialog/index.vue";
 import DialogTable from "@/components/DialogTable/index.vue";
 import Detail from "@/components/Detail/index.vue";
 
@@ -87,9 +86,8 @@ const DefaultTableQuery = {
 export default {
   name: "channelList",
   components: {
-    AppTable,
+    Table,
     Search,
-    Dialog,
     Detail,
     DialogTable,
   },

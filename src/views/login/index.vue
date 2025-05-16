@@ -71,7 +71,6 @@
 <script>
 import { validUsername } from "@/utils/validate";
 import forget from './forget.vue'
-console.log("🚀 ~ forget:", forget)
 
 export default {
   name: "Login",
@@ -80,8 +79,11 @@ export default {
   },
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!validUsername(value)) {
+      console.log("🚀 ~ validateUsername ~ value:", value)
+      if (!value) {
         callback(new Error("请输入手机号或邮箱"));
+      }else if (!/^(1[3-9]\d{9})$|^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/.test(value)) {
+        callback(new Error("手机号或邮箱格式不对"));
       } else {
         callback();
       }
@@ -95,8 +97,9 @@ export default {
     };
     return {
       loginForm: {
-        username: "admin",
-        password: "111111",
+        username: "18680341485",
+        password: "123456",
+        type: 1
       },
       loginRules: {
         username: [
@@ -136,6 +139,9 @@ export default {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
           this.loading = true;
+          // let a = md5(this.loginForm.password);
+          // console.log("🚀 ~ this.$refs.loginForm.validate ~ a:", md5(md5(this.loginForm.password)))
+          // return 
           this.$store
             .dispatch("user/login", this.loginForm)
             .then(() => {
@@ -239,6 +245,9 @@ $cursor: #fff;
   .el-button {
     border: 1px solid #d9d9d9;
     border-radius: 0px;
+  }
+  .el-form-item__error {
+    padding-top: 11px;
   }
 }
 </style>

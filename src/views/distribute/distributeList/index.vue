@@ -1,7 +1,7 @@
 <template>
   <div>
     <Search v-bind="filterAttrs" v-on="filterEvent"></Search>
-    <app-table
+    <Table
       :list-query-params.sync="listQueryParams"
       v-bind="tableAttrs"
       v-on="tableEvent"
@@ -31,9 +31,8 @@
 </template>
 
 <script>
-import AppTable from "@/components/AppTable/index.vue";
+import Table from "@/components/Table/index.vue";
 import Search from "@/components/Search/index.vue";
-import Dialog from "@/components/Dialog/index.vue";
 import Detail from "@/components/Detail/index.vue";
 
 // 定义的接口根据自己项目更换
@@ -49,9 +48,8 @@ const DefaultTableQuery = {
 export default {
   name: "distributeList",
   components: {
-    AppTable,
+    Table,
     Search,
-    Dialog,
     Detail,
   },
   data() {

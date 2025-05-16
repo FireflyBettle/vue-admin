@@ -2,102 +2,61 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-15 18:26:17
+ * @LastEditTime: 2025-05-16 10:35:20
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/businessManage/businessList/index.vue
 -->
 <template>
   <div class="shop-list">
-    <div class="filter-container">
-      <div class="filter-container__left">
-        <el-select
-          v-model="value"
-          size="medium"
-          filterable
-          placeholder="商户名称"
-          @change="handleFilter"
+    <Search v-bind="filterAttrs" v-on="filterEvent"></Search>
+        <Table
+          :list-query-params.sync="listQueryParams"
+          v-bind="tableAttrs"
+          v-on="tableEvent"
+        />
+        <el-dialog
+          :title="title"
+          :visible.sync="dialogFormVisible"
+          width="572px"
         >
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+          <Detail
+            ref="getTable"
+            :title="title"
+            :styleType="styleType"
+            :tableData="shopForm"
+            :tableFormAttrs="tableFormAttrs"
+            @submitForm="submitForm"
           >
-          </el-option>
-        </el-select>
-        <el-input v-model="input" placeholder="请输入内容">
-          <el-button slot="append" icon="el-icon-search"></el-button>
-        </el-input>
-      </div>
-      <div class="filter-container__right">
-        <el-button type="primary" @click="dialogFormVisible = true"
-          >添加商户</el-button
+          </Detail>
+          <div slot="footer" class="dialog-footer">
+            <el-button @click="dialogFormVisible = false">取消</el-button>
+            <el-button type="primary" @click="submitForm()">添加</el-button>
+          </div>
+        </el-dialog>
+        <!-- 删除商户 -->
+        <el-dialog
+          title=""
+          :visible.sync="deleteShopDialogVisible"
+          width="30%"
+          :show-close="false"
+          class="deleteShopDialog"
         >
-        <!-- <el-button type="info" plain @click="deleteShopDialogVisible = true"
-          >删除商户</el-button> -->
-        <el-button type="info" plain @click="deleteShopDialog"
-          >删除商户</el-button
-        >
-      </div>
-    </div>
-    <!-- <Table :tableData="tableData"></Table> -->
-    <app-table
-      :list-query-params.sync="listQueryParams"
-      v-bind="tableAttrs"
-      v-on="tableEvent"
-    />
-    <!-- <Dialog
-      @changeDialogFormVisible="changeDialogFormVisible"
-      :dialogFormVisible.sync="dialogFormVisible"
-      :table-data="shopForm"
-      @submitForm="submitForm"
-    /> -->
-    <el-dialog
-      :title="title"
-      :visible.sync="dialogFormVisible"
-      width="572px"
-    >
-      <Detail
-        ref="getTable"
-        :title="title"
-        :styleType="styleType"
-        :tableData="shopForm"
-        :tableFormAttrs="tableFormAttrs"
-        @submitForm="submitForm"
-      >
-      </Detail>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitForm()"
-          >添加</el-button
-        >
-      </div>
-    </el-dialog>
-    <!-- 删除商户 -->
-    <el-dialog
-      title=""
-      :visible.sync="deleteShopDialogVisible"
-      width="30%"
-      :show-close="false"
-      class="deleteShopDialog"
-    >
-      <i class="el-icon-warning-outline"></i>
-      <span>确认删除商户名称?</span>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="deleteShopDialogVisible = false">否</el-button>
-        <el-button type="primary" @click="deleteShopDialogVisible = false"
-          >是</el-button
-        >
-      </span>
-    </el-dialog>
+          <i class="el-icon-warning-outline"></i>
+          <span>确认删除商户名称?</span>
+          <span slot="footer" class="dialog-footer">
+            <el-button @click="deleteShopDialogVisible = false">否</el-button>
+            <el-button type="primary" @click="deleteShopDialogVisible = false"
+              >是</el-button
+            >
+          </span>
+        </el-dialog>
   </div>
 </template>
 
 <script>
-import Dialog from "@/components/Dialog/index.vue";
 import Table from "@/components/Table/index.vue";
-import AppTable from "@/components/AppTable/index.vue";
 import Detail from "@/components/Detail/index.vue";
+import Search from "@/components/Search/index.vue";
 
 import testData from "./data.json";
 
@@ -110,10 +69,9 @@ const DefaultTableQuery = {
 export default {
   name: "businessList",
   components: {
-    Dialog,
     Table,
-    AppTable,
-    Detail
+    Detail,
+    Search,
   },
   data() {
     return {
@@ -292,6 +250,36 @@ export default {
           pageNo: 1,
         },
       },
+      filterButtonText: [
+        {
+          label: "添加商户",
+          type: "primary",
+        },
+        {
+          label: "删除商户",
+          type: "info",
+        },
+      ],
+      filterOptions: [
+        {
+          type: "multiSelect",
+          placeholder: "商户名称",
+          inputValue: "",
+          isSearch: true,
+          inputWidth: "264px",
+          selectWidth: "105px",
+          options: [
+            {
+              value: "选项1",
+              label: "黄金糕",
+            },
+            {
+              value: "选项2",
+              label: "双皮奶",
+            },
+          ],
+        },
+      ],
     };
   },
   computed: {
@@ -323,6 +311,20 @@ export default {
         subSelected: this.handleSelectionChange,
       };
     },
+    filterAttrs() {
+      return {
+        // 按钮名称
+        filterButtonText: this.filterButtonText,
+        filterOptions: this.filterOptions,
+      };
+    },
+    filterEvent() {
+      return {
+        // 选择数据回调
+        handleFilterButton: this.handleFilterButton,
+        clickSearch: this.clickSearch,
+      };
+    },
   },
   created() {
     this.getList();
@@ -352,7 +354,10 @@ export default {
     },
     submitForm() {
       this.$refs.getTable.getTableRef().validate((valid) => {
-      console.log("🔍 ~ submitForm ~ src/views/businessManage/businessList/index.vue:354 ~ valid:", valid)
+        console.log(
+          "🔍 ~ submitForm ~ src/views/businessManage/businessList/index.vue:354 ~ valid:",
+          valid
+        );
         if (valid) {
           alert(1);
         } else {
@@ -416,6 +421,28 @@ export default {
     // 分页操作
     handleRefreshList() {
       this.getList();
+    },
+    clickSearch() {
+      console.log("🚀 ~ clickSearch ~ val:", "clickSearch");
+    },
+    handleFilterButton(val) {
+      console.log("🚀 ~ handleFilterButton ~ val:", val);
+      if (val === "添加商户") {
+        this.dialogFormVisible = true;
+      }
+      if (val === "删除商户") {
+        this.$confirm("确定删除吗?", "", {
+          type: "warning",
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+        })
+          .then(async () => {
+            this.$message.success(" 删除成功");
+          })
+          .catch(() => {
+            this.$message.info(" 已取消删除");
+          });
+      }
     },
   },
 };

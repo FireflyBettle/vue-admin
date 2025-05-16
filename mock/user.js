@@ -2,19 +2,20 @@
  * @Author: chenyourong
  * @Date: 2021-11-18 23:21:54
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-04-24 16:19:43
+ * @LastEditTime: 2025-05-16 16:05:31
  * @Description: 
  * @FilePath: /vue-admin-template-master/mock/user.js
  */
 
-const tokens = {
-  admin: {
-    token: 'admin-token'
-  },
-  editor: {
-    token: 'editor-token'
-  }
-}
+// const tokens = {
+//   admin: {
+//     token: 'admin-token'
+//   },
+//   editor: {
+//     token: 'editor-token'
+//   }
+// }
+const tokens = ['admin-token', 'editor-token']
 
 const users = {
   'admin-token': {
@@ -34,11 +35,12 @@ const users = {
 module.exports = [
   // user login
   {
-    url: '/vue-admin-template/user/login',
+    url: '/web/account/login',
     type: 'post',
-    response: config => {
-      const { username } = config.body
-      const token = tokens[username]
+    response: (config) => {
+      console.log("🚀 ~ config:", config)
+      const { type } = config.body
+      const token = tokens[type]
 
       // mock error
       if (!token) {
@@ -49,8 +51,11 @@ module.exports = [
       }
 
       return {
-        code: 20000,
-        data: token
+        code: 0,
+        data: {
+          token: tokens.admin,
+          avatar: ''
+        },
       }
     }
   },
