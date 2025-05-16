@@ -42,8 +42,8 @@ router.beforeEach(async(to, from, next) => {
           // get user info
           // await store.dispatch('user/getInfo')
           // 这里修改权限
-          // const { roles } = await store.dispatch('user/getInfo')
-          const roles = 'admin';
+          const { roles } = await store.dispatch('user/getInfo')
+          // const roles = 'admin';
           const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
           console.log("🚀 ~ router.beforeEach ~ accessRoutes:", accessRoutes)
           router.addRoutes(accessRoutes)

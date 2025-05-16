@@ -52,26 +52,11 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
-        const { data } = response
-
-        if (!data) {
-          return reject('Verification failed, please Login again.')
-        }
-        
-        const { name, avatar, roles } = data
-        // const roles = data.roles.split(',')
-        // roles must be a non-empty array
-        if (!roles || roles.length <= 0) {
-          reject('getInfo: roles must be a non-null array!')
-        }
-
-        commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
-        commit('SET_ROLES', roles)
-        resolve(data)
-      }).catch(error => {
-        reject(error)
+      commit('SET_NAME', "admin")
+      commit('SET_AVATAR', '')
+      commit('SET_ROLES', 'admin')
+      resolve({
+        roles: 'admin'
       })
     })
   },

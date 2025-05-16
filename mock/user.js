@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2021-11-18 23:21:54
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-16 16:05:31
+ * @LastEditTime: 2025-05-16 18:32:08
  * @Description: 
  * @FilePath: /vue-admin-template-master/mock/user.js
  */
@@ -52,10 +52,7 @@ module.exports = [
 
       return {
         code: 0,
-        data: {
-          token: tokens.admin,
-          avatar: ''
-        },
+        data: token
       }
     }
   },
