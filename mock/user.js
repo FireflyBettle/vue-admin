@@ -38,9 +38,8 @@ module.exports = [
     url: '/web/account/login',
     type: 'post',
     response: (config) => {
-      console.log("🚀 ~ config:", config)
       const { type } = config.body
-      const token = tokens[type]
+      const token = tokens[type-1]
 
       // mock error
       if (!token) {
@@ -52,7 +51,12 @@ module.exports = [
 
       return {
         code: 0,
-        data: token
+        data: {
+          token: token,
+          name: 'test',
+          avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
+          roles: ['admin'],
+        }
       }
     }
   },
@@ -74,7 +78,7 @@ module.exports = [
       }
 
       return {
-        code: 20000,
+        code: 0,
         data: info
       }
     }
@@ -82,11 +86,11 @@ module.exports = [
 
   // user logout
   {
-    url: '/vue-admin-template/user/logout',
-    type: 'post',
+    url: '/web/account/logout',
+    type: 'get',
     response: _ => {
       return {
-        code: 20000,
+        code: 0,
         data: 'success'
       }
     }

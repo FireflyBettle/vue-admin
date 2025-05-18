@@ -45,7 +45,36 @@ export const constantRoutes = [
     component: () => import('@/views/login/index'),
     hidden: true
   },
-
+{
+    path: '/',
+    component: Layout,
+    redirect: '/business/businessList',
+    meta: {
+      title: '商户管理',
+      icon: 'el-icon-school'
+    },
+    children: [
+      {
+        path: '/business/businessList',
+        component: () => import('@/views/businessManage/businessList/index'),
+        name: 'businessList',
+        meta: { title: '商户列表', icon: 'edit' }
+      },
+      {
+        path: '/business/shopList',
+        component: () => import('@/views/businessManage/shopList/index'),
+        name: 'shopList',
+        meta: { title: '门店列表', icon: 'list' }
+      },
+      {
+        path: '/business/businessList/:id',
+        component: () => import('@/views/businessManage/businessList/detail'),
+        name: 'businessDetail',
+        meta: { title: '商户详情', icon: 'edit',activeMenu: '/business/businessList' },
+        hidden: true,
+      },
+    ]
+  },
   {
     path: '/404',
     component: () => import('@/views/404'),

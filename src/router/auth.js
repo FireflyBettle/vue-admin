@@ -9,40 +9,11 @@
 import Layout from '@/layout'
 
 const asyncRoutes = [
-  {
-    path: '/',
-    component: Layout,
-    redirect: '/business/businessList',
-    meta: {
-      title: '商户管理',
-      icon: 'el-icon-school'
-    },
-    children: [
-      {
-        path: '/business/businessList',
-        component: () => import('@/views/businessManage/businessList/index'),
-        name: 'businessList',
-        meta: { title: '商户列表', icon: 'edit' }
-      },
-      {
-        path: '/business/shopList',
-        component: () => import('@/views/businessManage/shopList/index'),
-        name: 'shopList',
-        meta: { title: '门店列表', icon: 'list' }
-      },
-      {
-        path: '/business/businessList/:id',
-        component: () => import('@/views/businessManage/businessList/detail'),
-        name: 'businessDetail',
-        meta: { title: '商户详情', icon: 'edit',activeMenu: '/business/businessList' },
-        hidden: true,
-      },
-    ]
-  },
+ 
   {
     path: '/distribute',
     component: Layout,
-    redirect: '/distribute',
+    redirect: '/distribute/distributeList',
     meta: {
       title: '渠道管理',
       icon: 'el-icon-wallet'
@@ -61,6 +32,10 @@ const asyncRoutes = [
         meta: { title: '渠道详情', icon: 'edit',activeMenu: '/distribute/distributeList' },
         hidden: true,
       },
+      {
+        path: '/distribute/404',
+      }
+
     ]
   },
   {
@@ -84,7 +59,11 @@ const asyncRoutes = [
         name: 'orderDetail',
         meta: { title: '分发详情', icon: 'edit',activeMenu: '/channel/channelList' },
         hidden: true,
+      },
+      {
+        path: '/distribute/404',
       }
+
     ]
   },
   {
@@ -107,29 +86,29 @@ const asyncRoutes = [
       }
     ]
   },
-  // {
-  //   path: '/bill',
-  //   component: Layout,
-  //   redirect: '/bill',
-  //   meta: {
-  //     title: '账单流水统计',
-  //     icon: 'el-icon-discount'
-  //   },
-  //   children: [
-  //     {
-  //       path: '/bill/businessList',
-  //       component: () => import('@/views/businessManage/businessList/index'),
-  //       name: 'businessList',
-  //       meta: { title: '账单记录', icon: 'edit' }
-  //     },
-  //     {
-  //       path: '/bill/shopList',
-  //       component: () => import('@/views/businessManage/shopList/index'),
-  //       name: 'shopList',
-  //       meta: { title: '流水记录', icon: 'list' }
-  //     }
-  //   ]
-  // },
+  {
+    path: '/bill',
+    component: Layout,
+    redirect: '/bill',
+    meta: {
+      title: '账单流水统计',
+      icon: 'el-icon-discount'
+    },
+    children: [
+      {
+        path: '/bill/businessList',
+        component: () => import('@/views/businessManage/businessList/index'),
+        name: 'businessList',
+        meta: { title: '账单记录', icon: 'edit' }
+      },
+      {
+        path: '/bill/shopList',
+        component: () => import('@/views/businessManage/shopList/index'),
+        name: 'shopList',
+        meta: { title: '流水记录', icon: 'list' }
+      }
+    ]
+  },
 ];
 
 export default asyncRoutes

@@ -14,15 +14,27 @@
           <template v-if="item.type === 'input'">
             <el-input
               v-model="tableData[item.prop]"
+              :type="item.inputType ? item.inputType : 'text'"
               autocomplete="off"
               :disabled="item.disabled"
               :placeholder="item.placeholder"
+              :ref="item.isClosePwd ? 'password' : ''"
             >
               <template slot="append" v-if="item.slot">{{
                 item.slot
-              }}</template>
-              ></el-input
+              }}</template></el-input
             >
+            <template v-if="item.isClosePwd">
+              <span class="show-pwd" @click="showPwd(item)">
+                <svg-icon
+                  :icon-class="
+                    passwordType === 'password'
+                      ? 'EyeInvisible'
+                      : 'EyeInvisible-open'
+                  "
+                />
+              </span>
+            </template>
           </template>
           <!-- 上传 -->
           <template v-if="item.type === 'upload'">
@@ -34,7 +46,11 @@
               :on-success="handleAvatarSuccess"
               :before-upload="beforeAvatarUpload"
             >
-              <img v-if="tableData[item.prop]" :src="imageUrl" class="avatar" />
+              <img
+                v-if="tableData[item.prop]"
+                :src="tableData[item.prop]"
+                class="avatar"
+              />
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
           </template>
@@ -72,8 +88,8 @@
               v-model="tableData.status"
               :disabled="item.disabled"
             >
-              <el-radio v-model="tableData[item.prop]" label="1">启用</el-radio>
-              <el-radio v-model="tableData[item.prop]" label="2">暂停</el-radio>
+              <el-radio v-model="tableData[item.prop]" label="0">启用</el-radio>
+              <el-radio v-model="tableData[item.prop]" label="1">暂停</el-radio>
             </el-radio-group>
           </template>
         </el-form-item>
@@ -90,6 +106,21 @@
 </template>
 
 <script>
+// 定义手机号的正则表达式，用于匹配中国手机号格式
+const validatePhone = (rule, value, callback) => {
+  const phoneReg = /^1[3-9]\d{9}$/;
+  if (!value) {
+    // 如果手机号为空，触发原有的提示信息
+    return callback(new Error("请输入手机号"));
+  }
+  if (!phoneReg.test(value)) {
+    // 如果手机号格式不符合正则表达式，给出格式错误的提示
+    callback(new Error("请输入正确的手机号"));
+  } else {
+    // 手机号格式正确，通过验证
+    callback();
+  }
+};
 export default {
   props: {
     tableData: {
@@ -110,20 +141,22 @@ export default {
   },
   data() {
     return {
-      imageUrl: "",
       tableDataRules: {
-        name: [
+        merchantName: [
           { required: true, message: "请输入商户名称", trigger: "blur" },
-          { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" },
         ],
-        rate: [{ required: true, message: "请输入折扣率", trigger: "blur" }],
-        contactPerson: [
-          { required: true, message: "请输入联系人", trigger: "blur" },
+        discountRate: [
+          { required: true, message: "请输入折扣率", trigger: "blur" },
         ],
-        phoneNumber: [
+        contact: [{ required: true, message: "请输入联系人", trigger: "blur" }],
+        phone: [
           { required: true, message: "请输入手机号", trigger: "blur" },
+          { validator: validatePhone, trigger: "blur" },
         ],
-        email: [{ required: true, message: "请输入邮箱", trigger: "blur" }],
+        email: [
+          { required: true, message: "请输入邮箱", trigger: "blur" },
+          { type: "email", message: "请输入正确的邮箱地址", trigger: ["blur"] },
+        ],
         shopPerson: [
           { required: true, message: "请选择券码类型", trigger: "blur" },
         ],
@@ -135,13 +168,12 @@ export default {
         ],
       },
       isLimitReached: false,
-      passwordType: "password",
+      passwordType: "",
     };
   },
   methods: {
     handleAvatarSuccess(res, file) {
-      this.imageUrl = URL.createObjectURL(file.raw);
-      this.tableData.logo = this.imageUrl;
+      this.$emit("handleAvatarSuccess", file);
     },
     handleInput(item) {
       // 检查是否达到限制
@@ -152,14 +184,18 @@ export default {
         item.name = item.name.substring(0, 100);
       }
     },
-    showPwd() {
+    showPwd(item) {
       if (this.passwordType === "password") {
         this.passwordType = "";
+        item.inputType = "text";
       } else {
         this.passwordType = "password";
+        item.inputType = "password";
       }
       this.$nextTick(() => {
-        this.$refs.password.focus();
+        // item.inputType = 'text';
+        console.log("🔍 ~ showPwd ~ src/components/Detail/index.vue:194 ~ this.$refs.password:", this.$refs.password)
+        // this.$refs.password[0].focus();
       });
     },
     getTableRef() {
@@ -274,6 +310,14 @@ export default {
     .el-textarea {
       width: 348px;
     }
+  }
+  .show-pwd {
+    position: absolute;
+    right: 10px;
+    font-size: 16px;
+    color: #889aa4;
+    cursor: pointer;
+    user-select: none;
   }
 }
 </style>

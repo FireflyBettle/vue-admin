@@ -21,7 +21,7 @@
         <el-input
           ref="username"
           v-model="loginForm.username"
-          placeholder="请输入手机号或邮箱"
+          placeholder="请输入手机号"
           name="username"
           type="text"
           tabindex="1"
@@ -50,8 +50,8 @@
         </span>
       </el-form-item>
       <div class="info">
-        <el-checkbox v-model="isRememberTheAccount">记住账号</el-checkbox>
-        <div class="forgetThePassword">忘记密码 ？</div>
+        <el-checkbox v-model="isRememberTheAccount" @change="changeRememberTheAccount">记住账号</el-checkbox>
+        <div class="forgetThePassword" @click="forgetPassword">忘记密码 ？</div>
       </div>
 
       <el-button
@@ -63,27 +63,22 @@
         >登录</el-button
       >
     </el-form>
-    <forget></forget>
+    <Forget :isForget="isForget" :isReset="isReset" v-on="handleClickEvent"></Forget>
     
   </div>
 </template>
 
 <script>
 import { validUsername } from "@/utils/validate";
-import forget from './forget.vue'
+import Forget from './forget.vue'
+import Cookies from "js-cookie";
 
-export default {
-  name: "Login",
-  components: {
-    forget,
-  },
-  data() {
-    const validateUsername = (rule, value, callback) => {
+const validateUsername = (rule, value, callback) => {
       console.log("🚀 ~ validateUsername ~ value:", value)
       if (!value) {
-        callback(new Error("请输入手机号或邮箱"));
-      }else if (!/^(1[3-9]\d{9})$|^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/.test(value)) {
-        callback(new Error("手机号或邮箱格式不对"));
+        callback(new Error("请输入手机号"));
+      }else if (!/^(1[3-9]\d{9})$/.test(value)) {
+        callback(new Error("请输入正确的手机号格式"));
       } else {
         callback();
       }
@@ -95,9 +90,18 @@ export default {
         callback();
       }
     };
+
+export default {
+  name: "Login",
+  components: {
+    Forget,
+  },
+  data() {
     return {
+      isForget: false,
+      isReset: false,
       loginForm: {
-        username: "18680341485",
+        username: Cookies.get("name") || "",
         password: "123456",
         type: 1
       },
@@ -112,7 +116,7 @@ export default {
       loading: false,
       passwordType: "password",
       redirect: undefined,
-      isRememberTheAccount: false,
+      isRememberTheAccount: Cookies.get("name") ? true : false,
       isLogin: true,
     };
   },
@@ -124,7 +128,45 @@ export default {
       immediate: true,
     },
   },
+  computed: {
+    handleClickEvent() {
+      return {
+        submitNext: this.submitNext,
+        submitPrevious: this.submitPrevious,
+        resetPasswordEvent: this.resetPasswordEvent,
+        sureSubmit: this.sureSubmit,
+      };
+    },
+  },
   methods: {
+    forgetPassword() {
+      this.isForget = true;
+      this.isLogin = false;
+    },
+    submitPrevious() {
+      this.isForget = false;
+      this.isLogin = true;
+    },
+    resetPasswordEvent() {
+      this.isReset = false;
+      this.isForget = true;
+    },
+    sureSubmit() {
+      alert(1)
+      // this.isReset = false;
+      // this.isForget = true;
+    },
+    submitNext() {
+      this.isReset = true;
+      this.isForget = false;
+    },
+    changeRememberTheAccount() {
+      if (this.isRememberTheAccount) {
+        Cookies.set("name", this.loginForm.username, { expires: 7 });
+      } else {
+        Cookies.remove("name");
+      }
+    },
     showPwd() {
       if (this.passwordType === "password") {
         this.passwordType = "";
@@ -347,6 +389,7 @@ $light_gray: #eee;
     .forgetThePassword {
       font-size: 14px;
       color: #1890ff;
+      cursor: pointer;
     }
   }
   .login {

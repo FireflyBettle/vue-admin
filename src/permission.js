@@ -34,8 +34,8 @@ router.beforeEach(async(to, from, next) => {
       next({ path: '/' })
       NProgress.done()
     } else {
-      const hasGetUserInfo = store.getters.name
-      if (hasGetUserInfo) {
+      const hasGetUserInfo = store.getters.roles
+      if (hasGetUserInfo.length) {
         next()
       } else {
         try {
@@ -44,8 +44,8 @@ router.beforeEach(async(to, from, next) => {
           // 这里修改权限
           const { roles } = await store.dispatch('user/getInfo')
           // const roles = 'admin';
+          
           const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
-          console.log("🚀 ~ router.beforeEach ~ accessRoutes:", accessRoutes)
           router.addRoutes(accessRoutes)
           next({ ...to, replace: true })
           // next()

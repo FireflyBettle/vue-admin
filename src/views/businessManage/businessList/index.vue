@@ -9,47 +9,43 @@
 <template>
   <div class="shop-list">
     <Search v-bind="filterAttrs" v-on="filterEvent"></Search>
-        <Table
-          :list-query-params.sync="listQueryParams"
-          v-bind="tableAttrs"
-          v-on="tableEvent"
-        />
-        <el-dialog
-          :title="title"
-          :visible.sync="dialogFormVisible"
-          width="572px"
+    <Table
+      :list-query-params.sync="listQueryParams"
+      v-bind="tableAttrs"
+      v-on="tableEvent"
+    />
+    <el-dialog :title="title" :visible.sync="dialogFormVisible" width="572px">
+      <Detail
+        ref="getTable"
+        :title="title"
+        :styleType="styleType"
+        :tableData="shopForm"
+        :tableFormAttrs="tableFormAttrs"
+        @handleAvatarSuccess="handleAvatarSuccess"
+      >
+      </Detail>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="submitForm()">添加</el-button>
+      </div>
+    </el-dialog>
+    <!-- 删除商户 -->
+    <el-dialog
+      title=""
+      :visible.sync="deleteShopDialogVisible"
+      width="30%"
+      :show-close="false"
+      class="deleteShopDialog"
+    >
+      <i class="el-icon-warning-outline"></i>
+      <span>确认删除商户名称?</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="deleteShopDialogVisible = false">否</el-button>
+        <el-button type="primary" @click="deleteShopDialogVisible = false"
+          >是</el-button
         >
-          <Detail
-            ref="getTable"
-            :title="title"
-            :styleType="styleType"
-            :tableData="shopForm"
-            :tableFormAttrs="tableFormAttrs"
-            @submitForm="submitForm"
-          >
-          </Detail>
-          <div slot="footer" class="dialog-footer">
-            <el-button @click="dialogFormVisible = false">取消</el-button>
-            <el-button type="primary" @click="submitForm()">添加</el-button>
-          </div>
-        </el-dialog>
-        <!-- 删除商户 -->
-        <el-dialog
-          title=""
-          :visible.sync="deleteShopDialogVisible"
-          width="30%"
-          :show-close="false"
-          class="deleteShopDialog"
-        >
-          <i class="el-icon-warning-outline"></i>
-          <span>确认删除商户名称?</span>
-          <span slot="footer" class="dialog-footer">
-            <el-button @click="deleteShopDialogVisible = false">否</el-button>
-            <el-button type="primary" @click="deleteShopDialogVisible = false"
-              >是</el-button
-            >
-          </span>
-        </el-dialog>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -57,6 +53,9 @@
 import Table from "@/components/Table/index.vue";
 import Detail from "@/components/Detail/index.vue";
 import Search from "@/components/Search/index.vue";
+import md5 from 'js-md5';
+
+import { createShop } from '@/api/business'
 
 import testData from "./data.json";
 
@@ -137,47 +136,42 @@ export default {
           title: "商户名称:",
           placeholder: "请输入商户名称",
           type: "input",
-          prop: "name",
+          prop: "merchantName",
           required: true,
         },
         {
           title: "Logo:",
           type: "upload",
-          prop: "logo",
+          prop: "merchantLogo",
         },
         {
           title: "商户描述:",
           placeholder: "请输入商户描述",
           type: "textarea",
-          prop: "des",
-        },
-        {
-          title: "商户ID:",
-          placeholder: "系统自生成",
-          type: "input",
-          prop: "shopName",
-          disabled: true,
+          prop: "merchantDesc",
         },
         {
           title: "折扣率:",
           placeholder: "请输入折扣率",
           type: "input",
+          inputType: "number",
           slot: "%",
-          prop: "rate",
+          prop: "discountRate",
           required: true,
         },
         {
           title: "联系人:",
           placeholder: "请输入联系人",
           type: "input",
-          prop: "contactPerson",
+          prop: "contact",
           required: true,
         },
         {
           title: "手机号:",
           placeholder: "请输入手机号",
           type: "input",
-          prop: "phoneNumber",
+          prop: "phone",
+          inputType: "number",
           required: true,
         },
         {
@@ -197,7 +191,9 @@ export default {
           title: "密码:",
           placeholder: "请输入密码",
           type: "input",
-          prop: "password",
+          inputType: "text",
+          prop: "passwd",
+          isClosePwd: true,
         },
       ],
       // 表格加载loading
@@ -231,17 +227,15 @@ export default {
       dialogFormVisible: false,
       deleteShopDialogVisible: false,
       shopForm: {
-        name: "",
-        des: "",
-        logo: "",
-        des: "",
-        shopName: "",
-        rate: "",
-        contactPerson: "",
-        phoneNumber: "",
+        merchantName: "",
+        merchantDesc: "",
+        merchantLogo: "",
+        discountRate: "",
+        contact: "",
+        phone: "",
         email: "",
         status: "",
-        password: "",
+        passwd: "",
       },
       // url参数
       params: {
@@ -352,13 +346,23 @@ export default {
         console.log(error);
       }
     },
+    handleAvatarSuccess(file) {
+      this.shopForm.merchantLogo = URL.createObjectURL(file.raw);
+    },
     submitForm() {
       this.$refs.getTable.getTableRef().validate((valid) => {
-        console.log(
-          "🔍 ~ submitForm ~ src/views/businessManage/businessList/index.vue:354 ~ valid:",
-          valid
-        );
         if (valid) {
+          this.shopForm.discountRate = this.shopForm.discountRate / 100;
+          this.shopForm.passwd = md5(md5(this.shopForm.passwd));
+          this.shopForm.ipWhiteList = 'test'
+          createShop(this.shopForm).then((res) => {
+            console.log("🚀 ~ submitForm ~ res:", res);
+            this.$message({
+              message: "添加成功",
+              type: "success",
+            });
+            this.dialogFormVisible = false;
+          });
           alert(1);
         } else {
           console.log("error submit!!");

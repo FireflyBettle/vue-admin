@@ -14,7 +14,7 @@
       <el-form-item prop="phone">
         <el-input
           v-model="forgetForm.phone"
-          placeholder="请输入手机号或邮箱"
+          placeholder="请输入手机号"
           name="phone"
           type="text"
           tabindex="1"
@@ -104,7 +104,7 @@
           :loading="loading"
           class="login"
           style="width: 100%"
-          @click.native.prevent="submitPrevious"
+          @click.native.prevent="resetPasswordEvent"
           >取消重置</el-button
         >
         <el-button
@@ -112,7 +112,7 @@
           type="primary"
           class="login"
           style="width: 100%"
-          @click.native.prevent="sure"
+          @click.native.prevent="sureSubmit"
           >确认</el-button
         >
       </div>
@@ -123,6 +123,16 @@
 <script>
 export default {
   name: "forget",
+  props: {
+    isForget: {
+      type: Boolean,
+      default: false,
+    },
+    isReset: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     const validateUsername = (rule, value, callback) => {
       if (value.length < 6) {
@@ -140,7 +150,7 @@ export default {
     };
     const validatePhone = (rule, value, callback) => {
       if (value.length <= 0) {
-        callback(new Error("请输入手机号或邮箱"));
+        callback(new Error("请输入手机号"));
       } else {
         callback();
       }
@@ -169,7 +179,7 @@ export default {
       resetPasswordType: "password",
       redirect: undefined,
       isRememberTheAccount: false,
-      isReset: false,
+      // isReset: false,
 
 
       forgetForm: {
@@ -187,7 +197,7 @@ export default {
         ],
         code: [{ required: true, trigger: "blur", validator: validateCode }],
       },
-      isForget: false,
+      // isForget: false,
       isSendingCode: false,
       buttonText: "发送验证码",
       countdown: 0,
@@ -204,10 +214,11 @@ export default {
         this.$refs.resetPassword.focus();
       });
     },
-    sure() {
+    sureSubmit() {
       this.$refs.resetForm.validate((valid) => {
         console.log("🚀 ~ this.$refs.resetForm.validate ~ valid:", valid)
         if (valid) {
+          this.$emit("submitNext");
           this.loading = true;
           this.$store
             .dispatch("user/login", this.resetForm)
@@ -288,10 +299,15 @@ export default {
         }
       });
     },
+    submitPrevious() {
+      this.$emit("submitPrevious");
+    },
     submitNext() {
       this.$refs.forgetForm.validate((valid) => {
         console.log("🚀 ~ this.$refs.forgetForm.validate ~ valid:", valid);
         if (valid) {
+          
+          this.$emit("submitNext");
           // 调用登录接口
           // axios.post('/login',  this.loginForm)
           //   .then(response => {
@@ -303,14 +319,22 @@ export default {
         }
       });
     },
+    resetPasswordEvent() {
+      debugger
+      this.$emit("resetPasswordEvent");
+    },
   },
 };
 </script>
 
 
-<style lang="scss" scoped>
+<style lang="scss">
 .forget {
   width: 360px;
+  .el-form-item:nth-child(3) {
+    margin-bottom: 69px!important;
+
+  }
   .des {
     font-family: Roboto;
     font-size: 20px;

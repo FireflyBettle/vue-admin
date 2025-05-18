@@ -1,6 +1,7 @@
 import { login, logout, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
+import Cookies from 'js-cookie'
 import md5 from 'js-md5';
 
 const getDefaultState = () => {
@@ -36,12 +37,15 @@ const actions = {
   // user login
   login({ commit }, userInfo) {
     const { username, password, type } = userInfo
-    console.log("🚀 ~ login ~ type:", type)
     return new Promise((resolve, reject) => {
       login({ phone: username.trim(), passwd: md5(md5(password)), type: type }).then(response => {
         const { data } = response
         commit('SET_TOKEN', data.token)
+        commit('SET_NAME', data.name)
+        commit('SET_AVATAR', data.avatar)
         setToken(data.token)
+        Cookies.set("username", data.name)
+        Cookies.set("avatar", data.avatar)
         resolve()
       }).catch(error => {
         reject(error)
@@ -50,14 +54,14 @@ const actions = {
   },
 
   // get user info
-  getInfo({ commit, state }) {
+    getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      commit('SET_NAME', "admin")
-      commit('SET_AVATAR', '')
-      commit('SET_ROLES', 'admin')
-      resolve({
-        roles: 'admin'
-      })
+      // commit('SET_NAME', 'Normal Editor')
+        // commit('SET_AVATAR', '')
+        commit('SET_ROLES', ['admin'])
+        resolve({
+          roles: ['admin'],
+        })
     })
   },
 
