@@ -14,3 +14,10 @@ export function merchantList(data) {
     data
   })
 }
+export function merchantDetail(data) {
+  return request({
+    url: '/web/merchant/detail',
+    method: 'post',
+    data
+  })
+}

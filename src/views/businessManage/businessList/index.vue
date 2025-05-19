@@ -29,23 +29,6 @@
         <el-button type="primary" @click="submitForm()">添加</el-button>
       </div>
     </el-dialog>
-    <!-- 删除商户 -->
-    <el-dialog
-      title=""
-      :visible.sync="deleteShopDialogVisible"
-      width="30%"
-      :show-close="false"
-      class="deleteShopDialog"
-    >
-      <i class="el-icon-warning-outline"></i>
-      <span>确认删除商户名称?</span>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="deleteShopDialogVisible = false">否</el-button>
-        <el-button type="primary" @click="deleteShopDialogVisible = false"
-          >是</el-button
-        >
-      </span>
-    </el-dialog>
   </div>
 </template>
 
@@ -122,6 +105,7 @@ export default {
         {
           label: "状态",
           width: "70",
+          format: 'status',
           value: "status",
         },
       ],
@@ -192,7 +176,7 @@ export default {
       ],
       // 表格加载loading
       loadingStatus: false,
-      buttonsName: ["查看", "编辑", "删除"],
+      buttonsName: ["查看", "编辑"],
       optionWidth: 148,
       options: [
         {
@@ -243,10 +227,10 @@ export default {
           label: "添加商户",
           type: "primary",
         },
-        {
-          label: "删除商户",
-          type: "info",
-        },
+        // {
+        //   label: "删除商户",
+        //   type: "info",
+        // },
       ],
       filterOptions: [
         {
@@ -288,7 +272,7 @@ export default {
         // 操作栏宽度
         optionColumnWidth: this.optionWidth,
         // 是否需要选择
-        isSelection: true,
+        isSelection: false,
         isShowNumber: true,
       };
     },
@@ -334,16 +318,11 @@ export default {
         // 发送请求,请求到的数据格式见下文，
         const { data } = await merchantList(this.params);
         // const { data, cntData } = testData;
-        console.log("🚀 ~ getList ~ testData:", testData);
         const tableData = data.list || [];
         // 分页组件显示  this.listQueryParams.total 值大于0才会出现
-        this.listQueryParams.total = data.total;
-        // this.listQueryParams = {
-
-        //   total: data.total
-        // }
+        this.listQueryParams.total = data.total
         // 数据给表格
-        this.tableData = data.list;
+        this.tableData = data.list || [];
         this.loadingStatus = false;
       } catch (error) {
         console.log(error);
@@ -354,6 +333,8 @@ export default {
     },
     submitForm() {
       this.$refs.getTable.getTableRef().validate((valid) => {
+      console.log("🔍 ~ submitForm ~ src/views/businessManage/businessList/index.vue:338 ~ valid:", valid)
+      return
         if (valid) {
           this.shopForm.discountRate = this.shopForm.discountRate / 100;
           this.shopForm.passwd = md5(md5(this.shopForm.passwd));
@@ -412,8 +393,16 @@ export default {
     handleTableOption(index, row, option) {
       this.operationalData = { ...row };
       if (option === "查看") {
-        console.log(index, row, option);
+        // console.log(index, row, option);
       } else if (option === "编辑") {
+        this.dialogFormVisible = true;
+        this.shopForm = row;
+        this.shopForm.status = row.status.toString();
+        this.tableFormAttrs.forEach(val => {
+          if (val.isClosePwd) {
+            val.title = "重置密码:";
+          }
+        })
         console.log(index, row, option);
       } else if (option === "删除") {
         console.log(index, row, option);
@@ -440,6 +429,12 @@ export default {
       console.log("🚀 ~ handleFilterButton ~ val:", val);
       if (val === "添加商户") {
         this.dialogFormVisible = true;
+        this.shopForm = {};
+        this.tableFormAttrs.forEach(val => {
+          if (val.isClosePwd) {
+            val.title = "密码:";
+          }
+        })
       }
       if (val === "删除商户") {
         this.$confirm("确定删除吗?", "", {

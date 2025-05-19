@@ -69,6 +69,10 @@
             Number(scope.row[item.value])
           }}</span>
 
+          <span v-else-if="item.format === 'status'">{{
+            scope.row[item.value] ? "暂停" : "启用"
+          }}</span>
+
           <!-- format = a, 网页跳转 -->
           <span v-else-if="item.format === 'a'">
             <u class="link">
@@ -101,7 +105,7 @@
             class="button-margin-left"
           >
             <template v-if="option === '查看'">
-              <router-link :to="`${$route.path}/${scope.row.id}`">
+              <router-link :to="`${$route.path}/${scope.row.merchantId}`">
                 <span>{{ option }}</span>
               </router-link>
             </template>
@@ -126,9 +130,6 @@
 
     <!-- 分页组件 -->
     <div v-if="isShowPagination && listQueryParams.total > 0" class="pagination-container">
-      {{ listQueryParams.pageNum }}
-      {{ listQueryParams.pageSize }}
-      {{ listQueryParams.total }}
       <el-pagination
         background
         layout="sizes, prev, pager, next, jumper"

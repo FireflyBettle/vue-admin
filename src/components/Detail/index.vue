@@ -7,13 +7,15 @@
           v-for="(item, index) in tableFormAttrs"
           :label="item.title"
           :label-width="formLabelWidth"
-          :prop="item.required ? item.prop : ''"
+          :value="item.required ? item.value : ''"
           :key="index"
+          :prop="item.value"
+          :required="item.required"
         >
           <!-- 输入框 -->
           <template v-if="item.type === 'input'">
             <el-input
-              v-model="tableData[item.prop]"
+              v-model="tableData[item.value]"
               :type="item.inputType ? item.inputType : 'text'"
               autocomplete="off"
               :disabled="item.disabled"
@@ -47,8 +49,8 @@
               :before-upload="beforeAvatarUpload"
             >
               <img
-                v-if="tableData[item.prop]"
-                :src="tableData[item.prop]"
+                v-if="tableData[item.value]"
+                :src="tableData[item.value]"
                 class="avatar"
               />
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -57,7 +59,7 @@
           <!-- 选择框 -->
           <template v-if="item.type === 'select'">
             <el-select
-              v-model="tableData[item.prop]"
+              v-model="tableData[item.value]"
               :disabled="item.disabled"
               :placeholder="item.placeholder"
             >
@@ -88,8 +90,12 @@
               v-model="tableData.status"
               :disabled="item.disabled"
             >
-              <el-radio v-model="tableData[item.prop]" label="0">启用</el-radio>
-              <el-radio v-model="tableData[item.prop]" label="1">暂停</el-radio>
+              <el-radio v-model="tableData[item.value]" label="0"
+                >启用</el-radio
+              >
+              <el-radio v-model="tableData[item.value]" label="1"
+                >暂停</el-radio
+              >
             </el-radio-group>
           </template>
         </el-form-item>
@@ -138,6 +144,10 @@ export default {
       type: String,
       default: "84px",
     },
+    filterDataRules: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
@@ -171,6 +181,15 @@ export default {
       passwordType: "",
     };
   },
+  created() {
+    // 监听输入框的输入事件
+    if (this.filterDataRules) {
+      this.filterDataRules.forEach((item) => {
+        this.tableDataRules = {};
+        this.tableDataRules[item] = this.tableDataRules[item];
+      });
+    }
+  },
   methods: {
     handleAvatarSuccess(res, file) {
       this.$emit("handleAvatarSuccess", file);
@@ -194,7 +213,10 @@ export default {
       }
       this.$nextTick(() => {
         // item.inputType = 'text';
-        console.log("🔍 ~ showPwd ~ src/components/Detail/index.vue:194 ~ this.$refs.password:", this.$refs.password)
+        console.log(
+          "🔍 ~ showPwd ~ src/components/Detail/index.vue:194 ~ this.$refs.password:",
+          this.$refs.password
+        );
         // this.$refs.password[0].focus();
       });
     },
