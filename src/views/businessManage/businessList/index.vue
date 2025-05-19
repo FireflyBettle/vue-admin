@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-16 10:35:20
+ * @LastEditTime: 2025-05-19 18:20:29
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/businessManage/businessList/index.vue
 -->
@@ -53,16 +53,15 @@
 import Table from "@/components/Table/index.vue";
 import Detail from "@/components/Detail/index.vue";
 import Search from "@/components/Search/index.vue";
-import md5 from 'js-md5';
+import md5 from "js-md5";
 
-import { createShop } from '@/api/business'
+import { createMerchant, merchantList } from "@/api/business";
 
 import testData from "./data.json";
 
 const DefaultTableQuery = {
-  page: 1,
-  limit: 10,
-  total: 0,
+  pageNum: 1,
+  pageSize: 3,
 };
 
 export default {
@@ -81,54 +80,49 @@ export default {
       tableData: [],
       tableConfig: [
         {
-          label: "ID",
-          width: "60",
-          prop: "id",
-        },
-        {
           label: "商户名称",
           width: "90",
-          prop: "name",
+          value: "merchantName",
         },
         {
           label: "商户描述",
           width: "260",
-          prop: "des",
+          value: "merchantDesc",
         },
         {
           label: "商户ID",
           width: "120",
-          prop: "shopName",
+          value: "merchantId",
         },
         {
           label: "折扣率",
           width: "70",
-          prop: "rate",
+          value: "discountRate",
         },
         {
           label: "门店数",
           width: "70",
-          prop: "storeNumber",
+          value: "storeNumber",
         },
         {
           label: "联系人",
           width: "80",
-          prop: "contactPerson",
+          value: "contact",
         },
         {
           label: "手机号",
           width: "70",
-          prop: "phoneNumber",
+          value: "phone",
         },
         {
           label: "邮箱",
           width: "90",
-          prop: "email",
+          value: "email",
         },
         {
           label: "状态",
           width: "70",
-          prop: "status",
+          value: "status",
         },
       ],
       tableFormAttrs: [
@@ -136,19 +130,19 @@ export default {
           title: "商户名称:",
           placeholder: "请输入商户名称",
           type: "input",
-          prop: "merchantName",
+          value: "merchantName",
           required: true,
         },
         {
           title: "Logo:",
           type: "upload",
-          prop: "merchantLogo",
+          value: "merchantLogo",
         },
         {
           title: "商户描述:",
           placeholder: "请输入商户描述",
           type: "textarea",
-          prop: "merchantDesc",
+          value: "merchantDesc",
         },
         {
           title: "折扣率:",
@@ -156,21 +150,21 @@ export default {
           type: "input",
           inputType: "number",
           slot: "%",
-          prop: "discountRate",
+          value: "discountRate",
           required: true,
         },
         {
           title: "联系人:",
           placeholder: "请输入联系人",
           type: "input",
-          prop: "contact",
+          value: "contact",
           required: true,
         },
         {
           title: "手机号:",
           placeholder: "请输入手机号",
           type: "input",
-          prop: "phone",
+          value: "phone",
           inputType: "number",
           required: true,
         },
@@ -178,21 +172,21 @@ export default {
           title: "邮箱:",
           placeholder: "请输入邮箱",
           type: "input",
-          prop: "email",
+          value: "email",
           required: true,
         },
         {
           title: "状态:",
           placeholder: "请输入邮箱",
           type: "radio",
-          prop: "status",
+          value: "status",
         },
         {
           title: "密码:",
           placeholder: "请输入密码",
           type: "input",
           inputType: "text",
-          prop: "passwd",
+          value: "passwd",
           isClosePwd: true,
         },
       ],
@@ -239,10 +233,10 @@ export default {
       },
       // url参数
       params: {
-        pageInfo: {
-          pageSize: 10,
-          pageNo: 1,
-        },
+        pageSize: 10,
+        pageNum: 0,
+        searchKey: "",
+        searchVal: "",
       },
       filterButtonText: [
         {
@@ -257,19 +251,22 @@ export default {
       filterOptions: [
         {
           type: "multiSelect",
-          placeholder: "商户名称",
+          placeholder: "请选择",
+          selectValue: "merchantName",
           inputValue: "",
           isSearch: true,
           inputWidth: "264px",
           selectWidth: "105px",
           options: [
             {
-              value: "选项1",
-              label: "黄金糕",
+              label: "商户名称",
+              width: "90",
+              value: "merchantName",
             },
             {
-              value: "选项2",
-              label: "双皮奶",
+              label: "商户ID",
+              width: "120",
+              value: "merchantId",
             },
           ],
         },
@@ -292,6 +289,7 @@ export default {
         optionColumnWidth: this.optionWidth,
         // 是否需要选择
         isSelection: true,
+        isShowNumber: true,
       };
     },
     // 表格事件
@@ -315,6 +313,7 @@ export default {
     filterEvent() {
       return {
         // 选择数据回调
+        handleFilter: this.handleFilter,
         handleFilterButton: this.handleFilterButton,
         clickSearch: this.clickSearch,
       };
@@ -325,22 +324,26 @@ export default {
   },
   methods: {
     // 获取列表
-    getList() {
+    async getList() {
       try {
         // 表格加载loading
         this.loadingStatus = true;
         // 分页数据作为参数给服务端
-        this.params.pageInfo.pageSize = this.listQueryParams.limit;
-        this.params.pageInfo.pageNo = this.listQueryParams.page;
+        this.params.pageSize = this.listQueryParams.pageSize;
+        this.params.pageNum = this.listQueryParams.pageNum - 1;
         // 发送请求,请求到的数据格式见下文，
-        // const { data, cntData } = await TalentServe.getTalentList(this.params)
-        const { data, cntData } = testData;
+        const { data } = await merchantList(this.params);
+        // const { data, cntData } = testData;
         console.log("🚀 ~ getList ~ testData:", testData);
-        const tableData = data || [];
+        const tableData = data.list || [];
         // 分页组件显示  this.listQueryParams.total 值大于0才会出现
-        this.listQueryParams.total = cntData;
+        this.listQueryParams.total = data.total;
+        // this.listQueryParams = {
+
+        //   total: data.total
+        // }
         // 数据给表格
-        this.tableData = data;
+        this.tableData = data.list;
         this.loadingStatus = false;
       } catch (error) {
         console.log(error);
@@ -354,8 +357,8 @@ export default {
         if (valid) {
           this.shopForm.discountRate = this.shopForm.discountRate / 100;
           this.shopForm.passwd = md5(md5(this.shopForm.passwd));
-          this.shopForm.ipWhiteList = 'test'
-          createShop(this.shopForm).then((res) => {
+          this.shopForm.status = Number(this.shopForm.status);
+          createMerchant(this.shopForm).then((res) => {
             console.log("🚀 ~ submitForm ~ res:", res);
             this.$message({
               message: "添加成功",
@@ -363,7 +366,6 @@ export default {
             });
             this.dialogFormVisible = false;
           });
-          alert(1);
         } else {
           console.log("error submit!!");
           return false;
@@ -389,6 +391,7 @@ export default {
     showAddShop() {},
     handleFilter(val) {
       console.log("🚀 ~ handleFilter ~ val:", val);
+      this.params.searchKey = val.selectValue;
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
@@ -426,8 +429,12 @@ export default {
     handleRefreshList() {
       this.getList();
     },
-    clickSearch() {
-      console.log("🚀 ~ clickSearch ~ val:", "clickSearch");
+    clickSearch(val) {
+      console.log("🚀 ~ clickSearch ~ val:", val);
+      this.params.searchKey = val.selectValue;
+      this.params.searchVal = val.inputValue;
+      this.getList();
+      console.log("🚀 ~ clickSearch ~ val:", val);
     },
     handleFilterButton(val) {
       console.log("🚀 ~ handleFilterButton ~ val:", val);

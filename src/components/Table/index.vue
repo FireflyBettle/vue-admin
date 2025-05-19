@@ -25,6 +25,7 @@
         v-if="isShowNumber"
         fixed="left"
         type="index"
+        label="ID"
         :index="tableIndex"
       ></el-table-column>
 
@@ -32,7 +33,7 @@
       <el-table-column
         v-for="(item, index) in config"
         :key="index"
-        :prop="item.prop"
+        :value="item.value"
         :label="item.label"
         :min-width="item.width"
         :show-overflow-tooltip="true"
@@ -44,35 +45,35 @@
               title="点击查看大图"
               alt="图片"
               class="image-size"
-              :src="scope.row[item.prop]"
+              :src="scope.row[item.value]"
             />
           </span>
 
           <!-- format = timestamp, 把时间戳转换成YYYY-MM-dd HH:mm:ss ，parseTime过滤器后文会提到   -->
           <span v-if="item.format === 'timestamp'">{{
-            scope.row[item.prop] | timeFormat
+            scope.row[item.value] | timeFormat
           }}</span>
 
           <!-- format = money, 显示金额 -->
           <span v-else-if="item.format === 'money'">{{
-            "￥" + scope.row[item.prop]
+            "￥" + scope.row[item.value]
           }}</span>
 
           <!-- format = rate, 显示比例 -->
           <span v-else-if="item.format === 'rate'">{{
-            scope.row[item.prop] + "%"
+            scope.row[item.value] + "%"
           }}</span>
 
           <!-- format = number, 显示数字-->
           <span v-else-if="item.format === 'number'">{{
-            Number(scope.row[item.prop])
+            Number(scope.row[item.value])
           }}</span>
 
           <!-- format = a, 网页跳转 -->
           <span v-else-if="item.format === 'a'">
             <u class="link">
-              <a :href="scope.row[item.prop]" target="_blank">{{
-                scope.row[item.prop]
+              <a :href="scope.row[item.value]" target="_blank">{{
+                scope.row[item.value]
               }}</a>
             </u>
           </span>
@@ -80,7 +81,7 @@
           <!-- 需要添加其他数据处理，继续添加 v-else-if="item.format === ''" 就好 -->
 
           <!-- 没有format -->
-          <span v-else>{{ scope.row[item.prop] }}</span>
+          <span v-else>{{ scope.row[item.value] }}</span>
         </template>
       </el-table-column>
 
@@ -124,14 +125,17 @@
     </el-table>
 
     <!-- 分页组件 -->
-    <div v-if="isShowPagination && total > 0" class="pagination-container">
+    <div v-if="isShowPagination && listQueryParams.total > 0" class="pagination-container">
+      {{ listQueryParams.pageNum }}
+      {{ listQueryParams.pageSize }}
+      {{ listQueryParams.total }}
       <el-pagination
         background
         layout="sizes, prev, pager, next, jumper"
-        :current-page="page"
         :page-sizes="pageSizeList"
-        :page-size="limit"
-        :total="total"
+        :current-page="listQueryParams.pageNum"
+        :page-size="listQueryParams.pageSize"
+        :total="listQueryParams.total"
         @current-change="handleCurrentChange"
         @size-change="handleSizeChange"
       ></el-pagination>
@@ -209,7 +213,7 @@ export default {
     pageSizeList: {
       type: Array,
       default: function () {
-        return [10, 20, 30, 50, 100];
+        return [3, 6, 30, 50, 100];
       },
     },
   },
@@ -231,11 +235,11 @@ export default {
     },
     // 第几页
     page: function () {
-      return this.listQueryParams.page || 1;
+      return this.listQueryParams.pageNum || 1;
     },
     // 每页数据数
-    limit: function () {
-      return this.listQueryParams.limit || 10;
+    pageSize: function () {
+      return this.listQueryParams.pageSize || 10;
     },
     // 数据总数
     total: function () {
@@ -264,23 +268,23 @@ export default {
 
     // 改变翻页组件中每页数据总数
     handleSizeChange(val) {
-      this.listQueryParams.limit = val;
+      this.listQueryParams.pageSize = val;
       // 改变翻页数目，将页面=1
-      this.listQueryParams.page = 1;
+      this.listQueryParams.pageNum = 1;
       this.$emit("update:listQueryParams", this.listQueryParams);
       this.$emit("subClickPagination", this.listQueryParams);
     },
 
     // 跳到当前是第几页
     handleCurrentChange(val) {
-      this.listQueryParams.page = val;
+      this.listQueryParams.pageNum = val;
       this.$emit("update:listQueryParams", this.listQueryParams);
       this.$emit("subClickPagination", this.listQueryParams);
     },
 
     // 重写索引生成方法
     tableIndex(index) {
-      const i = (this.page - 1) * this.limit + index + 1;
+      const i = (this.page - 1) * this.pageSize + index + 1;
       return i;
     },
   },

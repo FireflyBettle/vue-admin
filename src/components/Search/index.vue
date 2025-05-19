@@ -2,12 +2,12 @@
  * @Author: chenyourong
  * @Date: 2025-05-12 17:36:48
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-14 10:25:38
+ * @LastEditTime: 2025-05-19 17:45:09
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/components/Search/index.vue
 -->
 <template>
-  <div class="filter-container">
+  <div class="filter-container" v-if="filterOptions.length">
     <div class="filter-container__left">
       <div
         class="select-item"
@@ -16,7 +16,7 @@
       >
         <template v-if="item.type === 'multiSelect'">
           <el-select
-            v-model="item.value"
+            v-model="item.selectValue"
             size="medium"
             filterable
             :placeholder="item.placeholder"
@@ -24,22 +24,27 @@
             :style="{width: item.selectWidth}"
           >
             <el-option
-              v-for="item in item.options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+              v-for="val in item.options"
+              :key="val.value"
+              :label="val.label"
+              :value="val.value"
             >
             </el-option>
           </el-select>
           <el-input
             :style="{ width: item.inputWidth }"
-            v-model="item.inputValue"
+            type="text"
+            v-model="input"
             placeholder="请输入内容"
           >
             <el-button
               v-if="item.isSearch"
               slot="append"
               icon="el-icon-search"
+              @click="clickSearch({
+                selectValue: item.selectValue,
+                inputValue: input,
+              })"
             ></el-button>
           </el-input>
         </template>
@@ -52,10 +57,10 @@
             @change="handleFilter"
           >
             <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+              v-for="val in options"
+              :key="val.value"
+              :label="val.label"
+              :value="val.value"
             >
             </el-option>
           </el-select>
@@ -119,10 +124,11 @@ export default {
         });
     },
     handleFilter(val) {
-      console.log("🚀 ~ handleFilter ~ val:", val);
+      this.$emit("handleFilter", val);
+      // console.log("🚀 ~ handleFilter ~ val:", val);
     },
-    clickSearch() {
-      this.$emit("clickSearch");
+    clickSearch(val) {
+      this.$emit("clickSearch", val);
     },
   },
 };
