@@ -23,8 +23,9 @@
 
 <script>
 import Detail from "@/components/Detail/index.vue";
+import md5 from 'js-md5';
 
-import { merchantDetail } from "@/api/business";
+import { merchantDetail, changeMerchant } from "@/api/business";
 export default {
   name: "distributeDetail",
   components: {
@@ -46,7 +47,7 @@ export default {
         status: "1",
         password: "",
       },
-      filterDataRules: ['merchantName'],
+      filterDataRules: ['discountRate'],
       tableFormAttrs: [
         {
           title: "商户名称:",
@@ -75,7 +76,7 @@ export default {
           inputType: "number",
           slot: "%",
           value: "discountRate",
-          // disabled: true,
+          disabled: true,
           required: true,
         },
         {
@@ -111,13 +112,23 @@ export default {
           title: "密码:",
           placeholder: "请输入密码",
           type: "input",
-          inputType: "text",
+          // inputType: "text",
           value: "passwd",
           isClosePwd: false,
           disabled: true,
         },
       ],
     };
+  },
+  watch: {
+    isEdit(val) {
+      this.tableFormAttrs.forEach((item) => {
+        item.disabled = !val;
+        if (item.prop === "shopName") {
+          item.disabled = true;
+        }
+      });
+    },
   },
   created() {
     this.getMerchantDetail();
@@ -129,10 +140,29 @@ export default {
       });
       this.tableForm = data;
       this.tableForm.status = this.tableForm.status.toString();
+      this.tableForm.discountRate = this.tableForm.discountRate * 100;
     },
-    submitForm() {
+    async submitForm() {
       this.$refs.getTable.getTableRef().validate((valid) => {
+        console.log(valid);
         if (valid) {
+          changeMerchant({
+            merchantId: this.$route.params.id,
+            merchantName: this.tableForm.merchantName,
+            merchantDesc: this.tableForm.merchantDesc,
+            merchantLogo: this.tableForm.merchantLogo,
+            discountRate: this.tableForm.discountRate / 100,
+            contact: this.tableForm.contact,
+            phone: this.tableForm.phone,
+            email: this.tableForm.email,
+            status: +this.tableForm.status,
+            passwd: this.tableForm.passwd ? md5(md5(this.tableForm.passwd)) : md5(md5('')),
+          }).then((res) => {
+            if (res.code === 0) {
+              this.$message.success("修改成功");
+              this.isEdit = false;
+            }
+          });
         } else {
           console.log("error submit!!");
           return false;
@@ -147,12 +177,6 @@ export default {
     },
     edit() {
       this.isEdit = true;
-      this.tableFormAttrs.forEach((item) => {
-        item.disabled = false;
-        if (item.prop === "shopName") {
-          item.disabled = true;
-        }
-      });
     },
   },
 };

@@ -70,7 +70,7 @@
           }}</span>
 
           <span v-else-if="item.format === 'status'">{{
-            scope.row[item.value] ? "暂停" : "启用"
+            +scope.row[item.value] === 0 ? "启用" : "暂停"
           }}</span>
 
           <!-- format = a, 网页跳转 -->

@@ -109,7 +109,7 @@ export default {
   background: #001529;
   width: 100%;
   height: 48px;
-  z-index: 1;
+  z-index: 9;
   padding-right: 28px;
   .avatar-wrapper {
     display: flex;

@@ -14,7 +14,7 @@
       v-bind="tableAttrs"
       v-on="tableEvent"
     />
-    <el-dialog :title="title" :visible.sync="dialogFormVisible" width="572px">
+    <el-dialog :title="title" v-if="dialogFormVisible" :visible.sync="dialogFormVisible" width="572px">
       <Detail
         ref="getTable"
         :title="title"
@@ -38,7 +38,7 @@ import Detail from "@/components/Detail/index.vue";
 import Search from "@/components/Search/index.vue";
 import md5 from "js-md5";
 
-import { createMerchant, merchantList } from "@/api/business";
+import { createMerchant, merchantList, changeMerchant } from "@/api/business";
 
 import testData from "./data.json";
 
@@ -81,6 +81,7 @@ export default {
           label: "折扣率",
           width: "70",
           value: "discountRate",
+          format: "rate",
         },
         {
           label: "门店数",
@@ -105,7 +106,7 @@ export default {
         {
           label: "状态",
           width: "70",
-          format: 'status',
+          format: "status",
           value: "status",
         },
       ],
@@ -317,10 +318,16 @@ export default {
         this.params.pageNum = this.listQueryParams.pageNum - 1;
         // 发送请求,请求到的数据格式见下文，
         const { data } = await merchantList(this.params);
+        if (data.list) {
+          data.list.forEach((item) => {
+            item.discountRate =parseInt(item.discountRate * 100);
+            item.status = item.status.toString();
+          });
+        }
         // const { data, cntData } = testData;
-        const tableData = data.list || [];
+        // const tableData = data.list || [];
         // 分页组件显示  this.listQueryParams.total 值大于0才会出现
-        this.listQueryParams.total = data.total
+        this.listQueryParams.total = data.total;
         // 数据给表格
         this.tableData = data.list || [];
         this.loadingStatus = false;
@@ -331,22 +338,35 @@ export default {
     handleAvatarSuccess(file) {
       this.shopForm.merchantLogo = URL.createObjectURL(file.raw);
     },
+    // 点击添加按钮
     submitForm() {
       this.$refs.getTable.getTableRef().validate((valid) => {
-      console.log("🔍 ~ submitForm ~ src/views/businessManage/businessList/index.vue:338 ~ valid:", valid)
-      return
         if (valid) {
-          this.shopForm.discountRate = this.shopForm.discountRate / 100;
-          this.shopForm.passwd = md5(md5(this.shopForm.passwd));
-          this.shopForm.status = Number(this.shopForm.status);
-          createMerchant(this.shopForm).then((res) => {
-            console.log("🚀 ~ submitForm ~ res:", res);
-            this.$message({
-              message: "添加成功",
-              type: "success",
+          const params = {
+            ...this.shopForm,
+            discountRate: this.shopForm.discountRate / 100,
+            passwd: this.shopForm.passwd ? md5(md5(this.shopForm.passwd)) : md5(md5('')),
+            status: Number(this.shopForm.status),
+          };
+          if (this.title === "添加商户") {
+            createMerchant(params).then((res) => {
+              this.getList();
+              this.$message({
+                message: "添加成功",
+                type: "success",
+              });
             });
-            this.dialogFormVisible = false;
-          });
+          }
+          if (this.title === "编辑商户") {
+            changeMerchant(params).then((res) => {
+              this.getList();
+              this.$message({
+                message: "修改成功",
+                type: "success",
+              });
+            });
+          }
+          this.dialogFormVisible = false;
         } else {
           console.log("error submit!!");
           return false;
@@ -366,75 +386,54 @@ export default {
           this.$message.info(" 已取消删除");
         });
     },
-    changeDialogFormVisible(val) {
-      this.dialogFormVisible = val;
-    },
-    showAddShop() {},
     handleFilter(val) {
-      console.log("🚀 ~ handleFilter ~ val:", val);
       this.params.searchKey = val.selectValue;
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    handleEdit(index, row) {
-      console.log(index, row);
-    },
-    handleDelete(index, row) {
-      console.log(index, row);
-    },
-    handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
-    },
-    handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
-    },
-    // 表格操作功能 index：表格索引, row：表格行数据, option：按钮名称
+    // 点击编辑
     handleTableOption(index, row, option) {
       this.operationalData = { ...row };
       if (option === "查看") {
-        // console.log(index, row, option);
+        console.log(index, row, option);
       } else if (option === "编辑") {
         this.dialogFormVisible = true;
+        this.title = "编辑商户";
         this.shopForm = row;
+        // this.shopForm.passwd = "";
         this.shopForm.status = row.status.toString();
-        this.tableFormAttrs.forEach(val => {
+        // this.shopForm.passwd = '12';
+        // this.shopForm.discountRate = row.discountRate * 100;
+        this.tableFormAttrs.forEach((val) => {
           if (val.isClosePwd) {
             val.title = "重置密码:";
           }
-        })
+        });
         console.log(index, row, option);
       } else if (option === "删除") {
         console.log(index, row, option);
       }
     },
-
-    // 选择的数据回调
-    handleSelectionChange(data) {
-      console.log("🚀 ~ handleSelectionChange ~ data:", data);
-    },
-
     // 分页操作
     handleRefreshList() {
       this.getList();
     },
     clickSearch(val) {
-      console.log("🚀 ~ clickSearch ~ val:", val);
       this.params.searchKey = val.selectValue;
       this.params.searchVal = val.inputValue;
       this.getList();
-      console.log("🚀 ~ clickSearch ~ val:", val);
     },
     handleFilterButton(val) {
-      console.log("🚀 ~ handleFilterButton ~ val:", val);
       if (val === "添加商户") {
         this.dialogFormVisible = true;
+        this.title = "添加商户";
         this.shopForm = {};
-        this.tableFormAttrs.forEach(val => {
+        this.tableFormAttrs.forEach((val) => {
           if (val.isClosePwd) {
             val.title = "密码:";
           }
-        })
+        });
       }
       if (val === "删除商户") {
         this.$confirm("确定删除吗?", "", {

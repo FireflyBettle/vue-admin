@@ -17,7 +17,6 @@
             <el-input
               v-model="tableData[item.value]"
               :type="item.inputType ? item.inputType : 'text'"
-              autocomplete="off"
               :disabled="item.disabled"
               :placeholder="item.placeholder"
               :ref="item.isClosePwd ? 'password' : ''"
@@ -75,7 +74,7 @@
           <!-- 多文本框 -->
           <template v-if="item.type === 'textarea'">
             <el-input
-              v-model="item.name"
+              v-model="tableData[item.value]"
               type="textarea"
               :autosize="{ minRows: 1, maxRows: 4 }"
               maxlength="100"
@@ -185,8 +184,9 @@ export default {
     // 监听输入框的输入事件
     if (this.filterDataRules) {
       this.filterDataRules.forEach((item) => {
-        this.tableDataRules = {};
-        this.tableDataRules[item] = this.tableDataRules[item];
+        let obj = {};
+        obj[item] = this.tableDataRules[item];
+        this.tableDataRules = obj;
       });
     }
   },

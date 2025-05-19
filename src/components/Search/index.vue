@@ -36,6 +36,10 @@
             type="text"
             v-model="input"
             placeholder="请输入内容"
+            @keyup.enter.native="clickSearch({
+                selectValue: item.selectValue,
+                inputValue: input,
+              })"
           >
             <el-button
               v-if="item.isSearch"

@@ -21,3 +21,10 @@ export function merchantDetail(data) {
     data
   })
 }
+export function changeMerchant(data) {
+  return request({
+    url: '/web/merchant/update',
+    method: 'post',
+    data
+  })
+}
