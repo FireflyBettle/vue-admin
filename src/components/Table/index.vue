@@ -104,9 +104,9 @@
             :key="index"
             class="button-margin-left"
           >
-            <template v-if="option === '查看'">
-              <router-link :to="`${$route.path}/${scope.row.merchantId}`">
-                <span>{{ option }}</span>
+            <template v-if="option.label === '查看'">
+              <router-link :to="`${$route.path}/${scope.row[option.route]}`">
+                <span>{{ option.label }}</span>
               </router-link>
             </template>
             <span
@@ -114,7 +114,7 @@
               @click="
                 handleClickOption(scope.$index, scope.row, option, $event)
               "
-              >{{ option }}</span
+              >{{ option.label }}</span
             >
             <!--  <el-button
               size="small"
@@ -214,7 +214,7 @@ export default {
     pageSizeList: {
       type: Array,
       default: function () {
-        return [3, 6, 30, 50, 100];
+        return [10, 20, 30, 50, 100];
       },
     },
   },

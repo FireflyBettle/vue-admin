@@ -9,27 +9,26 @@
 import Layout from '@/layout'
 
 const asyncRoutes = [
- 
-  {
-    path: '/distribute',
+    {
+    path: '/channel',
     component: Layout,
-    redirect: '/distribute/distributeList',
+    redirect: '/channel',
     meta: {
       title: '渠道管理',
-      icon: 'el-icon-wallet'
+      icon: 'el-icon-monitor'
     },
     children: [
       {
-        path: '/distribute/distributeList',
-        component: () => import('@/views/distribute/distributeList/index'),
-        name: 'distribute',
-        meta: { title: '渠道列表', icon: 'edit' },
+        path: '/channel/channelList',
+        component: () => import('@/views/channel/channelList/index'),
+        name: 'businessList',
+        meta: { title: '渠道列表', icon: 'edit' }
       },
       {
-        path: '/distribute/distributeList/:id',
-        component: () => import('@/views/distribute/distributeList/detail'),
-        name: 'distributeDetail',
-        meta: { title: '渠道详情', icon: 'edit',activeMenu: '/distribute/distributeList' },
+        path: '/channel/channelList/:id',
+        component: () => import('@/views/channel/channelList/detail'),
+        name: 'orderDetail',
+        meta: { title: '渠道详情', icon: 'edit',activeMenu: '/channel/channelList' },
         hidden: true,
       },
       {
@@ -39,25 +38,25 @@ const asyncRoutes = [
     ]
   },
   {
-    path: '/channel',
+    path: '/distribute',
     component: Layout,
-    redirect: '/channel',
+    redirect: '/distribute/distributeList',
     meta: {
       title: '分发管理',
-      icon: 'el-icon-monitor'
+      icon: 'el-icon-wallet'
     },
     children: [
       {
-        path: '/channel/channelList',
-        component: () => import('@/views/channel/channelList/index'),
-        name: 'businessList',
-        meta: { title: '分发列表', icon: 'edit' }
+        path: '/distribute/distributeList',
+        component: () => import('@/views/distribute/distributeList/index'),
+        name: 'distribute',
+        meta: { title: '分发列表', icon: 'edit' },
       },
       {
-        path: '/channel/channelList/:id',
-        component: () => import('@/views/channel/channelList/detail'),
-        name: 'orderDetail',
-        meta: { title: '分发详情', icon: 'edit',activeMenu: '/channel/channelList' },
+        path: '/distribute/distributeList/:id',
+        component: () => import('@/views/distribute/distributeList/detail'),
+        name: 'distributeDetail',
+        meta: { title: '分发详情', icon: 'edit',activeMenu: '/distribute/distributeList' },
         hidden: true,
       },
       {

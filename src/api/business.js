@@ -46,3 +46,12 @@ export function createStores(data) {
     data
   })
 }
+
+// 修改门店
+export function changeStores(data) {
+  return request({
+    url: '/web/store/update',
+    method: 'post',
+    data
+  })
+}

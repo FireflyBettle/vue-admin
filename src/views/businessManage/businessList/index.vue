@@ -14,7 +14,12 @@
       v-bind="tableAttrs"
       v-on="tableEvent"
     />
-    <el-dialog :title="title" v-if="dialogFormVisible" :visible.sync="dialogFormVisible" width="572px">
+    <el-dialog
+      :title="title"
+      v-if="dialogFormVisible"
+      :visible.sync="dialogFormVisible"
+      width="572px"
+    >
       <Detail
         ref="getTable"
         :title="title"
@@ -26,7 +31,7 @@
       </Detail>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitForm()">添加</el-button>
+        <el-button type="primary" @click="submitForm()">{{ sureButtonsName }}</el-button>
       </div>
     </el-dialog>
   </div>
@@ -42,7 +47,7 @@ import { createMerchant, merchantList, changeMerchant } from "@/api/business";
 
 const DefaultTableQuery = {
   pageNum: 1,
-  pageSize: 3,
+  pageSize: 10,
 };
 
 export default {
@@ -55,6 +60,7 @@ export default {
   data() {
     return {
       title: "添加商户",
+      sureButtonsName: '添加',
       styleType: "dialog",
       // 参数
       listQueryParams: { ...DefaultTableQuery },
@@ -175,7 +181,15 @@ export default {
       ],
       // 表格加载loading
       loadingStatus: false,
-      buttonsName: ["查看", "编辑"],
+      buttonsName: [
+        {
+          label: "查看",
+          route: "merchantId",
+        },
+        {
+          label: "编辑",
+        },
+      ],
       optionWidth: 148,
       dialogFormVisible: false,
       dialogForm: {
@@ -293,7 +307,7 @@ export default {
         const { data } = await merchantList(this.params);
         if (data.list) {
           data.list.forEach((item) => {
-            item.discountRate =parseInt(item.discountRate * 100);
+            item.discountRate = parseInt(item.discountRate * 100);
             item.status = item.status.toString();
           });
         }
@@ -307,7 +321,7 @@ export default {
     },
     // 点击上传
     handleAvatarSuccess(file) {
-      console.log("🚀 ~ handleAvatarSuccess ~ file:", file)
+      console.log("🚀 ~ handleAvatarSuccess ~ file:", file);
       this.dialogForm.merchantLogo = URL.createObjectURL(file.raw);
     },
     // 点击添加按钮
@@ -317,7 +331,9 @@ export default {
           const params = {
             ...this.dialogForm,
             discountRate: this.dialogForm.discountRate / 100,
-            passwd: this.dialogForm.passwd ? md5(md5(this.dialogForm.passwd)) : md5(md5('')),
+            passwd: this.dialogForm.passwd
+              ? md5(md5(this.dialogForm.passwd))
+              : md5(md5("")),
             status: Number(this.dialogForm.status),
           };
           if (this.title === "添加商户") {
@@ -369,11 +385,12 @@ export default {
     // 点击编辑
     handleTableOption(index, row, option) {
       this.operationalData = { ...row };
-      if (option === "查看") {
+      if (option.label === "查看") {
         console.log(index, row, option);
-      } else if (option === "编辑") {
+      } else if (option.label === "编辑") {
         this.dialogFormVisible = true;
         this.title = "编辑商户";
+        this.sureButtonsName = "确定";
         this.dialogForm = row;
         this.dialogForm.status = row.status.toString();
         this.dialogFormAttrs.forEach((val) => {
@@ -400,6 +417,7 @@ export default {
       if (val === "添加商户") {
         this.dialogFormVisible = true;
         this.title = "添加商户";
+        this.sureButtonsName = "添加";
         this.dialogForm = {};
         this.dialogFormAttrs.forEach((val) => {
           if (val.isClosePwd) {

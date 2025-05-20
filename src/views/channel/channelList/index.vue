@@ -1,417 +1,249 @@
+<!--
+ * @Author: chenyourong
+ * @Date: 2025-05-08 18:06:50
+ * @LastEditors: chenyourong
+ * @LastEditTime: 2025-05-20 11:08:48
+ * @Description: 
+ * @FilePath: /vue-admin-template-master/src/views/businessManage/businessList/index.vue
+-->
 <template>
-  <div class="channelList">
+  <div class="shop-list">
     <Search v-bind="filterAttrs" v-on="filterEvent"></Search>
     <Table
       :list-query-params.sync="listQueryParams"
       v-bind="tableAttrs"
       v-on="tableEvent"
     />
-    <el-dialog :title="title" :visible.sync="dialogFormVisible" width="800px">
-      <div
-        :class="[
-          'dialog-header',
-          createIndex === 1 ? 'first' : createIndex === 2 ? 'second' : '',
-        ]"
+    <el-dialog
+      :title="title"
+      v-if="dialogFormVisible"
+      :visible.sync="dialogFormVisible"
+      width="572px"
+    >
+      <Detail
+        ref="getTable"
+        :title="title"
+        :styleType="styleType"
+        :tableData="dialogForm"
+        :tableFormAttrs="dialogFormAttrs"
+        @handleAvatarSuccess="handleAvatarSuccess"
       >
-        <div class="dots">
-          <span class="dot"></span>
-          <span class="border"></span>
-          <span class="dot"></span>
-          <span class="border"></span>
-          <span class="dot"></span>
-        </div>
-        <div class="names">
-          <span>选择商户</span>
-          <span>选择门店</span>
-          <span>选择渠道</span>
-        </div>
+      </Detail>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="submitForm()">{{ buttonName }}</el-button>
       </div>
-      <template v-if="createIndex === 0">
-        <Detail
-          ref="getTable"
-          :title="title"
-          :styleType="styleType"
-          :tableData="shopForm"
-          :formLabelWidth="formLabelWidth"
-          :tableFormAttrs="tableFormAttrs"
-          @submitForm="nextSecond"
-        >
-        </Detail>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogFormVisible = false">取消</el-button>
-          <el-button type="primary" @click="nextSecond()">下一步</el-button>
-        </div>
-      </template>
-      <template v-if="createIndex === 1">
-        <dialog-table
-          :list-query-params.sync="listQueryParams"
-          :dialogTableConfig="dialogTableConfigSecond"
-          :dialogTableData="dialogTableDataSecond"
-        />
-        <div slot="footer" class="dialog-footer">
-          <el-button class="previousButton" @click="createIndex = 0">上一步</el-button>
-          <el-button class="nextButton" type="primary" @click="createIndex = 2">下一步</el-button>
-        </div>
-      </template>
-      <template v-if="createIndex === 2">
-        <dialog-table
-          :list-query-params.sync="listQueryParams"
-          :dialogTableConfig="dialogTableConfigThird"
-          :dialogTableData="dialogTableDataThird"
-        />
-        <div slot="footer" class="dialog-footer">
-          <el-button class="previousButton" @click="createIndex = 1">上一步</el-button>
-          <el-button class="nextButton" type="primary" @click="submitDialogForm">发布</el-button>
-        </div></template>
     </el-dialog>
   </div>
 </template>
 
 <script>
 import Table from "@/components/Table/index.vue";
-import Search from "@/components/Search/index.vue";
-import DialogTable from "@/components/DialogTable/index.vue";
 import Detail from "@/components/Detail/index.vue";
+import Search from "@/components/Search/index.vue";
+import md5 from "js-md5";
 
-// 定义的接口根据自己项目更换
-// import TalentServe from '@/api/talent'
-import testData from "./data.json";
-//  表格查询参数
+import { createChannel, channelList, updateChannel } from "@/api/channel.js";
+
 const DefaultTableQuery = {
-  page: 1,
-  limit: 10,
-  total: 0,
+  pageNum: 1,
+  pageSize: 10,
 };
 
 export default {
-  name: "channelList",
+  name: "businessList",
   components: {
     Table,
-    Search,
     Detail,
-    DialogTable,
+    Search,
   },
   data() {
     return {
-      title: "创建分发（1/3）",
-      createIndex: 0,
-      formLabelWidth: "97px",
+      title: "添加渠道",
+      buttonName: '添加',
       styleType: "dialog",
-      // 表格加载loading
-      loadingStatus: false,
-      //  操作栏宽度
-      optionWidth: 148,
-      // 表头配置  prop字段和服务端数据给的字段一致
+      // 参数
+      listQueryParams: { ...DefaultTableQuery },
+      tableData: [],
       tableConfig: [
         {
-          label: "ID",
-          width: "60",
-          prop: "id",
-        },
-        {
-          label: "商户",
+          label: "渠道名称",
           width: "90",
-          prop: "name",
-        },
-        {
-          label: "门店数",
-          width: "80",
-          prop: "storeNumber",
-        },
-        {
-          label: "折扣率",
-          width: "80",
-          prop: "rate",
-        },
-        {
-          label: "配置渠道",
-          width: "80",
-          prop: "configureChannels",
-        },
-        {
-          label: "佣金率",
-          width: "80",
-          prop: "commissionRate",
-        },
-        {
-          label: "券码类型",
-          width: "90",
-          prop: "couponCodeType",
-        },
-        {
-          label: "券码描述",
-          width: "105",
-          prop: "couponCodeDescription",
-        },
-        {
-          label: "券码有效时间",
-          width: "105",
-          prop: "couponValidTime",
-        },
-        {
-          label: "创建金额",
-          width: "80",
-          prop: "createAnAmount",
-        },
-        {
-          label: "待核销金额",
-          width: "80",
-          prop: "amountToBeWrittenOff",
-        },
-        {
-          label: "核销金额",
-          width: "80",
-          prop: "writeOffAmount",
-        },
-        // 最后一个不给宽度让表格自适应
-        {
-          label: "状态",
-          prop: "status",
-        },
-      ],
-      tableFormAttrs: [
-        {
-          title: "商户:",
-          placeholder: "请选择商户",
-          type: "select",
-          prop: "shopPerson",
-          required: true,
-          options: [
-            {
-              value: "选项1",
-              label: "黄金糕",
-            },
-            {
-              value: "选项2",
-              label: "双皮奶",
-            },
-            {
-              value: "选项3",
-              label: "蚵仔煎",
-            },
-          ],
-        },
-        {
-          title: "商户ID:",
-          placeholder: "系统自生成",
-          type: "input",
-          prop: "shopId",
-          disabled: true,
-        },
-        {
-          title: "折扣率:",
-          placeholder: "请输入折扣率",
-          type: "input",
-          slot: "%",
-          prop: "rate",
-          disabled: true,
-        },
-        {
-          title: "券码类型:",
-          placeholder: "请选择券码类型",
-          type: "select",
-          prop: "couponType",
-          required: true,
-          options: [
-            {
-              value: "选项1",
-              label: "黄金糕",
-            },
-            {
-              value: "选项2",
-              label: "双皮奶",
-            },
-            {
-              value: "选项3",
-              label: "蚵仔煎",
-            },
-          ],
-        },
-        {
-          title: "券码有效期:",
-          placeholder: "请输入券码有效期",
-          type: "input",
-          slot: "小时",
-          prop: "couponTime",
-          required: true,
-        },
-        {
-          title: "券码描述:",
-          placeholder: "请输入渠道描述",
-          type: "textarea",
-          prop: "des",
-        },
-      ],
-      dialogTableConfigSecond: [
-        {
-          label: "ID",
-          width: "60",
-          prop: "id",
-        },
-        {
-          label: "门店",
-          width: "90",
-          prop: "store",
-        },
-        {
-          label: "门店地址",
-          width: "225",
-          prop: "storeAddress",
-        },
-        {
-          label: "门店ID",
-          width: "225",
-          prop: "storeId",
-        },
-      ],
-      dialogTableConfigThird: [
-        {
-          label: "ID",
-          width: "60",
-          prop: "id",
-        },
-        {
-          label: "渠道",
-          width: "90",
-          prop: "store",
+          value: "channelName",
         },
         {
           label: "渠道描述",
-          width: "150",
-          prop: "storeDes",
+          width: "167",
+          value: "channelDesc",
         },
         {
-          label: "门店ID",
-          width: "150",
-          prop: "storeId",
+          label: "渠道ID",
+          width: "167",
+          value: "channelId",
         },
         {
-          label: "佣金率",
-          width: "150",
-          prop: "commissionRate",
-          format: 'input'
+          label: "预存款金额",
+          width: "90",
+          value: "predepositAmount",
+        },
+        {
+          label: "可用预存款",
+          width: "90",
+          value: "availablePredeposit",
+        },
+        {
+          label: "锁定预存款",
+          width: "90",
+          value: "lockedPredeposit",
+        },
+        {
+          label: "联系人",
+          width: "70",
+          value: "contact",
+        },
+        {
+          label: "手机号",
+          width: "90",
+          value: "phone",
+        },
+        {
+          label: "邮箱",
+          width: "90",
+          value: "email",
+        },
+        {
+          label: "状态",
+          width: "80",
+          format: "status",
+          value: "status",
         },
       ],
-      dialogTableDataSecond: [
+      dialogFormAttrs: [
         {
-          id: "1",
-          store: "麦当劳",
-          storeAddress: "这里是门店地址",
-          storeId: "022A15EFC727DCAD",
+          title: "渠道名称:",
+          placeholder: "请输入渠道名称",
+          type: "input",
+          value: "channelName",
+          required: true,
         },
         {
-          id: "1",
-          store: "麦当劳",
-          storeAddress: "这里是门店地址",
-          storeId: "022A15EFC727DCAD",
+          title: "渠道描述:",
+          placeholder: "请输入渠道描述",
+          type: "textarea",
+          value: "channelDesc",
         },
         {
-          id: "1",
-          store: "麦当劳",
-          storeAddress: "这里是门店地址",
-          storeId: "022A15EFC727DCAD",
+          title: "渠道ID:",
+          placeholder: "请输入预存款金额",
+          type: "input",
+          inputType: "number",
+          value: "channelId",
+          disabled: true,
+        },
+        {
+          title: "联系人:",
+          placeholder: "请输入联系人",
+          type: "input",
+          value: "contact",
+          required: true,
+        },
+        {
+          title: "手机号:",
+          placeholder: "请输入手机号",
+          type: "input",
+          value: "phone",
+          inputType: "number",
+          required: true,
+        },
+        {
+          title: "邮箱:",
+          placeholder: "请输入邮箱",
+          type: "input",
+          value: "email",
+          required: true,
+        },
+        {
+          title: "状态:",
+          placeholder: "请输入邮箱",
+          type: "radio",
+          value: "status",
+        },
+        {
+          title: "初始密码:",
+          placeholder: "请输入密码",
+          type: "input",
+          inputType: "text",
+          value: "passwd",
+          isClosePwd: true,
         },
       ],
-      dialogTableDataThird: [
+      // 表格加载loading
+      loadingStatus: false,
+      buttonsName: [
         {
-          id: "1",
-          store: "麦当劳",
-          storeDes: "这里是渠道描述",
-          storeId: "022A15EFC727DCAD",
-          commissionRate: "",
+          label: "查看",
+          route: "channelId",
         },
         {
-          id: "1",
-          store: "麦当劳",
-          storeDes: "这里是渠道描述",
-          storeId: "022A15EFC727DCAD",
-          commissionRate: "",
-        },
-        {
-          id: "1",
-          store: "麦当劳",
-          storeDes: "这里是渠道描述",
-          storeId: "022A15EFC727DCAD",
-          commissionRate: "",
+          label: "编辑",
         },
       ],
-      shopForm: {
-        shopPerson: "",
-        shopId: "",
-        rate: "",
-        couponType: "",
-        couponTime: "",
-        des: "",
+      optionWidth: 148,
+      dialogFormVisible: false,
+      dialogForm: {
+        channelName: "",
+        channelDesc: "",
+        merchantLogo: "",
+        predepositAmount: "",
+        contact: "",
+        status: "",
+        passwd: "",
       },
-      // 参数
-      listQueryParams: { ...DefaultTableQuery },
-      // 列表数据
-      tableData: [],
       // url参数
       params: {
-        pageInfo: {
-          pageSize: 10,
-          pageNo: 1,
-        },
+        pageSize: 10,
+        pageNum: 0,
+        searchKey: "",
+        searchVal: "",
       },
-      // 操作栏按钮
-      buttonsName: ["查看", "编辑", "删除"],
-      // 选择数据
-      selectData: [],
-      // 操作数据
-      operationalData: {},
       filterButtonText: [
         {
-          label: "创建分发",
+          label: "添加渠道",
           type: "primary",
         },
-        {
-          label: "删除分发",
-          type: "info",
-        },
+        // {
+        //   label: "删除渠道",
+        //   type: "info",
+        // },
       ],
       filterOptions: [
         {
           type: "multiSelect",
-          placeholder: "商户",
+          placeholder: "请选择",
+          selectValue: "channelName",
           inputValue: "",
-          isSearch: false,
-          inputWidth: "136px",
-          selectWidth: "90px",
+          isSearch: true,
+          inputWidth: "264px",
+          selectWidth: "105px",
           options: [
             {
-              value: "选项1",
-              label: "黄金糕",
+              label: "渠道名称",
+              width: "90",
+              value: "channelName",
             },
             {
-              value: "选项2",
-              label: "双皮奶",
+              label: "渠道ID",
+              width: "120",
+              value: "channelId",
+            },
+            {
+              label: "手机号",
+              width: "120",
+              value: "phone",
             },
           ],
-        },
-        {
-          type: "multiSelect",
-          placeholder: "渠道",
-          inputValue: "",
-          isSearch: false,
-          inputWidth: "136px",
-          selectWidth: "90px",
-          options: [
-            {
-              value: "选项1",
-              label: "黄金糕",
-            },
-            {
-              value: "选项2",
-              label: "双皮奶",
-            },
-          ],
-        },
-        {
-          type: "button",
         },
       ],
-      dialogFormVisible: false,
     };
   },
   computed: {
@@ -429,14 +261,8 @@ export default {
         // 操作栏宽度
         optionColumnWidth: this.optionWidth,
         // 是否需要选择
-        isSelection: true,
-      };
-    },
-    filterAttrs() {
-      return {
-        // 按钮名称
-        filterButtonText: this.filterButtonText,
-        filterOptions: this.filterOptions,
+        isSelection: false,
+        isShowNumber: true,
       };
     },
     // 表格事件
@@ -450,49 +276,158 @@ export default {
         subSelected: this.handleSelectionChange,
       };
     },
+    filterAttrs() {
+      return {
+        // 按钮名称
+        filterButtonText: this.filterButtonText,
+        filterOptions: this.filterOptions,
+      };
+    },
     filterEvent() {
       return {
         // 选择数据回调
+        handleFilter: this.handleFilter,
         handleFilterButton: this.handleFilterButton,
         clickSearch: this.clickSearch,
       };
-    },
-  },
-  watch: {
-    createIndex: {
-      handler: function(val, oldVal) {
-        const arr = ['创建分发（1/3）','创建分发（2/3）','创建分发（3/3）'];
-        return this.title = arr[val];
-      },
-      immediate: true
     },
   },
   created() {
     this.getList();
   },
   methods: {
-    nextSecond() {
+    // 获取列表
+    async getList() {
+      try {
+        // 表格加载loading
+        this.loadingStatus = true;
+        // 分页数据作为参数给服务端
+        this.params.pageSize = this.listQueryParams.pageSize;
+        this.params.pageNum = this.listQueryParams.pageNum - 1;
+        // 发送请求,请求到的数据格式见下文，
+        const { data } = await channelList(this.params);
+        if (data.list) {
+          data.list.forEach((item) => {
+            item.status = item.status.toString();
+          });
+        }
+        this.listQueryParams.total = data.total;
+        // 数据给表格
+        this.tableData = data.list || [];
+        this.loadingStatus = false;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    // 点击上传
+    handleAvatarSuccess(file) {
+      console.log("🚀 ~ handleAvatarSuccess ~ file:", file);
+      this.dialogForm.merchantLogo = URL.createObjectURL(file.raw);
+    },
+    // 点击添加按钮
+    submitForm() {
       this.$refs.getTable.getTableRef().validate((valid) => {
         if (valid) {
-          this.createIndex = 1;
+          const params = {
+            ...this.dialogForm,
+            passwd: this.dialogForm.passwd
+              ? md5(md5(this.dialogForm.passwd))
+              : md5(md5("")),
+            status: Number(this.dialogForm.status),
+          };
+          if (this.title === "添加渠道") {
+            createChannel(params).then((res) => {
+              this.getList();
+              this.$message({
+                message: "添加成功",
+                type: "success",
+              });
+              this.dialogFormVisible = false;
+            });
+          }
+          if (this.title === "编辑渠道") {
+            updateChannel(params).then((res) => {
+              this.getList();
+              this.$message({
+                message: "修改成功",
+                type: "success",
+              });
+            });
+            this.dialogFormVisible = false;
+          }
         } else {
           console.log("error submit!!");
           return false;
         }
       });
     },
-    submitDialogForm() {
-      console.log("🚀 ~ submitDialogForm ~ submitDialogForm:", "submitDialogForm")
+    // 删除渠道
+    deleteShopDialog() {
+      this.$confirm("确定删除吗?", "", {
+        type: "warning",
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+      })
+        .then(async () => {
+          this.$message.success(" 删除成功");
+        })
+        .catch(() => {
+          this.$message.info(" 已取消删除");
+        });
     },
-    clickSearch() {
-      console.log("🚀 ~ clickSearch ~ val:", "clickSearch");
+    handleFilter(val) {
+      this.params.searchKey = val.selectValue;
     },
-    handleFilterButton(val) {
-      console.log("🚀 ~ handleFilterButton ~ val:", val);
-      if (val === "创建分发") {
+    // 多选框
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
+    // 点击编辑
+    handleTableOption(index, row, option) {
+      this.operationalData = { ...row };
+      if (option.label === "查看") {
+        console.log(index, row, option);
+      } else if (option.label === "编辑") {
         this.dialogFormVisible = true;
+        this.title = "编辑渠道";
+        this.buttonName = "确定";
+        this.dialogForm = row;
+        this.dialogForm.status = row.status.toString();
+        this.dialogFormAttrs.forEach((val) => {
+          if (val.isClosePwd) {
+            val.title = "重置密码:";
+          }
+        });
+        console.log(index, row, option);
+      } else if (option === "删除") {
+        console.log(index, row, option);
       }
-      if (val === "删除分发") {
+    },
+    // 分页操作
+    handleRefreshList() {
+      this.getList();
+    },
+    clickSearch(val) {
+      this.params.searchKey = val.selectValue;
+      this.params.searchVal = val.inputValue;
+      this.getList();
+    },
+    // 点击添加渠道弹窗
+    handleFilterButton(val) {
+      if (val === "添加渠道") {
+        this.dialogFormVisible = true;
+        this.title = "添加渠道";
+        this.buttonName = "添加";
+        this.dialogForm = {};
+        this.dialogForm.email = "140@qq.co"; // 测试，后面去掉
+        // this.dialogForm.phone = "19412345671";
+        this.dialogFormAttrs.forEach((val) => {
+          if (val.isClosePwd) {
+            val.title = "初始密码:";
+          }
+        });
+      }
+      if (val === "删除渠道") {
         this.$confirm("确定删除吗?", "", {
           type: "warning",
           confirmButtonText: "确定",
@@ -506,153 +441,102 @@ export default {
           });
       }
     },
-    // 获取列表
-    getList() {
-      console.log("🚀 ~ getList ~ getList:", this.$route.path)
-      try {
-        // 表格加载loading
-        this.loadingStatus = true;
-        // 分页数据作为参数给服务端
-        this.params.pageInfo.pageSize = this.listQueryParams.limit;
-        this.params.pageInfo.pageNo = this.listQueryParams.page;
-        // 发送请求,请求到的数据格式见下文，
-        // const { data, cntData } = await TalentServe.getTalentList(this.params)
-        const { data, cntData } = testData;
-        console.log("🚀 ~ getList ~ testData:", testData);
-        const tableData = data || [];
-        // 分页组件显示  this.listQueryParams.total 值大于0才会出现
-        this.listQueryParams.total = cntData;
-        // 数据给表格
-        this.tableData = data;
-        this.loadingStatus = false;
-      } catch (error) {
-        console.log(error);
-      }
-    },
-
-    // 表格操作功能 index：表格索引, row：表格行数据, option：按钮名称
-    handleTableOption(index, row, option) {
-      this.operationalData = { ...row };
-      if (option === "查看") {
-        console.log(index, row, option);
-      } else if (option === "编辑") {
-        console.log(index, row, option);
-      } else if (option === "删除") {
-        console.log(index, row, option);
-      }
-    },
-
-    // 选择的数据回调
-    handleSelectionChange(data) {
-      console.log("🚀 ~ handleSelectionChange ~ data:", data);
-    },
-
-    // 分页操作
-    handleRefreshList() {
-      this.getList();
-    },
   },
 };
 </script>
 <style lang="scss">
-.channelList {
-  .dialog-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 66px;
-    padding-top: 20px;
-    .dots {
+.shop-list {
+  .filter-container {
+    .el-input {
+      width: 265px;
+      input {
+        height: 32px;
+      }
+      .el-input__inner {
+        height: 32px;
+        line-height: 32px;
+      }
+    }
+    .el-select {
+      margin-right: 4px;
+      .el-input {
+        width: 106px;
+      }
+    }
+    .el-input-group__append {
+      background: #fff;
+    }
+    .el-button {
+      padding: 12px;
+    }
+    .filter-container__right {
+      .el-button {
+        width: 88px;
+        height: 32px;
+        line-height: 32px;
+        padding: 0;
+        font-size: 14px;
+      }
+      .el-button--primary {
+        background: #1890ff;
+      }
+      .el-button--info {
+        background: #f5f5f5;
+        color: rgba(0, 0, 0, 0.25);
+      }
+    }
+  }
+  .deleteShopDialog {
+    .el-dialog__header {
+      display: none;
+    }
+    .el-dialog__body {
       display: flex;
-      justify-content: center;
       align-items: center;
-      .dot {
-        display: inline-block;
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background-color: #1890ff;
-        margin: 0 4px;
-      }
-      .dot:nth-child(1) {
-        width: 10px;
-        height: 10px;
-      }
-      .border {
-        width: 122px;
-        height: 3px;
-        background-color: #f0f0f0;
-      }
+      border: none;
     }
-    .names {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 16px;
-      color: rgba(0, 0, 0, 0.85);
-      margin-top: 10px;
-      line-height: 1;
-      font-weight: normal;
-      span:nth-child(2) {
-        margin: 0 75px;
-      }
-      span:nth-child(1) {
-        color: rgba(0, 0, 0, 0.85);
-        font-weight: bold;
-      }
+    .el-icon-warning-outline {
+      font-size: 22px;
+      color: #faad14;
+      margin-right: 16px;
     }
-  }
-  .dialog-header.first {
-    .dot:nth-child(1) {
-      width: 8px;
-      height: 8px;
+    .el-dialog__footer {
+      padding: 0px 20px 20px;
     }
-    .dot:nth-child(3) {
-      width: 10px;
-      height: 10px;
-    }
-    .border:nth-child(2) {
-      background-color: #1890ff;
-    }
-    .names {
-      span {
-        font-weight: normal;
-      }
-      span:nth-child(2) {
-        color: rgba(0, 0, 0, 0.85);
-        font-weight: bold;
-      }
-    }
-  }
-  .dialog-header.second {
-    .dot:nth-child(1) {
-      width: 8px;
-      height: 8px;
-    }
-    .dot:nth-child(5) {
-      width: 10px;
-      height: 10px;
-    }
-    .border {
-      background-color: #1890ff;
-    }
-    .names {
-      span {
-        font-weight: normal;
-      }
-      span:nth-child(3) {
-        color: rgba(0, 0, 0, 0.85);
-        font-weight: bold;
-      }
-    }
-  }
-  .el-dialog__body {
-    padding: 0px 60px 20px;
-  }
-  .el-input-group__append {
-    padding: 0 10px;
   }
 }
 </style>
 
+<style lang="scss" scoped>
+@import "~@/styles/mixin.scss";
+.shop-list {
+  .filter-container {
+    @include flex;
+    justify-content: space-between;
+    padding: 0 24px;
+    width: 100%;
+    height: 80px;
+    background: #fff;
+  }
+  .show-pwd {
+    position: absolute;
+    right: 60px;
+    top: 0;
+    font-size: 16px;
+    color: #000;
+    cursor: pointer;
+    user-select: none;
+  }
+  .char-count {
+    text-align: right;
+    color: #666;
+    font-size: 12px;
+    margin-top: 4px;
+  }
 
+  .limit-reached {
+    color: #f56c6c;
+    font-weight: bold;
+  }
+}
+</style>

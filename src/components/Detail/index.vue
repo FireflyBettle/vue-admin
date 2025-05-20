@@ -78,7 +78,7 @@
               v-model="tableData[item.value]"
               :options="item.options"
               placeholder="请选择省市区"
-              @change="handleAreaChange" 
+              @change="handleAreaChange"
             ></el-cascader>
           </template>
           <!-- 多文本框 -->
@@ -161,17 +161,24 @@ export default {
   data() {
     return {
       tableDataRules: {
+        amount: [
+          { required: true, message: "请输入充值金额", trigger: "blur" },
+        ],
         merchantName: [
           { required: true, message: "请输入商户名称", trigger: "blur" },
+        ],
+        channelName: [
+          { required: true, message: "请输入渠道名称", trigger: "blur" },
         ],
         storeName: [
           { required: true, message: "请输入门店名称", trigger: "blur" },
         ],
-        area: [
-          { required: true, message: "请选择省市区/县", trigger: "blur" },
-        ],
+        area: [{ required: true, message: "请选择省市区/县", trigger: "blur" }],
         storeAddr: [
           { required: true, message: "请输入详细地址", trigger: "blur" },
+        ],
+        merchantId: [
+          { required: true, message: "请选择所属商户", trigger: "blur" },
         ],
         ipWhiteList: [
           { required: true, message: "请输入IP白名单", trigger: "blur" },
@@ -274,9 +281,9 @@ export default {
   .el-button {
     flex: 1;
     overflow: auto;
-    width: 60px;
     height: 32px;
-    padding: 0;
+    line-height: 1;
+    padding: 0 10px;
   }
   .el-dialog__body {
     padding: 24px;

@@ -33,7 +33,7 @@
       </Detail>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitForm()">添加</el-button>
+        <el-button type="primary" @click="submitForm()">{{ sureButtonsName }}</el-button>
       </div>
     </el-dialog>
   </div>
@@ -50,12 +50,12 @@ import {
   createStores,
   merchantList,
   storesList,
-  changeMerchant,
+  changeStores,
 } from "@/api/business";
 
 const DefaultTableQuery = {
   pageNum: 1,
-  pageSize: 3,
+  pageSize: 10,
 };
 
 export default {
@@ -68,6 +68,7 @@ export default {
   data() {
     return {
       title: "添加门店",
+      sureButtonsName: "添加",
       styleType: "dialog",
       regionData,
       // 参数
@@ -108,7 +109,6 @@ export default {
           label: "所属商户",
           width: "90",
           value: "merchantName",
-          format: "rate",
         },
         {
           label: "联系人",
@@ -245,7 +245,14 @@ export default {
       ],
       // 表格加载loading
       loadingStatus: false,
-      buttonsName: ["编辑", "删除"],
+      buttonsName: [
+        {
+          label: "编辑",
+        },
+        {
+          label: "删除",
+        },
+      ],
       optionWidth: 148,
       dialogFormVisible: false,
       dialogForm: {},
@@ -294,8 +301,8 @@ export default {
           ],
         },
       ],
-      selectedAreaText: '',
-      
+      selectedAreaText: "",
+      dialogStoreId: "",
     };
   },
   computed: {
@@ -355,12 +362,12 @@ export default {
           pageNum: 0,
           pageSize: 1000,
         }).then((res) => {
-          res.data.list.forEach(val => {
+          res.data.list.forEach((val) => {
             item.options.push({
               label: val.merchantName,
-              value: val.merchantId
+              value: val.merchantId,
             });
-          })
+          });
         });
       }
     });
@@ -421,34 +428,36 @@ export default {
                 type: "success",
               });
             });
+            this.dialogFormVisible = false;
           }
-          if (this.title === "编辑商户") {
-            changeMerchant(params).then((res) => {
+          if (this.title === "编辑门店") {
+            params.storeId = this.dialogStoreId;
+            changeStores(params).then((res) => {
               this.getList();
               this.$message({
                 message: "修改成功",
                 type: "success",
               });
             });
+            this.dialogFormVisible = false;
           }
-          this.dialogFormVisible = false;
         } else {
           console.log("error submit!!");
           return false;
         }
       });
     },
-    handleAreaChange(value) { 
-      let areaText = ''; 
-      let currentOptions = this.regionData;  
-      selectedAreaText.split('').forEach((code,  index) => { 
-        const option = currentOptions.find(item  => item.value  === code); 
-        if (option) { 
-          areaText += option.label;
-          currentOptions = option.children  || []; 
-        } 
-      }); 
-      this.selectedAreaText = areaText; 
+    handleAreaChange(value) {
+      let areaText = "";
+      let currentOptions = this.regionData;
+      value.forEach((code, index) => {
+        const option = currentOptions.find((item) => item.value === code);
+        if (option) {
+          areaText += option.label + " ";
+          currentOptions = option.children || [];
+        }
+      });
+      this.selectedAreaText = areaText;
     },
     // 删除商户
     deleteShopDialog() {
@@ -474,24 +483,31 @@ export default {
     // 点击编辑
     handleTableOption(index, row, option) {
       this.operationalData = { ...row };
-      if (option === "查看") {
+      if (option.label === "查看") {
         console.log(index, row, option);
-      } else if (option === "编辑") {
+      } else if (option.label === "编辑") {
         this.dialogFormVisible = true;
-        this.title = "编辑商户";
+        this.title = "编辑门店";
+        this.sureButtonsName = "确定";
         this.dialogForm = row;
         this.dialogForm.status = row.status.toString();
 
-        let areaText = ''; 
-      let currentOptions = this.regionData;  
-   /*    value.forEach((code,  index) => { 
-        const option = currentOptions.find(item  => item.value  === code); 
-        if (option) { 
-          areaText += option.label;
-          currentOptions = option.children  || []; 
-        } 
-      }); 
-      this.selectedAreaText = areaText;  */
+        let arr = [];
+        let currentOptions = this.regionData;
+        this.dialogForm.storeAddr.split(" ").forEach((code, index) => {
+          const option = currentOptions.find((item) => item.label === code);
+          if (option) {
+            arr.push(option.value);
+            currentOptions = option.children || [];
+          }
+        });
+        this.dialogForm.area = arr;
+        this.selectedAreaText = this.dialogForm.storeAddr;
+        this.dialogForm.storeAddr = this.dialogForm.storeAddr
+          .split(" ")
+          .slice(-1)[0];
+        this.dialogStoreId = this.dialogForm.storeId;
+        // this.selectedAreaText = arr;
 
         this.dialogFormAttrs.forEach((val) => {
           if (val.isClosePwd) {
@@ -517,6 +533,7 @@ export default {
       if (val === "添加门店") {
         this.dialogFormVisible = true;
         this.title = "添加门店";
+        this.sureButtonsName = "添加";
         this.dialogForm = {};
         this.dialogFormAttrs.forEach((val) => {
           if (val.isClosePwd) {
