@@ -56,6 +56,7 @@
             </el-upload>
           </template>
           <!-- 选择框 -->
+
           <template v-if="item.type === 'select'">
             <el-select
               v-model="tableData[item.value]"
@@ -71,6 +72,15 @@
               </el-option>
             </el-select>
           </template>
+          <!-- 多选框 -->
+          <template v-if="item.type === 'multipleSelect'">
+            <el-cascader
+              v-model="tableData[item.value]"
+              :options="item.options"
+              placeholder="请选择省市区"
+              @change="handleAreaChange" 
+            ></el-cascader>
+          </template>
           <!-- 多文本框 -->
           <template v-if="item.type === 'textarea'">
             <el-input
@@ -81,7 +91,7 @@
               :placeholder="item.placeholder"
               :disabled="item.disabled"
               show-word-limit
-              @input="handleInput(item)"
+              @input="handleInput(tableData[item.value])"
             ></el-input>
           </template>
           <template v-if="item.type === 'radio'">
@@ -154,6 +164,18 @@ export default {
         merchantName: [
           { required: true, message: "请输入商户名称", trigger: "blur" },
         ],
+        storeName: [
+          { required: true, message: "请输入门店名称", trigger: "blur" },
+        ],
+        area: [
+          { required: true, message: "请选择省市区/县", trigger: "blur" },
+        ],
+        storeAddr: [
+          { required: true, message: "请输入详细地址", trigger: "blur" },
+        ],
+        ipWhiteList: [
+          { required: true, message: "请输入IP白名单", trigger: "blur" },
+        ],
         discountRate: [
           { required: true, message: "请输入折扣率", trigger: "blur" },
         ],
@@ -194,13 +216,16 @@ export default {
     handleAvatarSuccess(res, file) {
       this.$emit("handleAvatarSuccess", file);
     },
-    handleInput(item) {
+    handleAreaChange(val) {
+      this.$emit("handleAreaChange", val);
+    },
+    handleInput(value) {
       // 检查是否达到限制
-      this.isLimitReached = item.name.length >= 100;
+      this.isLimitReached = value.length >= 100;
 
       // 如果超过100个字符，截取前100个
-      if (item.name.length > 100) {
-        item.name = item.name.substring(0, 100);
+      if (value.length > 100) {
+        value = value.substring(0, 100);
       }
     },
     showPwd(item) {
@@ -245,7 +270,7 @@ export default {
   flex-direction: column;
   background: #fff;
   padding-top: 24px;
-  padding-bottom: 26px;
+  // padding-bottom: 26px;
   .el-button {
     flex: 1;
     overflow: auto;

@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-19 18:20:29
+ * @LastEditTime: 2025-05-20 11:08:48
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/businessManage/businessList/index.vue
 -->
@@ -19,8 +19,8 @@
         ref="getTable"
         :title="title"
         :styleType="styleType"
-        :tableData="shopForm"
-        :tableFormAttrs="tableFormAttrs"
+        :tableData="dialogForm"
+        :tableFormAttrs="dialogFormAttrs"
         @handleAvatarSuccess="handleAvatarSuccess"
       >
       </Detail>
@@ -39,8 +39,6 @@ import Search from "@/components/Search/index.vue";
 import md5 from "js-md5";
 
 import { createMerchant, merchantList, changeMerchant } from "@/api/business";
-
-import testData from "./data.json";
 
 const DefaultTableQuery = {
   pageNum: 1,
@@ -110,7 +108,7 @@ export default {
           value: "status",
         },
       ],
-      tableFormAttrs: [
+      dialogFormAttrs: [
         {
           title: "商户名称:",
           placeholder: "请输入商户名称",
@@ -179,33 +177,8 @@ export default {
       loadingStatus: false,
       buttonsName: ["查看", "编辑"],
       optionWidth: 148,
-      options: [
-        {
-          value: "选项1",
-          label: "黄金糕",
-        },
-        {
-          value: "选项2",
-          label: "双皮奶",
-        },
-        {
-          value: "选项3",
-          label: "蚵仔煎",
-        },
-        {
-          value: "选项4",
-          label: "龙须面",
-        },
-        {
-          value: "选项5",
-          label: "北京烤鸭",
-        },
-      ],
-      value: "",
-      input: "",
       dialogFormVisible: false,
-      deleteShopDialogVisible: false,
-      shopForm: {
+      dialogForm: {
         merchantName: "",
         merchantDesc: "",
         merchantLogo: "",
@@ -324,9 +297,6 @@ export default {
             item.status = item.status.toString();
           });
         }
-        // const { data, cntData } = testData;
-        // const tableData = data.list || [];
-        // 分页组件显示  this.listQueryParams.total 值大于0才会出现
         this.listQueryParams.total = data.total;
         // 数据给表格
         this.tableData = data.list || [];
@@ -335,18 +305,20 @@ export default {
         console.log(error);
       }
     },
+    // 点击上传
     handleAvatarSuccess(file) {
-      this.shopForm.merchantLogo = URL.createObjectURL(file.raw);
+      console.log("🚀 ~ handleAvatarSuccess ~ file:", file)
+      this.dialogForm.merchantLogo = URL.createObjectURL(file.raw);
     },
     // 点击添加按钮
     submitForm() {
       this.$refs.getTable.getTableRef().validate((valid) => {
         if (valid) {
           const params = {
-            ...this.shopForm,
-            discountRate: this.shopForm.discountRate / 100,
-            passwd: this.shopForm.passwd ? md5(md5(this.shopForm.passwd)) : md5(md5('')),
-            status: Number(this.shopForm.status),
+            ...this.dialogForm,
+            discountRate: this.dialogForm.discountRate / 100,
+            passwd: this.dialogForm.passwd ? md5(md5(this.dialogForm.passwd)) : md5(md5('')),
+            status: Number(this.dialogForm.status),
           };
           if (this.title === "添加商户") {
             createMerchant(params).then((res) => {
@@ -373,6 +345,7 @@ export default {
         }
       });
     },
+    // 删除商户
     deleteShopDialog() {
       this.$confirm("确定删除吗?", "", {
         type: "warning",
@@ -389,6 +362,7 @@ export default {
     handleFilter(val) {
       this.params.searchKey = val.selectValue;
     },
+    // 多选框
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
@@ -400,12 +374,9 @@ export default {
       } else if (option === "编辑") {
         this.dialogFormVisible = true;
         this.title = "编辑商户";
-        this.shopForm = row;
-        // this.shopForm.passwd = "";
-        this.shopForm.status = row.status.toString();
-        // this.shopForm.passwd = '12';
-        // this.shopForm.discountRate = row.discountRate * 100;
-        this.tableFormAttrs.forEach((val) => {
+        this.dialogForm = row;
+        this.dialogForm.status = row.status.toString();
+        this.dialogFormAttrs.forEach((val) => {
           if (val.isClosePwd) {
             val.title = "重置密码:";
           }
@@ -424,12 +395,13 @@ export default {
       this.params.searchVal = val.inputValue;
       this.getList();
     },
+    // 点击添加商户弹窗
     handleFilterButton(val) {
       if (val === "添加商户") {
         this.dialogFormVisible = true;
         this.title = "添加商户";
-        this.shopForm = {};
-        this.tableFormAttrs.forEach((val) => {
+        this.dialogForm = {};
+        this.dialogFormAttrs.forEach((val) => {
           if (val.isClosePwd) {
             val.title = "密码:";
           }

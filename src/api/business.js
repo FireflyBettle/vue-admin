@@ -28,3 +28,21 @@ export function changeMerchant(data) {
     data
   })
 }
+
+// 门店列表
+export function storesList(data) {
+  return request({
+    url: '/web/store/list',
+    method: 'post',
+    data
+  })
+}
+
+// 创建门店
+export function createStores(data) {
+  return request({
+    url: '/web/store/create',
+    method: 'post',
+    data
+  })
+}
