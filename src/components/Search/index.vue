@@ -2,77 +2,82 @@
  * @Author: chenyourong
  * @Date: 2025-05-12 17:36:48
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-19 17:45:09
+ * @LastEditTime: 2025-05-21 17:12:42
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/components/Search/index.vue
 -->
 <template>
-  <div class="filter-container" v-if="filterOptions.length">
+  <div class="filter-container">
     <div class="filter-container__left">
-      <div
-        class="select-item"
-        v-for="(item, index) in filterOptions"
-        :key="index"
-      >
-        <template v-if="item.type === 'multiSelect'">
-          <el-select
-            v-model="item.selectValue"
-            size="medium"
-            filterable
-            :placeholder="item.placeholder"
-            @change="handleFilter(item)"
-            :style="{width: item.selectWidth}"
-          >
-            <el-option
-              v-for="val in item.options"
-              :key="val.value"
-              :label="val.label"
-              :value="val.value"
+      <template v-if="filterOptions.length">
+        <div
+          class="select-item"
+          v-for="(item, index) in filterOptions"
+          :key="index"
+        >
+          <template v-if="item.type === 'multiSelect'">
+            <el-select
+              v-model="item.selectValue"
+              size="medium"
+              filterable
+              :placeholder="item.placeholder"
+              @change="handleFilter(item)"
+              :style="{width: item.selectWidth}"
             >
-            </el-option>
-          </el-select>
-          <el-input
-            :style="{ width: item.inputWidth }"
-            type="text"
-            v-model="input"
-            placeholder="请输入内容"
-            @keyup.enter.native="clickSearch({
-                selectValue: item.selectValue,
-                inputValue: input,
-              })"
-          >
-            <el-button
-              v-if="item.isSearch"
-              slot="append"
-              icon="el-icon-search"
-              @click="clickSearch({
-                selectValue: item.selectValue,
-                inputValue: input,
-              })"
-            ></el-button>
-          </el-input>
-        </template>
-        <template v-else-if="item.format === 'select'">
-          <el-select
-            v-model="value"
-            size="medium"
-            filterable
-            placeholder="商户名称"
-            @change="handleFilter"
-          >
-            <el-option
-              v-for="val in options"
-              :key="val.value"
-              :label="val.label"
-              :value="val.value"
+              <el-option
+                v-for="val in item.options"
+                :key="val.value"
+                :label="val.label"
+                :value="val.value"
+              >
+              </el-option>
+            </el-select>
+            <el-input
+              :style="{ width: item.inputWidth }"
+              type="text"
+              v-model="input"
+              placeholder="请输入内容"
+              @keyup.enter.native="clickSearch({
+                  selectValue: item.selectValue,
+                  inputValue: input,
+                })"
             >
-            </el-option>
-          </el-select>
-        </template>
-        <template v-else-if="item.type === 'button'">
-          <el-button type="primary" @click="clickSearch">搜索</el-button>
-        </template>
-      </div>
+              <el-button
+                v-if="item.isSearch"
+                slot="append"
+                icon="el-icon-search"
+                @click="clickSearch({
+                  selectValue: item.selectValue,
+                  inputValue: input,
+                })"
+              ></el-button>
+            </el-input>
+          </template>
+          <template v-else-if="item.format === 'select'">
+            <el-select
+              v-model="value"
+              size="medium"
+              filterable
+              placeholder="商户名称"
+              @change="handleFilter"
+            >
+              <el-option
+                v-for="val in options"
+                :key="val.value"
+                :label="val.label"
+                :value="val.value"
+              >
+              </el-option>
+            </el-select>
+          </template>
+          <template v-else-if="item.type === 'button'">
+            <el-button type="primary" @click="clickSearch">搜索</el-button>
+          </template>
+        </div>
+      </template>
+      <template v-else>
+        <div>商户门店</div>
+      </template>
     </div>
     <div class="filter-container__right">
       <el-button

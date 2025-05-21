@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-20 18:31:04
+ * @LastEditTime: 2025-05-21 16:35:16
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/businessManage/shopList/index.vue
 -->
@@ -27,13 +27,16 @@
         :tableData="dialogForm"
         :tableFormAttrs="dialogFormAttrs"
         formLabelWidth="91px"
+        @resetSecret="resetSecret"
         @handleAvatarSuccess="handleAvatarSuccess"
         @handleAreaChange="handleAreaChange"
       >
       </Detail>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitForm()">{{ sureButtonsName }}</el-button>
+        <el-button type="primary" @click="submitForm()">{{
+          sureButtonsName
+        }}</el-button>
       </div>
     </el-dialog>
   </div>
@@ -51,6 +54,8 @@ import {
   merchantList,
   storesList,
   changeStores,
+  deleteStores,
+  resetStoresSecret,
 } from "@/api/business";
 
 const DefaultTableQuery = {
@@ -93,12 +98,12 @@ export default {
         {
           label: "App ID",
           width: "110",
-          value: "appId",
+          value: "AppId",
         },
         {
           label: "App Secret",
           width: "110",
-          value: "appSecret",
+          value: "AppSecret",
         },
         {
           label: "IP白名单",
@@ -181,14 +186,15 @@ export default {
           title: "App ID:",
           placeholder: "系统自动生成",
           type: "input",
-          value: "appId",
+          value: "AppId",
           disabled: true,
         },
         {
           title: "App Secret:",
           placeholder: "系统自动生成",
           type: "input",
-          value: "appSecret",
+          value: "AppSecret",
+          icon: "el-icon-refresh-right",
           disabled: true,
         },
         {
@@ -303,6 +309,7 @@ export default {
       ],
       selectedAreaText: "",
       dialogStoreId: "",
+      multipleSelection: []
     };
   },
   computed: {
@@ -351,6 +358,18 @@ export default {
       };
     },
   },
+  watch: {
+    multipleSelection: {
+      handler: function (val) {
+        this.filterButtonText.forEach(item => {
+          if (item.label === '删除门店') {
+            item.type = val.length ? 'primary' : 'info'
+          }
+        })
+      },
+      immediate: true,
+    },
+  },
   created() {
     this.dialogFormAttrs.forEach((item) => {
       if (item.type === "multipleSelect") {
@@ -375,7 +394,7 @@ export default {
   },
   methods: {
     // 获取列表
-    async getList() {
+    async getList(storeId) {
       try {
         // 表格加载loading
         this.loadingStatus = true;
@@ -386,6 +405,9 @@ export default {
         const { data } = await storesList(this.params);
         if (data.list) {
           data.list.forEach((item) => {
+            if (item.storeId === storeId) {
+              this.dialogForm.AppSecret = item.AppSecret;
+            }
             item.status = item.status.toString();
           });
         }
@@ -401,6 +423,24 @@ export default {
     handleAvatarSuccess(file) {
       console.log("🚀 ~ handleAvatarSuccess ~ file:", file);
       this.dialogForm.merchantLogo = URL.createObjectURL(file.raw);
+    },
+    resetSecret() {
+      this.$confirm("确认重置App Secret?", "", {
+        type: "warning",
+        confirmButtonText: "是",
+        cancelButtonText: "否",
+      })
+        .then((res) => {
+          resetStoresSecret({
+            storeId: this.dialogForm.storeId,
+          }).then((res) => {
+            this.getList(this.dialogForm.storeId);
+            this.$message.success("重置App Secret成功");
+          });
+        })
+        .catch(() => {
+          this.$message.info(`已取消重置App Secret`);
+        });
     },
     // 点击添加按钮
     submitForm() {
@@ -479,6 +519,7 @@ export default {
     // 多选框
     handleSelectionChange(val) {
       this.multipleSelection = val;
+      console.log("🚀 ~ handleSelectionChange ~ this.multipleSelection:", this.multipleSelection)
     },
     // 点击编辑
     handleTableOption(index, row, option) {
@@ -491,7 +532,7 @@ export default {
         this.sureButtonsName = "确定";
         this.dialogForm = row;
         this.dialogForm.status = row.status.toString();
-
+        // 处理省市区过略
         let arr = [];
         let currentOptions = this.regionData;
         this.dialogForm.storeAddr.split(" ").forEach((code, index) => {
@@ -513,9 +554,29 @@ export default {
           if (val.isClosePwd) {
             val.title = "重置密码:";
           }
+          if (val.value === "AppSecret") {
+            val.icon = "el-icon-refresh-right";
+          }
         });
         console.log(index, row, option);
-      } else if (option === "删除") {
+      } else if (option.label === "删除") {
+        this.$confirm("确定删除门店吗?", "", {
+          type: "warning",
+          confirmButtonText: "是",
+          cancelButtonText: "否",
+        })
+          .then(async () => {
+            deleteStores({
+              storeIds: [row.storeId],
+            }).then((res) => {
+              this.getList();
+              this.$message.success(" 删除成功");
+            });
+          })
+          .catch(() => {
+            this.$message.info(" 已取消删除");
+          });
+
         console.log(index, row, option);
       }
     },
@@ -528,8 +589,8 @@ export default {
       this.params.searchVal = val.inputValue;
       this.getList();
     },
-    // 点击添加商户弹窗
-    handleFilterButton(val) {
+    // 点击右上角添加门店或者删除门店按钮
+    async handleFilterButton(val) {
       if (val === "添加门店") {
         this.dialogFormVisible = true;
         this.title = "添加门店";
@@ -539,15 +600,24 @@ export default {
           if (val.isClosePwd) {
             val.title = "密码:";
           }
+          if (val.value === "AppSecret") {
+            val.icon = "";
+          }
         });
       }
-      if (val === "删除商户") {
+      if (val === "删除门店") {
+        if (!this.multipleSelection.length) return false;
         this.$confirm("确定删除吗?", "", {
           type: "warning",
           confirmButtonText: "确定",
           cancelButtonText: "取消",
         })
           .then(async () => {
+            const storeIds = this.multipleSelection.map(val => val.storeId);
+            await deleteStores({
+              storeIds
+            });
+            this.getList();
             this.$message.success(" 删除成功");
           })
           .catch(() => {

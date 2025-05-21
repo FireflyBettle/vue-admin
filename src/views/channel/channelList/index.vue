@@ -2,9 +2,9 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-20 11:08:48
+ * @LastEditTime: 2025-05-21 15:07:18
  * @Description: 
- * @FilePath: /vue-admin-template-master/src/views/businessManage/businessList/index.vue
+ * @FilePath: /vue-admin-template-master/src/views/channel/channelList/index.vue
 -->
 <template>
   <div class="shop-list">
@@ -26,6 +26,7 @@
         :styleType="styleType"
         :tableData="dialogForm"
         :tableFormAttrs="dialogFormAttrs"
+        @resetSecret="resetSecret"
         @handleAvatarSuccess="handleAvatarSuccess"
       >
       </Detail>
@@ -43,7 +44,7 @@ import Detail from "@/components/Detail/index.vue";
 import Search from "@/components/Search/index.vue";
 import md5 from "js-md5";
 
-import { createChannel, channelList, updateChannel } from "@/api/channel.js";
+import { createChannel, channelList, updateChannel, channelSecretReset } from "@/api/channel.js";
 
 const DefaultTableQuery = {
   pageNum: 1,
@@ -134,10 +135,18 @@ export default {
         },
         {
           title: "渠道ID:",
-          placeholder: "请输入预存款金额",
+          placeholder: "系统自动生成",
           type: "input",
           inputType: "number",
           value: "channelId",
+          disabled: true,
+        },
+        {
+          title: "App Secret:",
+          placeholder: "系统自动生成",
+          type: "input",
+          value: "appSecret",
+          icon: "el-icon-refresh-right",
           disabled: true,
         },
         {
@@ -297,7 +306,7 @@ export default {
   },
   methods: {
     // 获取列表
-    async getList() {
+    async getList(channelId) {
       try {
         // 表格加载loading
         this.loadingStatus = true;
@@ -308,6 +317,12 @@ export default {
         const { data } = await channelList(this.params);
         if (data.list) {
           data.list.forEach((item) => {
+            if (item.channelId === channelId) {
+              this.dialogForm.appSecret = item.appSecret;
+            }
+            item.availablePredeposit = item.availablePredeposit / 100;
+            item.lockedPredeposit = item.lockedPredeposit / 100;
+            item.predepositAmount = item.predepositAmount / 100;
             item.status = item.status.toString();
           });
         }
@@ -324,7 +339,25 @@ export default {
       console.log("🚀 ~ handleAvatarSuccess ~ file:", file);
       this.dialogForm.merchantLogo = URL.createObjectURL(file.raw);
     },
-    // 点击添加按钮
+    resetSecret() {
+      this.$confirm("确认重置App Secret?", "", {
+        type: "warning",
+        confirmButtonText: "是",
+        cancelButtonText: "否",
+      })
+        .then((res) => {
+          channelSecretReset({
+            channelId: this.dialogForm.channelId,
+          }).then((res) => {
+            this.getList(this.dialogForm.channelId);
+            this.$message.success("重置App Secret成功");
+          });
+        })
+        .catch(() => {
+          this.$message.info(`已取消重置App Secret`);
+        });
+    },
+    // 弹窗点击添加按钮
     submitForm() {
       this.$refs.getTable.getTableRef().validate((valid) => {
         if (valid) {
@@ -397,8 +430,10 @@ export default {
           if (val.isClosePwd) {
             val.title = "重置密码:";
           }
+          if(val.value === 'appSecret') {
+            val.icon = "el-icon-refresh-right";
+          }
         });
-        console.log(index, row, option);
       } else if (option === "删除") {
         console.log(index, row, option);
       }
@@ -424,6 +459,9 @@ export default {
         this.dialogFormAttrs.forEach((val) => {
           if (val.isClosePwd) {
             val.title = "初始密码:";
+          }
+          if(val.value === 'appSecret') {
+            val.icon = ''
           }
         });
       }

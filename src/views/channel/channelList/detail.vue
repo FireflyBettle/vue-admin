@@ -8,6 +8,7 @@
       :filterDataRules="filterDataRules"
       formLabelWidth="90px"
       @submitForm="submitForm"
+      @resetSecret="resetSecret"
       @handleAvatarSuccess="handleAvatarSuccess"
     >
       <template v-slot:="button">
@@ -54,9 +55,15 @@
 import Detail from "@/components/Detail/index.vue";
 import md5 from "js-md5";
 
-import { channelDetail, updateChannel, ticketChannel } from "@/api/channel.js";
+import {
+  channelDetail,
+  updateChannel,
+  ticketChannel,
+  channelSecretReset,
+  channelBalanceUpdate,
+} from "@/api/channel.js";
 export default {
-  name: "distributeDetail",
+  name: "channelDetail",
   components: {
     Detail,
   },
@@ -64,19 +71,7 @@ export default {
     return {
       isEdit: false,
       dialogFormVisible: false,
-      tableForm: {
-        name: "",
-        des: "",
-        logo: "",
-        des: "",
-        shopName: "",
-        rate: "",
-        contactPerson: "",
-        phoneNumber: "",
-        email: "",
-        status: "1",
-        password: "",
-      },
+      tableForm: {},
       filterDataRules: ["discountRate"],
       dialogForm: {},
       tableFormAttrs: [
@@ -92,6 +87,14 @@ export default {
           placeholder: "请输入渠道描述",
           type: "textarea",
           value: "channelDesc",
+          disabled: true,
+        },
+        {
+          title: "App Secret:",
+          placeholder: "请输入App Secret",
+          type: "input",
+          value: "appSecret",
+          icon: "el-icon-refresh-right",
           disabled: true,
         },
         {
@@ -134,7 +137,7 @@ export default {
         },
         {
           title: "密码:",
-          placeholder: "请输入密码",
+          placeholder: "••••••••",
           type: "input",
           inputType: "password",
           value: "passwd",
@@ -143,7 +146,7 @@ export default {
         },
         {
           title: "预存款金额:",
-          placeholder: "请输入预存款金额",
+          placeholder: "0",
           type: "input",
           value: "predepositAmount",
           inputType: "number",
@@ -151,7 +154,7 @@ export default {
         },
         {
           title: "锁定预存款:",
-          placeholder: "请输入锁定预存款",
+          placeholder: "0",
           type: "input",
           value: "lockedPredeposit",
           inputType: "number",
@@ -159,7 +162,7 @@ export default {
         },
         {
           title: "可用预存款:",
-          placeholder: "请输入可用预存款",
+          placeholder: "0",
           type: "input",
           value: "availablePredeposit",
           inputType: "number",
@@ -177,7 +180,7 @@ export default {
         },
         {
           title: "预存款余额:",
-          placeholder: "请输入预存款金额",
+          placeholder: "0",
           type: "input",
           value: "predepositAmount",
           inputType: "number",
@@ -204,10 +207,21 @@ export default {
     isEdit(val) {
       this.tableFormAttrs.forEach((item) => {
         item.disabled = !val;
-        if (item.prop === "shopName") {
+        if (["appSecret", "channelId", 'predepositAmount', 'lockedPredeposit', 'availablePredeposit'].includes(item.value)) {
           item.disabled = true;
         }
+        if (item.value === 'passwd') {
+          item.inputType = val ? 'text' : 'password';
+        }
       });
+    },
+    dialogFormVisible(val) {
+      if (val) {
+        this.dialogForm = {};
+        this.dialogForm.channelId = this.tableForm.channelId;
+        this.dialogForm.channelName = this.tableForm.channelName;
+        this.dialogForm.predepositAmount = this.tableForm.predepositAmount;
+      }
     },
   },
   created() {
@@ -229,19 +243,19 @@ export default {
         if (valid) {
           const params = {
             channelId: this.dialogForm.channelId,
-            amount: +this.dialogForm.amount,
+            amount: +this.dialogForm.amount * 100,
             remark: this.dialogForm.remark,
           };
           let des = "";
           let message = "";
           if (this.buttonName === "充值") {
             params.type = "recharge";
-            des = `确认向渠道名称充值${params.amount}吗?`;
+            des = `确认向渠道名称充值¥${this.dialogForm.amount}吗?`;
             message = "充值成功";
           }
           if (this.buttonName === "冲正") {
             params.type = "consume";
-            des = `确认向渠道名称冲正${params.amount}吗?`;
+            des = `确认向渠道名称冲正¥${this.dialogForm.amount}吗?`;
             message = "冲正成功";
           }
           this.$confirm(des, "", {
@@ -252,8 +266,14 @@ export default {
             .then(async () => {
               ticketChannel(params).then((res) => {
                 if (res.code === 0) {
-                  this.$message.success(message);
-                  this.dialogFormVisible = false;
+                  channelBalanceUpdate({
+                    channelId: this.dialogForm.channelId,
+                    ticket: res.data.ticket
+                  }).then(res => {
+                    this.getMerchantDetail();
+                    this.$message.success(message);
+                    this.dialogFormVisible = false;
+                  })
                 }
               });
             })
@@ -272,9 +292,27 @@ export default {
       });
       this.tableForm = data;
       this.tableForm.status = this.tableForm.status.toString();
-      this.dialogForm.channelId = this.tableForm.channelId;
-      this.dialogForm.channelName = this.tableForm.channelName;
-      this.dialogForm.predepositAmount = this.tableForm.predepositAmount;
+      this.tableForm.predepositAmount = this.tableForm.predepositAmount / 100;
+      this.tableForm.availablePredeposit = this.tableForm.availablePredeposit / 100;
+      this.tableForm.lockedPredeposit = this.tableForm.lockedPredeposit / 100;
+    },
+    resetSecret() {
+      this.$confirm("确认重置App Secret?", "", {
+        type: "warning",
+        confirmButtonText: "是",
+        cancelButtonText: "否",
+      })
+        .then((res) => {
+          channelSecretReset({
+            channelId: this.tableForm.channelId,
+          }).then((res) => {
+            this.getMerchantDetail();
+            this.$message.success("重置App Secret成功");
+          });
+        })
+        .catch(() => {
+          this.$message.info(`已取消重置App Secret`);
+        });
     },
     async submitForm() {
       this.$refs.getTable.getTableRef().validate((valid) => {
@@ -293,6 +331,7 @@ export default {
           // params.passwd  = this.tableForm.passwd ? md5(md5(this.tableForm.passwd)) : md5(md5(''));
           updateChannel(params).then((res) => {
             if (res.code === 0) {
+              this.getMerchantDetail();
               this.$message.success("修改成功");
               this.isEdit = false;
             }

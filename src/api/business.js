@@ -55,3 +55,30 @@ export function changeStores(data) {
     data
   })
 }
+
+// 批量门店信息
+export function batchStoreInformation(data) {
+  return request({
+    url: '/web/store/details',
+    method: 'post',
+    data
+  })
+}
+
+// 批量删除门店
+export function deleteStores(data) {
+  return request({
+    url: '/web/store/delete',
+    method: 'post',
+    data
+  })
+}
+
+// 门店秘钥重置
+export function resetStoresSecret(data) {
+  return request({
+    url: '/web/store/secret/reset',
+    method: 'post',
+    data
+  })
+}

@@ -23,9 +23,12 @@
             >
               <template slot="append" v-if="item.slot">{{
                 item.slot
-              }}</template></el-input
-            >
-            <template v-if="item.isClosePwd">
+              }}</template>
+              <template slot="append" v-if="item.icon">
+                <el-button slot="append" :icon="item.icon" @click="resetSecret"></el-button>
+              </template>
+            </el-input>
+            <template v-if="item.isClosePwd && !item.disabled">
               <span class="show-pwd" @click="showPwd(item)">
                 <svg-icon
                   :icon-class="
@@ -225,6 +228,9 @@ export default {
     },
     handleAreaChange(val) {
       this.$emit("handleAreaChange", val);
+    },
+    resetSecret() {
+      this.$emit("resetSecret");
     },
     handleInput(value) {
       // 检查是否达到限制
