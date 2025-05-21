@@ -14,25 +14,78 @@
       v-bind="tableAttrs"
       v-on="tableEvent"
     />
-    <el-dialog
-      :title="title"
-      v-if="dialogFormVisible"
-      :visible.sync="dialogFormVisible"
-      width="572px"
-    >
-      <Detail
-        ref="getTable"
-        :title="title"
-        :styleType="styleType"
-        :tableData="dialogForm"
-        :tableFormAttrs="dialogFormAttrs"
-        @handleAvatarSuccess="handleAvatarSuccess"
+    <el-dialog :title="title" :visible.sync="dialogFormVisible" width="800px">
+      <div
+        :class="[
+          'dialog-header',
+          createIndex === 1 ? 'first' : createIndex === 2 ? 'second' : '',
+        ]"
       >
-      </Detail>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitForm()">{{ sureButtonsName }}</el-button>
+        <div class="dots">
+          <span class="dot"></span>
+          <span class="border"></span>
+          <span class="dot"></span>
+          <span class="border"></span>
+          <span class="dot"></span>
+        </div>
+        <div class="names">
+          <span>选择商户</span>
+          <span>选择门店</span>
+          <span>选择渠道</span>
+        </div>
       </div>
+      <template v-if="createIndex === 0">
+        <Detail
+          ref="getTable"
+          :title="title"
+          :styleType="styleType"
+          :tableData="shopForm"
+          :formLabelWidth="formLabelWidth"
+          :filterDataRules="filterDataRules"
+          :tableFormAttrs="tableFormAttrs"
+          @submitForm="nextSecond"
+        >
+        </Detail>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取消</el-button>
+          <el-button type="primary" @click="nextSecond()">下一步</el-button>
+        </div>
+      </template>
+      <template v-if="createIndex === 1">
+        <dialog-table
+          :list-query-params.sync="secondListQueryParams"
+          :dialogTableConfig="dialogTableConfigSecond"
+          :dialogTableData="dialogTableDataSecond"
+          @subSelected="handleSecondSelectionChange"
+          :isShowNumber="true"
+        />
+        <div slot="footer" class="dialog-footer">
+          <el-button class="previousButton" @click="createIndex = 0"
+            >上一步</el-button
+          >
+          <el-button class="nextButton" type="primary" @click="nextThird"
+            >下一步</el-button
+          >
+        </div>
+      </template>
+      <template v-if="createIndex === 2">
+        <dialog-table
+          ref="getThirdTable"
+          :list-query-params.sync="thirdListQueryParams"
+          :dialogTableConfig="dialogTableConfigThird"
+          :dialogTableData="dialogTableDataThird"
+          :mulSelect="false"
+          @subSelected="handleThirdSelectionChange"
+        />
+        <div slot="footer" class="dialog-footer">
+          <el-button class="previousButton" @click="createIndex = 1"
+            >上一步</el-button
+          >
+          <el-button class="nextButton" type="primary" @click="submitDialogForm"
+            >发布</el-button
+          >
+        </div></template
+      >
     </el-dialog>
   </div>
 </template>
@@ -41,9 +94,16 @@
 import Table from "@/components/Table/index.vue";
 import Detail from "@/components/Detail/index.vue";
 import Search from "@/components/Search/index.vue";
+import DialogTable from "@/components/DialogTable/index.vue";
 import md5 from "js-md5";
 
-import { createDistribution, distributionList, updateDistribution } from "@/api/distribute.js";
+import {
+  createDistribution,
+  distributionList,
+  updateDistribution,
+} from "@/api/distribute.js";
+import { channelList } from "@/api/channel.js";
+import { merchantList, storesList } from "@/api/business.js";
 
 const DefaultTableQuery = {
   pageNum: 1,
@@ -56,15 +116,76 @@ export default {
     Table,
     Detail,
     Search,
+    DialogTable,
   },
   data() {
     return {
-      title: "添加商户",
-      sureButtonsName: '添加',
+      title: "创建分发（1/3）",
+      createIndex: 0,
+      formLabelWidth: "97px",
+      shopForm: {
+        shopPerson: "",
+        shopId: "",
+        rate: "",
+        couponType: "",
+        couponTime: "",
+        des: "",
+      },
+      sureButtonsName: "添加",
       styleType: "dialog",
       // 参数
       listQueryParams: { ...DefaultTableQuery },
+      secondListQueryParams: { ...DefaultTableQuery },
+      thirdListQueryParams: { ...DefaultTableQuery },
       tableData: [],
+      tableFormAttrs: [
+        {
+          title: "商户:",
+          placeholder: "请选择商户",
+          type: "select",
+          value: "merchantId",
+          required: true,
+          options: [],
+        },
+        {
+          title: "商户ID:",
+          placeholder: "系统自动生成",
+          type: "input",
+          value: "merchantIds",
+          disabled: true,
+        },
+        {
+          title: "折扣率:",
+          placeholder: "请输入折扣率",
+          type: "input",
+          inputType: "number",
+          slot: "%",
+          value: "discountRate",
+          disabled: true,
+        },
+        {
+          title: "券码金额",
+          placeholder: "请输入券码金额",
+          type: "input",
+          inputType: "number",
+          value: "couponAmount",
+          required: true,
+        },
+        {
+          title: "券码有效期",
+          placeholder: "请输入券码有效期",
+          type: "input",
+          slot: "小时",
+          value: "effectiveTime",
+          required: true,
+        },
+        {
+          title: "券码描述",
+          placeholder: "请输入券码描述",
+          type: "input",
+          value: "couponDesc",
+        },
+      ],
       tableConfig: [
         {
           label: "商户名称",
@@ -194,12 +315,80 @@ export default {
           isClosePwd: true,
         },
       ],
+      dialogTableConfigSecond: [
+        {
+          label: "门店",
+          width: "90",
+          prop: "storeName",
+        },
+        {
+          label: "门店地址",
+          width: "225",
+          prop: "storeAddr",
+        },
+        {
+          label: "门店ID",
+          width: "225",
+          prop: "storeId",
+        },
+      ],
+      dialogTableConfigThird: [
+        {
+          label: "渠道",
+          width: "90",
+          prop: "channelName",
+        },
+        {
+          label: "渠道描述",
+          width: "150",
+          prop: "channelDesc",
+        },
+        {
+          label: "门店ID",
+          width: "150",
+          prop: "channelId",
+        },
+        {
+          label: "佣金率",
+          width: "150",
+          prop: "commissionRate",
+          format: "input",
+        },
+      ],
+      dialogTableDataSecond: [
+        {
+          storeName: "麦当劳",
+          storeAddr: "这里是门店地址",
+          storeId: "022A15EFC727DCAD",
+        },
+        {
+          storeName: "麦当劳",
+          storeAddr: "这里是门店地址",
+          storeId: "022A15EFC727DCAD",
+        },
+      ],
+      dialogTableDataThird: [
+        {
+          id: "1",
+          store: "麦当劳",
+          storeDes: "这里是渠道描述",
+          storeId: "022A15EFC727DCAD",
+          commissionRate: "",
+        },
+        {
+          id: "1",
+          store: "麦当劳",
+          storeDes: "这里是渠道描述",
+          storeId: "022A15EFC727DCAD",
+          commissionRate: "",
+        },
+      ],
       // 表格加载loading
       loadingStatus: false,
       buttonsName: [
         {
           label: "查看",
-          route: "merchantId",
+          route: "distributeId",
         },
         {
           label: "编辑",
@@ -222,8 +411,20 @@ export default {
       params: {
         pageSize: 10,
         pageNum: 0,
-        searchKey: "",
-        searchVal: "",
+        merchantId: "",
+        channelId: "",
+      },
+      secondParams: {
+        pageSize: 10,
+        pageNum: 0,
+        merchantId: "",
+        channelId: "",
+      },
+      thirdParams: {
+        pageSize: 10,
+        pageNum: 0,
+        merchantId: "",
+        channelId: "",
       },
       filterButtonText: [
         {
@@ -242,7 +443,8 @@ export default {
           inputValue: "",
           isSearch: false,
           inputWidth: "136px",
-          selectWidth: "90px",
+          selectWidth: "110px",
+          noShowInput: true,
           options: [
             {
               value: "选项1",
@@ -260,7 +462,8 @@ export default {
           inputValue: "",
           isSearch: false,
           inputWidth: "136px",
-          selectWidth: "90px",
+          selectWidth: "110px",
+          noShowInput: true,
           options: [
             {
               value: "选项1",
@@ -276,6 +479,7 @@ export default {
           type: "button",
         },
       ],
+      filterDataRules: ["merchantId", "couponAmount", "effectiveTime"],
     };
   },
   computed: {
@@ -324,11 +528,55 @@ export default {
       };
     },
   },
+  watch: {
+    createIndex: {
+      handler: function (val, oldVal) {
+        const arr = ["创建分发（1/3）", "创建分发（2/3）", "创建分发（3/3）"];
+        return (this.title = arr[val]);
+      },
+      immediate: true,
+    },
+  },
   created() {
+    this.init();
     this.getList();
+    // this.getDialogThirdList();
   },
   methods: {
     // 获取列表
+    init() {
+      const params = {
+        ...this.params,
+        pageSize: 1000,
+        pageNum: 0,
+      };
+      merchantList(params).then((res) => {
+        this.filterOptions[0].options = res.data.list.map((val) => {
+          return {
+            value: val.merchantId,
+            label: val.merchantName,
+          };
+        });
+        this.tableFormAttrs.forEach((item) => {
+          if (item.value === "merchantId") {
+            item.options = res.data.list.map((val) => {
+              return {
+                value: val.merchantId,
+                label: val.merchantName,
+              };
+            });
+          }
+        });
+      });
+      channelList(params).then((res) => {
+        this.filterOptions[1].options = res.data.list.map((val) => {
+          return {
+            value: val.channelId,
+            label: val.channelName,
+          };
+        });
+      });
+    },
     async getList() {
       try {
         // 表格加载loading
@@ -351,6 +599,66 @@ export default {
       } catch (error) {
         console.log(error);
       }
+    },
+    submitDialogForm() {
+      console.log(
+        "🚀 ~ submitDialogForm ~ submitDialogForm:",
+        "submitDialogForm"
+      );
+    },
+    async getStoreList() {
+      try {
+        // 表格加载loading
+        this.loadingStatus = true;
+        const params = {};
+        // 分页数据作为参数给服务端
+        params.pageSize = this.secondListQueryParams.pageSize;
+        params.pageNum = this.secondListQueryParams.pageNum - 1;
+        // 发送请求,请求到的数据格式见下文，
+        const { data } = await storesList(params);
+        this.secondListQueryParams.total = data.total;
+        // 数据给表格
+        this.dialogTableDataSecond = data.list || [];
+        this.loadingStatus = false;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async getCannelList() {
+      try {
+        // 表格加载loading
+        this.loadingStatus = true;
+        const params = {};
+        // 分页数据作为参数给服务端
+        params.pageSize = this.thirdListQueryParams.pageSize;
+        params.pageNum = this.thirdListQueryParams.pageNum - 1;
+        // 发送请求,请求到的数据格式见下文，
+        const { data } = await channelList(params);
+        this.thirdListQueryParams.total = data.total;
+        // 数据给表格
+        this.dialogTableDataThird = data.list || [];
+        this.loadingStatus = false;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    nextSecond() {
+      this.$refs.getTable.getTableRef().validate((valid) => {
+        if (valid) {
+          this.createIndex = 1;
+          this.getStoreList();
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
+    },
+    nextThird() {
+      this.createIndex = 2;
+      // this.$refs.getThirdTable.getTableRef().toggleRowSelection({
+      //   appId:"channel_50008",appSecret:"784D3FdD862a86b59F12C324FA7c4AAe",availablePredeposit:98980,channelDesc:"渠道描述",channelId:"50008",channelName:"测试渠道",contact:"渠道",email:"xx@qq.com",ipWhiteList:"127.0.0.1",lockedPredeposit:0,phone:"18680341485",predepositAmount:98980,status:0,statusTime:"2025-05-21 15:04:23"
+      // });
+      this.getCannelList();
     },
     // 点击上传
     handleAvatarSuccess(file) {
@@ -409,7 +717,16 @@ export default {
         });
     },
     handleFilter(val) {
-      this.params.searchKey = val.selectValue;
+      this.params.merchantId =
+        val.placeholder === "商户" ? val.selectValue : this.params.merchantId;
+      this.params.channelId =
+        val.placeholder === "渠道" ? val.selectValue : this.params.channelId;
+      console.log(
+        "🔍 ~ handleFilter ~ src/views/distribute/distributeList/index.vue:443 ~ this.params:",
+        this.params
+      );
+
+      // this.params.searchKey = val.selectValue;
     },
     // 多选框
     handleSelectionChange(val) {
@@ -471,6 +788,16 @@ export default {
             this.$message.info(" 已取消删除");
           });
       }
+    },
+    handleSecondSelectionChange(val) {
+      console.log(
+        "🔍 ~ handleSecondSelectionChange ~ src/views/distribute/distributeList/index.vue:777 ~ val:",
+        val
+      );
+    },
+    handleThirdSelectionChange(val) {
+    console.log("🔍 ~ handleThirdSelectionChange ~ src/views/distribute/distributeList/index.vue:794 ~ val:", val)
+
     },
   },
 };

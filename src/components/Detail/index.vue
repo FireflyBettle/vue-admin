@@ -167,8 +167,23 @@ export default {
         amount: [
           { required: true, message: "请输入充值金额", trigger: "blur" },
         ],
+        merchantId: [
+          { required: true, message: "请选择商户", trigger: "blur" },
+        ],
+        couponAmount: [
+          { required: true, message: "请输入券码金额", trigger: "blur" },
+        ],
+        effectiveTime: [
+          { required: true, message: "请输入券码有效期", trigger: "blur" },
+        ],
+        effectiveTime: [
+          { required: true, message: "请输入券码有效期", trigger: "blur" },
+        ],
         merchantName: [
           { required: true, message: "请输入商户名称", trigger: "blur" },
+        ],
+        merchantId: [
+          { required: true, message: "请选择商户", trigger: "blur" },
         ],
         channelName: [
           { required: true, message: "请输入渠道名称", trigger: "blur" },
@@ -213,13 +228,16 @@ export default {
     };
   },
   created() {
-    // 监听输入框的输入事件
-    if (this.filterDataRules) {
-      this.filterDataRules.forEach((item) => {
-        let obj = {};
-        obj[item] = this.tableDataRules[item];
-        this.tableDataRules = obj;
-      });
+    if (this.filterDataRules.length) {
+      let obj = {};
+      this.filterDataRules.forEach(item => {
+        Object.keys(this.tableDataRules).forEach(key => {
+          if (key === item) {
+            obj[item] = this.tableDataRules[item];
+          }
+        })
+      })
+      this.tableDataRules = obj;
     }
   },
   methods: {

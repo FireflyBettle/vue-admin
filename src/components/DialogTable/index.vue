@@ -5,7 +5,7 @@
 
     <!-- 表格主体 -->
     <el-table
-      :ref="ref"
+      ref="singleTable"
       v-loading="listLoading"
       :data="dialogTableData"
       :element-loading-text="loadingText"
@@ -18,6 +18,7 @@
         v-if="isShowNumber"
         fixed="left"
         type="index"
+        label="ID"
         :index="tableIndex"
       ></el-table-column>
 
@@ -57,10 +58,8 @@
           }}</span>
 
           <span v-else-if="item.format === 'input'">
-            <el-input
-              v-model="scope.row[item.prop]"
-            >
-            <template slot="append">%</template>
+            <el-input v-model="scope.row[item.prop]">
+              <template slot="append">%</template>
             </el-input>
           </span>
 
@@ -89,14 +88,14 @@
     </el-table>
 
     <!-- 分页组件 -->
-    <div v-if="isShowPagination && total > 0" class="pagination-container">
+    <div v-if="isShowPagination && listQueryParams.total > 0" class="pagination-container">
       <el-pagination
         background
         layout="sizes, prev, pager, next, jumper"
-        :current-page="page"
         :page-sizes="pageSizeList"
-        :page-size="limit"
-        :total="total"
+        :current-page="listQueryParams.pageNum"
+        :page-size="listQueryParams.pageSize"
+        :total="listQueryParams.total"
         @current-change="handleCurrentChange"
         @size-change="handleSizeChange"
       ></el-pagination>
@@ -115,6 +114,10 @@ export default {
     },
     // 是否需要翻页组件
     isShowPagination: {
+      type: Boolean,
+      default: true,
+    },
+    mulSelect: {
       type: Boolean,
       default: true,
     },
@@ -212,6 +215,9 @@ export default {
     },
   },
   methods: {
+    getTableRef() {
+      return this.$refs.singleTable;
+    },
     // 获取当前操作的按钮组
     getOptionsName(key) {
       return this.buttonsName || [];
@@ -225,6 +231,12 @@ export default {
     // 表格选择分发事件
     handleSelectionChange(val) {
       this.$emit("subSelected", val);
+      if (this.mulSelect) return false;
+      if (val.length > 1) {
+        this.$refs.singleTable.clearSelection();
+        this.$refs.singleTable.toggleRowSelection(val.pop());
+      }
+      this.singleSelection = val.length ? val[0] : null;
     },
 
     // 改变翻页组件中每页数据总数
@@ -281,7 +293,7 @@ export default {
 }
 </style>
 
- <style lang="scss" >
+<style lang="scss">
 .dialog-table {
   .el-table {
     .el-table__empty-block {

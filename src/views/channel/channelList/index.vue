@@ -409,6 +409,7 @@ export default {
         });
     },
     handleFilter(val) {
+    console.log("🔍 ~ handleFilter ~ src/views/channel/channelList/index.vue:411 ~ val:", val)
       this.params.searchKey = val.selectValue;
     },
     // 多选框

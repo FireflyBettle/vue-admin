@@ -5,12 +5,15 @@
       ref="getTable"
       :tableData="tableForm"
       :tableFormAttrs="tableFormAttrs"
+      :filterDataRules="filterDataRules"
+      formLabelWidth="95px"
       @submitForm="submitForm"
+      @handleAvatarSuccess="handleAvatarSuccess"
     >
       <template v-slot:="button">
         <template v-if="isEdit">
           <el-button @click="cancel">取消</el-button>
-          <el-button type="primary" @click="submitForm()">添加</el-button>
+          <el-button type="primary" @click="submitForm()">保存</el-button>
         </template>
         <template v-else>
           <el-button type="primary" @click="edit()">编辑</el-button>
@@ -22,6 +25,8 @@
 
 <script>
 import Detail from "@/components/Detail/index.vue";
+
+import { distributionDetail, updateDistribution } from "@/api/distribute";
 export default {
   name: "distributeDetail",
   components: {
@@ -43,91 +48,164 @@ export default {
         status: "1",
         password: "",
       },
+      filterDataRules: ['effectiveTime'],
       tableFormAttrs: [
         {
-          title: "商户名称:",
+          title: "商户:",
           placeholder: "请输入商户名称",
           type: "input",
-          prop: "name",
-          disabled: true,
-        },
-        {
-          title: "Logo:",
-          type: "upload",
-          prop: "logo",
-          disabled: true,
-        },
-        {
-          title: "商户描述:",
-          placeholder: "请输入商户描述",
-          type: "textarea",
-          prop: "des",
+          value: "merchantName",
           disabled: true,
         },
         {
           title: "商户ID:",
-          placeholder: "系统自生成",
+          placeholder: "请输入商户ID",
           type: "input",
-          prop: "shopName",
+          value: "merchantId",
           disabled: true,
         },
-        {
+         {
           title: "折扣率:",
           placeholder: "请输入折扣率",
           type: "input",
+          inputType: "number",
           slot: "%",
-          prop: "rate",
+          value: "discountRate",
+          disabled: true,
+        },
+        {
+          title: "券码金额",
+          placeholder: "请输入券码金额",
+          inputType: "number",
+          value: "couponAmount",
+          disabled: true,
+        },
+         {
+          title: "券码有效期",
+          placeholder: "请输入券码有效期",
+          type: "input",
+          slot: "小时",
+          value: "effectiveTime",
           disabled: true,
           required: true,
         },
         {
-          title: "联系人:",
-          placeholder: "请输入联系人",
+          title: "券码描述",
+          placeholder: "请输入券码描述",
           type: "input",
-          prop: "contactPerson",
+          value: "couponDesc",
+          disabled: true,
+        },
+         {
+          title: "渠道名称",
+          placeholder: "请输入渠道名称",
+          type: "input",
+          value: "channelName",
           disabled: true,
         },
         {
-          title: "手机号:",
-          placeholder: "请输入手机号",
+          title: "渠道ID",
+          placeholder: "请输入渠道ID",
           type: "input",
-          prop: "phoneNumber",
+          value: "channelId",
           disabled: true,
         },
         {
-          title: "邮箱:",
-          placeholder: "请输入邮箱",
+          title: "佣金率",
+          inputType: "number",
+          placeholder: "请输入佣金率",
           type: "input",
-          prop: "email",
+          value: "commissionRate",
           disabled: true,
         },
         {
           title: "状态:",
           placeholder: "请输入邮箱",
           type: "radio",
-          prop: "status",
+          value: "status",
           disabled: true,
         },
         {
-          title: "密码:",
-          placeholder: "请输入密码",
+          title: "创建金额",
+          placeholder: "0",
           type: "input",
-          prop: "password",
+          inputType: "number",
+          value: "createAmount",
+          disabled: true,
+        },
+        {
+          title: "待核销金额",
+          placeholder: "0",
+          inputType: "number",
+          type: "input",
+          value: "pendingAmount",
+          disabled: true,
+        },
+        {
+          title: "核销金额",
+          placeholder: "0",
+          inputType: "number",
+          type: "input",
+          value: "pendedAmount",
           disabled: true,
         },
       ],
     };
   },
+  watch: {
+    isEdit(val) {
+      this.tableFormAttrs.forEach((item) => {
+        item.disabled = true;
+        if (['effectiveTime', 'couponDesc', 'commissionRate', 'status'].includes(item.value)) {
+          item.disabled = val ? false : true;
+        }
+      });
+    },
+  },
+  created() {
+    this.getMerchantDetail();
+  },
   methods: {
-    submitForm() {
+    async getMerchantDetail() {
+      const { data } = await distributionDetail({
+        distributeId: this.$route.params.id,
+      });
+      this.tableForm = data;
+      this.tableForm.status = this.tableForm.status.toString();
+      this.tableForm.commissionRate = this.tableForm.commissionRate * 100;
+    },
+    async submitForm() {
       this.$refs.getTable.getTableRef().validate((valid) => {
+        console.log(valid);
         if (valid) {
-          alert(1);
+          const params = {
+            distributeId: this.$route.params.id,
+            merchantId: this.tableForm.merchantId,
+            couponAmount: this.tableForm.couponAmount * 100,
+            couponDesc: this.tableForm.couponDesc,
+            effectiveTime: +this.tableForm.effectiveTime,
+            channelId: this.tableForm.channelId,
+            storeIds: this.tableForm.storeIds,
+            status: +this.tableForm.status,
+            commissionRate: this.tableForm.commissionRate / 100,
+          }
+          // params.discountRate = this.tableForm.discountRate / 100;
+          // params.status = +this.tableForm.status
+          // params.passwd  = this.tableForm.passwd ? md5(md5(this.tableForm.passwd)) : md5(md5(''));
+          updateDistribution(params).then((res) => {
+            if (res.code === 0) {
+              this.$message.success("修改成功");
+              this.isEdit = false;
+            }
+          });
         } else {
           console.log("error submit!!");
           return false;
         }
       });
+    },
+    handleAvatarSuccess(file) {
+      this.tableForm.merchantLogo = URL.createObjectURL(file.raw);
     },
     cancel() {
       this.isEdit = false;
@@ -137,12 +215,6 @@ export default {
     },
     edit() {
       this.isEdit = true;
-      this.tableFormAttrs.forEach((item) => {
-        item.disabled = false;
-        if (item.prop === "shopName") {
-          item.disabled = true;
-        }
-      });
     },
   },
 };
@@ -151,6 +223,9 @@ export default {
 <style lang="scss">
 .distribute-detail {
   position: relative;
+  .content {
+    padding-bottom: 26px;
+  }
   .header {
     color: rgba(0, 0, 0, 0.85);
     padding: 0 0 24px 24px;

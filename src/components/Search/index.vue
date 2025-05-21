@@ -33,6 +33,7 @@
               </el-option>
             </el-select>
             <el-input
+              v-if="!item.noShowInput"
               :style="{ width: item.inputWidth }"
               type="text"
               v-model="input"
