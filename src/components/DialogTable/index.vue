@@ -58,8 +58,8 @@
           }}</span>
 
           <span v-else-if="item.format === 'input'">
-            <el-input v-model="scope.row[item.prop]">
-              <template slot="append">%</template>
+            <el-input v-model="scope.row[item.value]">
+              <template slot="append">{{ scope }}%</template>
             </el-input>
           </span>
 

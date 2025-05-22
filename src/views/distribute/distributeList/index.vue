@@ -52,66 +52,19 @@
         </div>
       </template>
       <template v-if="createIndex === 1">
-        <el-table
-          ref="singleTable"
-          v-loading="false"
-          :data="dialogTableDataSecond"
-          element-loading-text="加载中..."
-          :header-cell-style="{ backgroundColor: '#FAFAFA', color: '#333' }"
-          empty-text="暂无数据"
-          @selection-change="handleSecondSelectionChange"
-        >
-          <el-table-column
-            fixed="left"
-            type="index"
-            label="ID"
-            :index="1"
-          ></el-table-column>
-          <el-table-column
-            v-for="(item, index) in dialogTableConfigSecond"
-            :key="index"
-            :prop="item.prop"
-            :label="item.label"
-            :min-width="item.width"
-            :show-overflow-tooltip="true"
-          ></el-table-column>
-          <el-table-column width="55">
-            <template slot-scope="scope">
-              <el-checkbox-group
-              v-model="checkbox"
-                @change="handleCheckedCitiesChange"
-              >
-              <el-checkbox
-                :label="scope.row.storeId"
-                >{{ "" }}</el-checkbox
-              >
-              </el-checkbox-group>
-            </template>
-          </el-table-column>
-        </el-table>
-        <div
-          v-if="secondListQueryParams.total > 0"
-          class="pagination-container"
-        >
-          <el-pagination
-            background
-            layout="sizes, prev, pager, next, jumper"
-            :page-sizes="[1, 2, 30, 50, 100]"
-            :current-page="secondListQueryParams.pageNum"
-            :page-size="secondListQueryParams.pageSize"
-            :total="secondListQueryParams.total"
-            @current-change="handleCurrentChange"
-            @size-change="handleSizeChange"
-          ></el-pagination>
-        </div>
-        <!-- <dialog-table
+        <Table
+          listLoading="loadingStatusSecond"
           :list-query-params.sync="secondListQueryParams"
-          :dialogTableConfig="dialogTableConfigSecond"
-          :dialogTableData="dialogTableDataSecond"
-          :isSelection="isSelection"
-          @subSelected="handleSecondSelectionChange"
+          :config="dialogTableConfigSecond"
+          :tableData="dialogTableDataSecond"
+          :isMulSelect="true"
+          :isHasButtons="false"
           :isShowNumber="true"
-        /> -->
+          :initCheckData="initCheckData"
+          :initRadio="initRadio"
+          @subCheckAll="subCheckAll"
+          @subCheckedData="subCheckedData"
+        />
         <div slot="footer" class="dialog-footer">
           <el-button class="previousButton" @click="createIndex = 0"
             >上一步</el-button
@@ -122,70 +75,16 @@
         </div>
       </template>
       <template v-if="createIndex === 2">
-        <el-table
-          ref="getThirdTable"
-          v-loading="false"
-          :data="dialogTableDataThird"
-          element-loading-text="加载中..."
-          :header-cell-style="{ backgroundColor: '#FAFAFA', color: '#333' }"
-          empty-text="暂无数据"
-        >
-          <el-table-column
-            fixed="left"
-            type="index"
-            label="ID"
-            :index="1"
-          ></el-table-column>
-          <el-table-column
-            v-for="(item, index) in dialogTableConfigThird"
-            :key="index"
-            :prop="item.prop"
-            :label="item.label"
-            :min-width="item.width"
-            :show-overflow-tooltip="true"
-          >
-            <template slot-scope="scope">
-              <span v-if="item.format === 'input'">
-                <el-input v-model="scope.row[item.prop]">
-                  <template slot="append">%</template>
-                </el-input>
-              </span>
-              <span> {{ scope.row[item.prop] }} </span>
-            </template>
-          </el-table-column>
-          <el-table-column width="55" label="选择">
-            <template slot-scope="scope">
-              <el-radio
-                class="radio"
-                :label="scope.row.channelId"
-                v-model="radio"
-                @change.native="getCurrentRow(scope.row)"
-                >{{ "" }}</el-radio
-              >
-            </template>
-          </el-table-column>
-        </el-table>
-        <div v-if="thirdListQueryParams.total > 0" class="pagination-container">
-          <el-pagination
-            background
-            layout="sizes, prev, pager, next, jumper"
-            :page-sizes="[1, 2, 30, 50, 100]"
-            :current-page="thirdListQueryParams.pageNum"
-            :page-size="thirdListQueryParams.pageSize"
-            :total="thirdListQueryParams.total"
-            @current-change="handleCurrentChangeThird"
-            @size-change="handleSizeChangeThird"
-          ></el-pagination>
-        </div>
-        <!-- <dialog-table
-          ref="getThirdTable"
+        <Table
+          listLoading="loadingStatusThird"
           :list-query-params.sync="thirdListQueryParams"
-          :dialogTableConfig="dialogTableConfigThird"
-          :dialogTableData="dialogTableDataThird"
-          :isRadio="isRadio"
+          :config="dialogTableConfigThird"
+          :tableData="dialogTableDataThird"
+          :isRadio="true"
+          :isHasButtons="false"
           :isShowNumber="true"
-          @subSelected="handleThirdSelectionChange"
-        /> -->
+          @getCurrentRow="getCurrentRow"
+        />
         <div slot="footer" class="dialog-footer">
           <el-button class="previousButton" @click="createIndex = 1"
             >上一步</el-button
@@ -204,7 +103,6 @@ import Table from "@/components/Table/index.vue";
 import Detail from "@/components/Detail/index.vue";
 import Search from "@/components/Search/index.vue";
 import DialogTable from "@/components/DialogTable/index.vue";
-import md5 from "js-md5";
 
 import {
   createDistribution,
@@ -220,11 +118,11 @@ const DefaultTableQuery = {
 };
 const secondDefaultTableQuery = {
   pageNum: 1,
-  pageSize: 2,
+  pageSize: 10,
 };
 const thirdDefaultTableQuery = {
   pageNum: 1,
-  pageSize: 2,
+  pageSize: 10,
 };
 
 export default {
@@ -238,12 +136,9 @@ export default {
   data() {
     return {
       title: "创建分发（1/3）",
-      createIndex: 2,
-      radio: "",
-      checkbox: [],
+      createIndex: 0,
       formLabelWidth: "97px",
       shopForm: {},
-      sureButtonsName: "添加",
       styleType: "dialog",
       // 参数
       listQueryParams: { ...DefaultTableQuery },
@@ -431,72 +326,48 @@ export default {
         {
           label: "门店",
           width: "90",
-          prop: "storeName",
+          value: "storeName",
         },
         {
           label: "门店地址",
           width: "225",
-          prop: "storeAddr",
+          value: "storeAddr",
         },
         {
           label: "门店ID",
           width: "225",
-          prop: "storeId",
+          value: "storeId",
         },
       ],
       dialogTableConfigThird: [
         {
           label: "渠道",
           width: "90",
-          prop: "channelName",
+          value: "channelName",
         },
         {
           label: "渠道描述",
           width: "150",
-          prop: "channelDesc",
+          value: "channelDesc",
         },
         {
           label: "门店ID",
           width: "150",
-          prop: "channelId",
+          value: "channelId",
         },
         {
           label: "佣金率",
           width: "150",
-          prop: "commissionRate",
+          value: "commissionRate",
           format: "input",
         },
       ],
-      dialogTableDataSecond: [
-        {
-          storeName: "麦当劳",
-          storeAddr: "这里是门店地址",
-          storeId: "022A15EFC727DCAD",
-        },
-        {
-          storeName: "麦当劳",
-          storeAddr: "这里是门店地址",
-          storeId: "022A15EFC727DCAD",
-        },
-      ],
-      dialogTableDataThird: [
-        {
-          id: "1",
-          store: "麦当劳",
-          storeDes: "这里是渠道描述",
-          storeId: "022A15EFC727DCAD",
-          commissionRate: "",
-        },
-        {
-          id: "1",
-          store: "麦当劳",
-          storeDes: "这里是渠道描述",
-          storeId: "022A15EFC727DCAD",
-          commissionRate: "",
-        },
-      ],
+      dialogTableDataSecond: [],
+      dialogTableDataThird: [],
       // 表格加载loading
       loadingStatus: false,
+      loadingStatusSecond: false,
+      loadingStatusThird: false,
       buttonsName: [
         {
           label: "查看",
@@ -508,17 +379,6 @@ export default {
       ],
       optionWidth: 148,
       dialogFormVisible: false,
-      dialogForm: {
-        merchantName: "",
-        merchantDesc: "",
-        merchantLogo: "",
-        discountRate: "",
-        contact: "",
-        phone: "",
-        email: "",
-        status: "",
-        passwd: "",
-      },
       // url参数
       params: {
         pageSize: 10,
@@ -540,7 +400,7 @@ export default {
       },
       filterButtonText: [
         {
-          label: "添加商户",
+          label: "创建分发",
           type: "primary",
         },
         // {
@@ -592,6 +452,10 @@ export default {
         },
       ],
       filterDataRules: ["merchantId", "couponAmount", "effectiveTime"],
+      currentCannelId: "",
+      initCheckData: [],
+      initRadio: "",
+      isEdit: false,
     };
   },
   computed: {
@@ -643,18 +507,25 @@ export default {
   watch: {
     createIndex: {
       handler: function (val, oldVal) {
-        const arr = ["创建分发（1/3）", "创建分发（2/3）", "创建分发（3/3）"];
-        if (val === 1) {
-          // this.$nextTick(() => {
-          (this.isSelection = true), (this.isRadio = false);
-          // })
-        }
-        if (val === 2) {
-          // this.$nextTick(() => {
-          (this.isSelection = false), (this.isRadio = true);
-          // })
+        let arr = [];
+        if (this.isEdit) {
+          arr = ["编辑分发（1/3）", "编辑分发（2/3）", "编辑分发（3/3）"];
+        } else {
+          arr = ["创建分发（1/3）", "创建分发（2/3）", "创建分发（3/3）"];
         }
         return (this.title = arr[val]);
+      },
+      immediate: true,
+    },
+    isEdit: {
+      handler: function (val) {
+        let title = "";
+        if (val) {
+          title = "编辑分发（1/3）";
+        } else {
+          title = "创建分发（1/3）";
+        }
+        return (this.title = title);
       },
       immediate: true,
     },
@@ -662,8 +533,6 @@ export default {
   created() {
     this.init();
     this.getList();
-    this.getStoreList();
-    this.getCannelList();
     // this.getDialogThirdList();
   },
   methods: {
@@ -683,15 +552,14 @@ export default {
       this.thirdListQueryParams.pageNum = val;
       this.getCannelList();
     },
-    getCurrentRow(val) {
-      this.templateSelection = val;
-      console.log("🚀 ~ getCurrentRow ~ val:", val);
-    },
-    handleCheckedCitiesChange(value) {
-      console.log("🚀 ~ handleCheckedCitiesChange ~ value:", value);
-      // let checkedCount = value.length;
-      // this.checkAll = checkedCount === this.cities.length;
-      // this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length;
+    getCurrentRow(val,commissionRate) {
+      if (commissionRate) {
+        this.shopForm.commissionRate = commissionRate;
+      }
+      this.currentCannelId = val;
+      if (val.commissionRate) {
+        this.shopForm.commissionRate = val.commissionRate;
+      }
     },
     // 获取列表
     init() {
@@ -740,6 +608,10 @@ export default {
           data.list.forEach((item) => {
             item.discountRate = parseInt(item.discountRate * 100);
             item.status = item.status.toString();
+            item.couponAmount = parseInt(item.couponAmount / 100);
+            item.pendingAmount = parseInt(item.pendingAmount / 100);
+            item.pendedAmount = parseInt(item.pendedAmount / 100);
+            item.commissionRate = parseInt(item.commissionRate * 100);
           });
         }
         this.listQueryParams.total = data.total;
@@ -750,16 +622,44 @@ export default {
         console.log(error);
       }
     },
-    submitDialogForm() {
-      console.log(
-        "🚀 ~ submitDialogForm ~ submitDialogForm:",
-        "submitDialogForm"
-      );
+    // 发布
+    async submitDialogForm() {
+      const params = {
+        merchantId: this.shopForm.merchantId,
+        couponDesc: this.shopForm.couponDesc,
+        storeIds: this.shopForm.storeIds,
+        couponAmount: this.shopForm.couponAmount * 100,
+        effectiveTime: +this.shopForm.effectiveTime,
+      };
+      this.dialogTableDataThird.forEach((item) => {
+        if (this.currentCannelId === item.channelId) {
+          params.commissionRate = item.commissionRate / 100;
+          params.channelId = item.channelId;
+        }
+      });
+      if (params.commissionRate === "") {
+        this.$message.error("请填写佣金率");
+        return;
+      }
+      if (this.isEdit) {
+        params.channelId = this.shopForm.channelId;
+        params.commissionRate = this.shopForm.commissionRate / 100;
+        params.distributeId = this.shopForm.distributeId;
+        await updateDistribution(params);
+      } else {
+        await createDistribution(params);
+      }
+      this.$message.success("发布成功");
+      this.shopForm = {};
+      this.initCheckData = [];
+      this.createIndex = 0;
+      this.dialogFormVisible = false;
     },
+    //门店列表
     async getStoreList() {
       try {
         // 表格加载loading
-        this.loadingStatus = true;
+        this.loadingStatusSecond = true;
         const params = {};
         // 分页数据作为参数给服务端
         params.pageSize = this.secondListQueryParams.pageSize;
@@ -769,15 +669,16 @@ export default {
         this.secondListQueryParams.total = data.total;
         // 数据给表格
         this.dialogTableDataSecond = data.list || [];
-        this.loadingStatus = false;
+        this.loadingStatusSecond = false;
       } catch (error) {
         console.log(error);
       }
     },
+    // 渠道列表
     async getCannelList() {
       try {
         // 表格加载loading
-        this.loadingStatus = true;
+        this.loadingStatusThird = true;
         const params = {};
         // 分页数据作为参数给服务端
         params.pageSize = this.thirdListQueryParams.pageSize;
@@ -786,25 +687,27 @@ export default {
         const { data } = await channelList(params);
         this.thirdListQueryParams.total = data.total;
         // 数据给表格
+        data.list.forEach(val => {
+         if (this.shopForm.channelId === val.channelId) {
+           val.commissionRate = this.shopForm.commissionRate;
+         }
+       })
         this.dialogTableDataThird = data.list || [];
-        this.loadingStatus = false;
-
-        this.$nextTick(() => {
-          // 假设默认选择 id 为 1 和 2 的行
-          const defaultSelectedRows = this.dialogTableDataThird.filter((item) =>
-            ["channel_50008"].includes(item.appId)
-          );
-          defaultSelectedRows.forEach((row) => {
-            this.$nextTick(() => {
-              // this.$refs.getThirdTable
-              //   .toggleRowSelection(row, true);
-            });
-          });
-        });
+        // this.dialogTableDataThird[0].commissionRate = 20;
+        this.loadingStatusThird = false;
       } catch (error) {
         console.log(error);
       }
     },
+    subCheckAll(val) {
+      let params = val.join(",");
+      this.shopForm.storeIds = params;
+    },
+    subCheckedData(val) {
+      let params = val.join(",");
+      this.shopForm.storeIds = params;
+    },
+    // 点击下一步（第二步）
     nextSecond() {
       this.$refs.getTable.getTableRef().validate((valid) => {
         if (valid) {
@@ -816,78 +719,17 @@ export default {
         }
       });
     },
+    // 点击下一步（第三步）
     nextThird() {
       this.createIndex = 2;
       // this.isRadio = false;
       this.getCannelList();
-    },
-    // 点击上传
-    handleAvatarSuccess(file) {
-      console.log("🚀 ~ handleAvatarSuccess ~ file:", file);
-      this.dialogForm.merchantLogo = URL.createObjectURL(file.raw);
-    },
-    // 点击添加按钮
-    submitForm() {
-      this.$refs.getTable.getTableRef().validate((valid) => {
-        if (valid) {
-          const params = {
-            ...this.dialogForm,
-            discountRate: this.dialogForm.discountRate / 100,
-            passwd: this.dialogForm.passwd
-              ? md5(md5(this.dialogForm.passwd))
-              : md5(md5("")),
-            status: Number(this.dialogForm.status),
-          };
-          if (this.title === "添加商户") {
-            createDistribution(params).then((res) => {
-              this.getList();
-              this.$message({
-                message: "添加成功",
-                type: "success",
-              });
-            });
-          }
-          if (this.title === "编辑商户") {
-            updateDistribution(params).then((res) => {
-              this.getList();
-              this.$message({
-                message: "修改成功",
-                type: "success",
-              });
-            });
-          }
-          this.dialogFormVisible = false;
-        } else {
-          console.log("error submit!!");
-          return false;
-        }
-      });
-    },
-    // 删除商户
-    deleteShopDialog() {
-      this.$confirm("确定删除吗?", "", {
-        type: "warning",
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-      })
-        .then(async () => {
-          this.$message.success(" 删除成功");
-        })
-        .catch(() => {
-          this.$message.info(" 已取消删除");
-        });
     },
     handleFilter(val) {
       this.params.merchantId =
         val.placeholder === "商户" ? val.selectValue : this.params.merchantId;
       this.params.channelId =
         val.placeholder === "渠道" ? val.selectValue : this.params.channelId;
-      console.log(
-        "🔍 ~ handleFilter ~ src/views/distribute/distributeList/index.vue:443 ~ this.params:",
-        this.params
-      );
-
-      // this.params.searchKey = val.selectValue;
     },
     // 多选框
     handleSelectionChange(val) {
@@ -899,16 +741,12 @@ export default {
       if (option.label === "查看") {
         console.log(index, row, option);
       } else if (option.label === "编辑") {
+        this.createIndex = 0;
         this.dialogFormVisible = true;
-        this.title = "编辑商户";
-        this.sureButtonsName = "确定";
-        this.dialogForm = row;
-        this.dialogForm.status = row.status.toString();
-        this.dialogFormAttrs.forEach((val) => {
-          if (val.isClosePwd) {
-            val.title = "重置密码:";
-          }
-        });
+        this.isEdit = true;
+        this.shopForm = row;
+        this.initCheckData = row.storeIds.split(",");
+        this.initRadio = row.channelId;
         console.log(index, row, option);
       } else if (option === "删除") {
         console.log(index, row, option);
@@ -923,44 +761,16 @@ export default {
       this.params.searchVal = val.inputValue;
       this.getList();
     },
-    // 点击添加商户弹窗
+    // 点击创建分发按钮
     handleFilterButton(val) {
-      if (val === "添加商户") {
+      if (val === "创建分发") {
         this.dialogFormVisible = true;
-        this.title = "添加商户";
-        this.sureButtonsName = "添加";
-        this.dialogForm = {};
-        this.dialogFormAttrs.forEach((val) => {
-          if (val.isClosePwd) {
-            val.title = "密码:";
-          }
-        });
+        this.isEdit = false;
+        this.createIndex = 0;
+        this.shopForm = {};
+        this.initCheckData = [];
+        this.initRadio = "";
       }
-      if (val === "删除商户") {
-        this.$confirm("确定删除吗?", "", {
-          type: "warning",
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-        })
-          .then(async () => {
-            this.$message.success(" 删除成功");
-          })
-          .catch(() => {
-            this.$message.info(" 已取消删除");
-          });
-      }
-    },
-    handleSecondSelectionChange(val) {
-      console.log(
-        "🔍 ~ handleSecondSelectionChange ~ src/views/distribute/distributeList/index.vue:777 ~ val:",
-        val
-      );
-    },
-    handleThirdSelectionChange(val) {
-      console.log(
-        "🔍 ~ handleThirdSelectionChange ~ src/views/distribute/distributeList/index.vue:794 ~ val:",
-        val
-      );
     },
   },
 };

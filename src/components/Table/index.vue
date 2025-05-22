@@ -64,6 +64,12 @@
             scope.row[item.value] + "%"
           }}</span>
 
+          <span v-else-if="item.format === 'input'">
+            <el-input v-model="scope.row[item.value]" @change="handleInputChange(scope.row[item.value])">
+              <template slot="append">%</template>
+            </el-input>
+          </span>
+
           <!-- format = number, 显示数字-->
           <span v-else-if="item.format === 'number'">{{
             Number(scope.row[item.value])
@@ -86,6 +92,33 @@
 
           <!-- 没有format -->
           <span v-else>{{ scope.row[item.value] }}</span>
+        </template>
+      </el-table-column>
+
+      <el-table-column width="55" v-if="isMulSelect">
+        <template slot="header">
+          <el-checkbox
+            :indeterminate="isIndeterminate"
+            v-model="checkAll"
+            @change="handleCheckAllChange"
+          ></el-checkbox>
+        </template>
+        <template slot-scope="scope">
+          <el-checkbox-group v-model="checkData" @change="handleCheckedChange">
+            <el-checkbox :label="scope.row.storeId">{{ "" }}</el-checkbox>
+          </el-checkbox-group>
+        </template>
+      </el-table-column>
+
+      <el-table-column width="55" label="选择" v-if="isRadio">
+        <template slot-scope="scope">
+          <el-radio
+            class="radio"
+            :label="scope.row.channelId"
+            v-model="radio"
+            @change.native="getCurrentRow(scope.row)"
+            >{{ "" }}</el-radio
+          >
         </template>
       </el-table-column>
 
@@ -129,7 +162,10 @@
     </el-table>
 
     <!-- 分页组件 -->
-    <div v-if="isShowPagination && listQueryParams.total > 0" class="pagination-container">
+    <div
+      v-if="isShowPagination && listQueryParams.total > 0"
+      class="pagination-container"
+    >
       <el-pagination
         background
         layout="sizes, prev, pager, next, jumper"
@@ -165,6 +201,14 @@ export default {
     },
     // 是否是多选表格，默认非多选 :ref="'multipleTable'"
     isSelection: {
+      type: Boolean,
+      default: false,
+    },
+    isMulSelect: {
+      type: Boolean,
+      default: false,
+    },
+    isRadio: {
       type: Boolean,
       default: false,
     },
@@ -217,17 +261,37 @@ export default {
         return [10, 20, 30, 50, 100];
       },
     },
+    initCheckData: {
+      type: Array,
+      default: function () {
+        return [];
+      },
+    },
+    initRadio: {
+      type: String,
+      default: "",
+    },
   },
-  // data() {
-  //   return {
-  //     timeFormat,
-  //   }
-  // },
+  data() {
+    return {
+      isIndeterminate: false,
+      checkAll: false,
+      allData: [],
+      checkData: [],
+      radio: "50008",
+    };
+  },
   // filters: {
   //   timeFormat() {
   //     return this.timeFormat;
   //   }
   // },
+  created() {
+    this.checkData = this.initCheckData;
+    setTimeout(() => {
+      this.radio = this.initRadio;
+    }, 500);
+  },
 
   computed: {
     // 看是否是多选表格
@@ -252,6 +316,30 @@ export default {
     },
   },
   methods: {
+    handleInputChange(val) {
+      this.$emit("getCurrentRow", this.radio,val);
+    console.log("🔍 ~ handleInputChange ~ src/components/Table/index.vue:319 ~ val:", val)
+
+    },
+    getCurrentRow(val) {
+      this.$emit("getCurrentRow", this.radio);
+    },
+    handleCheckAllChange(val) {
+      this.allData = [];
+      this.tableData.forEach((item) => {
+        this.allData.push(item.storeId);
+      });
+      this.checkData = val ? this.allData : [];
+      this.isIndeterminate = false;
+      this.$emit("subCheckAll", this.checkData);
+    },
+    handleCheckedChange(value) {
+      let checkedCount = value.length;
+      this.checkAll = checkedCount === this.allData.length;
+      this.isIndeterminate =
+        checkedCount > 0 && checkedCount < this.allData.length;
+      this.$emit("subCheckedData", value);
+    },
     // 获取当前操作的按钮组
     getOptionsName(key) {
       return this.buttonsName || [];
@@ -321,7 +409,7 @@ export default {
 }
 </style>
 
- <style lang="scss" >
+<style lang="scss">
 .table {
   .el-table {
     .el-table__empty-block {
