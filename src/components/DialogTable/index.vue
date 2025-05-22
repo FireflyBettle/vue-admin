@@ -84,7 +84,18 @@
         </template>
       </el-table-column>
       <!-- 多选配置 -->
-      <el-table-column type="selection" width="55"></el-table-column>
+      <!-- <el-table-column v-if="isRadio" type="radio" width="55" label="选择">
+        <template slot-scope="scope">
+          <el-radio
+              class="radio"
+              :label="scope.row.channelId"
+              v-model="radio"  
+              @change.native="getCurrentRow(scope.row)"    
+            >{{""}}</el-radio>
+        </template>
+
+      </el-table-column> -->
+      <el-table-column v-if="isSelection" type="selection" width="55"></el-table-column>
     </el-table>
 
     <!-- 分页组件 -->
@@ -107,6 +118,10 @@
 export default {
   name: "AppTable",
   props: {
+    createIndex: {
+      type: Boolean,
+      default: false,
+    },
     // 是否需要序号
     isShowNumber: {
       type: Boolean,
@@ -117,10 +132,6 @@ export default {
       type: Boolean,
       default: true,
     },
-    mulSelect: {
-      type: Boolean,
-      default: true,
-    },
     // 是否需要栅格
     isBorder: {
       type: Boolean,
@@ -128,6 +139,10 @@ export default {
     },
     // 是否是多选表格，默认非多选 :ref="'multipleTable'"
     isSelection: {
+      type: Boolean,
+      default: false,
+    },
+    isRadio: {
       type: Boolean,
       default: false,
     },
@@ -181,11 +196,13 @@ export default {
       },
     },
   },
-  // data() {
-  //   return {
-  //     timeFormat,
-  //   }
-  // },
+  data() {
+    return {
+      singleSelected: null,
+      radio: "50070",
+      templateSelection: {}
+    }
+  },
   // filters: {
   //   timeFormat() {
   //     return this.timeFormat;
@@ -230,15 +247,24 @@ export default {
 
     // 表格选择分发事件
     handleSelectionChange(val) {
-      this.$emit("subSelected", val);
-      if (this.mulSelect) return false;
+      // console.log("🚀 ~ handleSelectionChange ~ val:", val)
+      /* if (this.mulSelect) return false;
       if (val.length > 1) {
         this.$refs.singleTable.clearSelection();
         this.$refs.singleTable.toggleRowSelection(val.pop());
       }
-      this.singleSelection = val.length ? val[0] : null;
+      if (val.length > 2) {
+        this.$refs.singleTable.clearSelection();
+      }
+      this.singleSelected = val.length  > 0 ? val[0] : null */
+      this.$emit("subSelected", val);
+      // this.singleSelection = val.length ? val[0] : null;
     },
-
+    getCurrentRow(val) {
+      this.templateSelection = val;
+      console.log("🚀 ~ getCurrentRow ~ val:", val);
+      
+    },
     // 改变翻页组件中每页数据总数
     handleSizeChange(val) {
       this.listQueryParams.limit = val;

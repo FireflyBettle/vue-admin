@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-21 18:16:23
+ * @LastEditTime: 2025-05-22 18:27:40
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/distribute/distributeList/index.vue
 -->
@@ -52,13 +52,66 @@
         </div>
       </template>
       <template v-if="createIndex === 1">
-        <dialog-table
+        <el-table
+          ref="singleTable"
+          v-loading="false"
+          :data="dialogTableDataSecond"
+          element-loading-text="加载中..."
+          :header-cell-style="{ backgroundColor: '#FAFAFA', color: '#333' }"
+          empty-text="暂无数据"
+          @selection-change="handleSecondSelectionChange"
+        >
+          <el-table-column
+            fixed="left"
+            type="index"
+            label="ID"
+            :index="1"
+          ></el-table-column>
+          <el-table-column
+            v-for="(item, index) in dialogTableConfigSecond"
+            :key="index"
+            :prop="item.prop"
+            :label="item.label"
+            :min-width="item.width"
+            :show-overflow-tooltip="true"
+          ></el-table-column>
+          <el-table-column width="55">
+            <template slot-scope="scope">
+              <el-checkbox-group
+              v-model="checkbox"
+                @change="handleCheckedCitiesChange"
+              >
+              <el-checkbox
+                :label="scope.row.storeId"
+                >{{ "" }}</el-checkbox
+              >
+              </el-checkbox-group>
+            </template>
+          </el-table-column>
+        </el-table>
+        <div
+          v-if="secondListQueryParams.total > 0"
+          class="pagination-container"
+        >
+          <el-pagination
+            background
+            layout="sizes, prev, pager, next, jumper"
+            :page-sizes="[1, 2, 30, 50, 100]"
+            :current-page="secondListQueryParams.pageNum"
+            :page-size="secondListQueryParams.pageSize"
+            :total="secondListQueryParams.total"
+            @current-change="handleCurrentChange"
+            @size-change="handleSizeChange"
+          ></el-pagination>
+        </div>
+        <!-- <dialog-table
           :list-query-params.sync="secondListQueryParams"
           :dialogTableConfig="dialogTableConfigSecond"
           :dialogTableData="dialogTableDataSecond"
+          :isSelection="isSelection"
           @subSelected="handleSecondSelectionChange"
           :isShowNumber="true"
-        />
+        /> -->
         <div slot="footer" class="dialog-footer">
           <el-button class="previousButton" @click="createIndex = 0"
             >上一步</el-button
@@ -69,14 +122,70 @@
         </div>
       </template>
       <template v-if="createIndex === 2">
-        <dialog-table
+        <el-table
+          ref="getThirdTable"
+          v-loading="false"
+          :data="dialogTableDataThird"
+          element-loading-text="加载中..."
+          :header-cell-style="{ backgroundColor: '#FAFAFA', color: '#333' }"
+          empty-text="暂无数据"
+        >
+          <el-table-column
+            fixed="left"
+            type="index"
+            label="ID"
+            :index="1"
+          ></el-table-column>
+          <el-table-column
+            v-for="(item, index) in dialogTableConfigThird"
+            :key="index"
+            :prop="item.prop"
+            :label="item.label"
+            :min-width="item.width"
+            :show-overflow-tooltip="true"
+          >
+            <template slot-scope="scope">
+              <span v-if="item.format === 'input'">
+                <el-input v-model="scope.row[item.prop]">
+                  <template slot="append">%</template>
+                </el-input>
+              </span>
+              <span> {{ scope.row[item.prop] }} </span>
+            </template>
+          </el-table-column>
+          <el-table-column width="55" label="选择">
+            <template slot-scope="scope">
+              <el-radio
+                class="radio"
+                :label="scope.row.channelId"
+                v-model="radio"
+                @change.native="getCurrentRow(scope.row)"
+                >{{ "" }}</el-radio
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+        <div v-if="thirdListQueryParams.total > 0" class="pagination-container">
+          <el-pagination
+            background
+            layout="sizes, prev, pager, next, jumper"
+            :page-sizes="[1, 2, 30, 50, 100]"
+            :current-page="thirdListQueryParams.pageNum"
+            :page-size="thirdListQueryParams.pageSize"
+            :total="thirdListQueryParams.total"
+            @current-change="handleCurrentChangeThird"
+            @size-change="handleSizeChangeThird"
+          ></el-pagination>
+        </div>
+        <!-- <dialog-table
           ref="getThirdTable"
           :list-query-params.sync="thirdListQueryParams"
           :dialogTableConfig="dialogTableConfigThird"
           :dialogTableData="dialogTableDataThird"
-          :mulSelect="false"
+          :isRadio="isRadio"
+          :isShowNumber="true"
           @subSelected="handleThirdSelectionChange"
-        />
+        /> -->
         <div slot="footer" class="dialog-footer">
           <el-button class="previousButton" @click="createIndex = 1"
             >上一步</el-button
@@ -109,6 +218,14 @@ const DefaultTableQuery = {
   pageNum: 1,
   pageSize: 10,
 };
+const secondDefaultTableQuery = {
+  pageNum: 1,
+  pageSize: 2,
+};
+const thirdDefaultTableQuery = {
+  pageNum: 1,
+  pageSize: 2,
+};
 
 export default {
   name: "businessList",
@@ -121,22 +238,17 @@ export default {
   data() {
     return {
       title: "创建分发（1/3）",
-      createIndex: 0,
+      createIndex: 2,
+      radio: "",
+      checkbox: [],
       formLabelWidth: "97px",
-      shopForm: {
-        shopPerson: "",
-        shopId: "",
-        rate: "",
-        couponType: "",
-        couponTime: "",
-        des: "",
-      },
+      shopForm: {},
       sureButtonsName: "添加",
       styleType: "dialog",
       // 参数
       listQueryParams: { ...DefaultTableQuery },
-      secondListQueryParams: { ...DefaultTableQuery },
-      thirdListQueryParams: { ...DefaultTableQuery },
+      secondListQueryParams: { ...secondDefaultTableQuery },
+      thirdListQueryParams: { ...thirdDefaultTableQuery },
       tableData: [],
       tableFormAttrs: [
         {
@@ -532,6 +644,16 @@ export default {
     createIndex: {
       handler: function (val, oldVal) {
         const arr = ["创建分发（1/3）", "创建分发（2/3）", "创建分发（3/3）"];
+        if (val === 1) {
+          // this.$nextTick(() => {
+          (this.isSelection = true), (this.isRadio = false);
+          // })
+        }
+        if (val === 2) {
+          // this.$nextTick(() => {
+          (this.isSelection = false), (this.isRadio = true);
+          // })
+        }
         return (this.title = arr[val]);
       },
       immediate: true,
@@ -540,9 +662,37 @@ export default {
   created() {
     this.init();
     this.getList();
+    this.getStoreList();
+    this.getCannelList();
     // this.getDialogThirdList();
   },
   methods: {
+    handleSizeChange(val) {
+      this.secondListQueryParams.pageSize = val;
+      this.getStoreList();
+    },
+    handleSizeChangeThird(val) {
+      this.thirdListQueryParams.pageSize = val;
+      this.getCannelList();
+    },
+    handleCurrentChange(val) {
+      this.secondListQueryParams.pageNum = val;
+      this.getStoreList();
+    },
+    handleCurrentChangeThird(val) {
+      this.thirdListQueryParams.pageNum = val;
+      this.getCannelList();
+    },
+    getCurrentRow(val) {
+      this.templateSelection = val;
+      console.log("🚀 ~ getCurrentRow ~ val:", val);
+    },
+    handleCheckedCitiesChange(value) {
+      console.log("🚀 ~ handleCheckedCitiesChange ~ value:", value);
+      // let checkedCount = value.length;
+      // this.checkAll = checkedCount === this.cities.length;
+      // this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length;
+    },
     // 获取列表
     init() {
       const params = {
@@ -638,6 +788,19 @@ export default {
         // 数据给表格
         this.dialogTableDataThird = data.list || [];
         this.loadingStatus = false;
+
+        this.$nextTick(() => {
+          // 假设默认选择 id 为 1 和 2 的行
+          const defaultSelectedRows = this.dialogTableDataThird.filter((item) =>
+            ["channel_50008"].includes(item.appId)
+          );
+          defaultSelectedRows.forEach((row) => {
+            this.$nextTick(() => {
+              // this.$refs.getThirdTable
+              //   .toggleRowSelection(row, true);
+            });
+          });
+        });
       } catch (error) {
         console.log(error);
       }
@@ -655,9 +818,7 @@ export default {
     },
     nextThird() {
       this.createIndex = 2;
-      // this.$refs.getThirdTable.getTableRef().toggleRowSelection({
-      //   appId:"channel_50008",appSecret:"784D3FdD862a86b59F12C324FA7c4AAe",availablePredeposit:98980,channelDesc:"渠道描述",channelId:"50008",channelName:"测试渠道",contact:"渠道",email:"xx@qq.com",ipWhiteList:"127.0.0.1",lockedPredeposit:0,phone:"18680341485",predepositAmount:98980,status:0,statusTime:"2025-05-21 15:04:23"
-      // });
+      // this.isRadio = false;
       this.getCannelList();
     },
     // 点击上传
@@ -796,8 +957,10 @@ export default {
       );
     },
     handleThirdSelectionChange(val) {
-    console.log("🔍 ~ handleThirdSelectionChange ~ src/views/distribute/distributeList/index.vue:794 ~ val:", val)
-
+      console.log(
+        "🔍 ~ handleThirdSelectionChange ~ src/views/distribute/distributeList/index.vue:794 ~ val:",
+        val
+      );
     },
   },
 };
@@ -820,6 +983,26 @@ export default {
     }
     .el-dialog__footer {
       padding: 0px 20px 20px;
+    }
+  }
+  .el-radio {
+    margin-left: 10px;
+  }
+  .pagination-container {
+    .el-pagination {
+      text-align: right;
+      margin-top: 16px;
+    }
+    .el-pagination.is-background .btn-next,
+    .el-pagination.is-background .btn-prev,
+    .el-pagination.is-background .el-pager li {
+      background: #fff;
+      border: 1px solid #d9d9d9;
+    }
+    .el-pagination.is-background .el-pager li:not(.disabled).active {
+      background-color: #fff;
+      color: #1890ff;
+      border: 1px solid #1890ff;
     }
   }
 }
