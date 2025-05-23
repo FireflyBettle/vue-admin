@@ -54,6 +54,10 @@
             scope.row[item.value] | timeFormat
           }}</span>
 
+          <div class="wrap-text" v-if="item.format === 'wrap'">
+            {{ scope.row[item.value] }}
+          </div>
+
           <!-- format = money, 显示金额 -->
           <span v-else-if="item.format === 'money'">{{
             "￥" + scope.row[item.value]
@@ -65,7 +69,10 @@
           }}</span>
 
           <span v-else-if="item.format === 'input'">
-            <el-input v-model="scope.row[item.value]" @change="handleInputChange(scope.row[item.value])">
+            <el-input
+              v-model="scope.row[item.value]"
+              @change="handleInputChange(scope.row[item.value])"
+            >
               <template slot="append">%</template>
             </el-input>
           </span>
@@ -159,6 +166,32 @@
           </span>
         </template>
       </el-table-column>
+
+      <!-- 订单列表页表格自定义操作按钮栏 -->
+      <el-table-column
+        v-if="isStatusButtons"
+        class="clearfix"
+        :width="optionColumnWidth + 'px'"
+        fixed="right"
+        label="操作"
+      >
+        <template slot-scope="scope">
+          <!-- 基本操作 -->
+          <span class="button-margin-left">
+            <router-link :to="`${$route.path}/${scope.row.voucherId}`">
+              <span>查看</span>
+            </router-link>
+          </span>
+          <span class="button-margin-left">
+            <span
+              @click="
+                handleCustomClickOption(scope.row)
+              "
+              >{{ scope.row.specialStatus }}</span
+            >
+          </span>
+        </template>
+      </el-table-column>
     </el-table>
 
     <!-- 分页组件 -->
@@ -216,6 +249,11 @@ export default {
     isHasButtons: {
       type: Boolean,
       default: true,
+    },
+    // 是否有根据数据自定义多种操作按钮
+    isStatusButtons: {
+      type: Boolean,
+      default: false,
     },
     // 表头名称
     title: {
@@ -317,11 +355,14 @@ export default {
   },
   methods: {
     handleInputChange(val) {
-      this.$emit("getCurrentRow", this.radio,val);
-    console.log("🔍 ~ handleInputChange ~ src/components/Table/index.vue:319 ~ val:", val)
-
+      console.log(
+        "🔍 ~ handleInputChange ~ src/components/Table/index.vue:319 ~ val:",
+        val
+      );
+      this.$emit("getCurrentRow", this.radio);
     },
     getCurrentRow(val) {
+      console.log("🚀 ~ getCurrentRow ~ val:", val);
       this.$emit("getCurrentRow", this.radio);
     },
     handleCheckAllChange(val) {
@@ -348,6 +389,10 @@ export default {
     // 点击按钮传递给父组件
     handleClickOption(index, row, option) {
       this.$emit("subOpitonButton", index, row, option);
+    },
+    // 点击自定义按钮传递给父组件
+    handleCustomClickOption(row) {
+      this.$emit("subOpitonButton", row);
     },
 
     // 表格选择分发事件
@@ -384,6 +429,11 @@ export default {
 .table {
   background: #fff;
   padding: 20px;
+}
+/* 设置需要换行的列的样式 */
+.wrap-text {
+  white-space: normal; /* 允许文本换行 */
+  word-wrap: break-word; /* 当单词太长时进行换行 */
 }
 .image-size {
   width: 30px;

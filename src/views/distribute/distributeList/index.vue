@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-22 18:27:40
+ * @LastEditTime: 2025-05-23 14:56:16
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/distribute/distributeList/index.vue
 -->
@@ -219,6 +219,7 @@ export default {
           label: "佣金率",
           width: "70",
           value: "commissionRate",
+          format: "rate",
         },
         {
           label: "券码金额",
@@ -552,14 +553,8 @@ export default {
       this.thirdListQueryParams.pageNum = val;
       this.getCannelList();
     },
-    getCurrentRow(val,commissionRate) {
-      if (commissionRate) {
-        this.shopForm.commissionRate = commissionRate;
-      }
+    getCurrentRow(val) {
       this.currentCannelId = val;
-      if (val.commissionRate) {
-        this.shopForm.commissionRate = val.commissionRate;
-      }
     },
     // 获取列表
     init() {
@@ -633,22 +628,23 @@ export default {
       };
       this.dialogTableDataThird.forEach((item) => {
         if (this.currentCannelId === item.channelId) {
-          params.commissionRate = item.commissionRate / 100;
+          params.commissionRate = item.commissionRate ? item.commissionRate / 100 : '';
           params.channelId = item.channelId;
         }
       });
-      if (params.commissionRate === "") {
+      if (params.commissionRate === '') {
         this.$message.error("请填写佣金率");
         return;
       }
       if (this.isEdit) {
-        params.channelId = this.shopForm.channelId;
-        params.commissionRate = this.shopForm.commissionRate / 100;
+        // params.channelId = this.shopForm.channelId;
+        // params.commissionRate = this.shopForm.commissionRate / 100;
         params.distributeId = this.shopForm.distributeId;
         await updateDistribution(params);
       } else {
         await createDistribution(params);
       }
+      this.getList();
       this.$message.success("发布成功");
       this.shopForm = {};
       this.initCheckData = [];
@@ -756,9 +752,7 @@ export default {
     handleRefreshList() {
       this.getList();
     },
-    clickSearch(val) {
-      this.params.searchKey = val.selectValue;
-      this.params.searchVal = val.inputValue;
+    clickSearch() {
       this.getList();
     },
     // 点击创建分发按钮

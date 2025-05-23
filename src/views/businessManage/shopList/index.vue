@@ -28,7 +28,6 @@
         :tableFormAttrs="dialogFormAttrs"
         formLabelWidth="91px"
         @resetSecret="resetSecret"
-        @handleAvatarSuccess="handleAvatarSuccess"
         @handleAreaChange="handleAreaChange"
       >
       </Detail>
@@ -153,20 +152,6 @@ export default {
           required: true,
           options: [],
         },
-        // {
-        //   title: "市:",
-        //   placeholder: "请选择市",
-        //   type: "select",
-        //   value: "city",
-        //   required: true,
-        // },
-        // {
-        //   title: "区/县:",
-        //   placeholder: "请选择区/县",
-        //   type: "select",
-        //   value: "area",
-        //   required: true,
-        // },
         {
           title: "详细地址:",
           placeholder: "请输入详细地址",
@@ -418,11 +403,6 @@ export default {
       } catch (error) {
         console.log(error);
       }
-    },
-    // 点击上传
-    handleAvatarSuccess(file) {
-      console.log("🚀 ~ handleAvatarSuccess ~ file:", file);
-      this.dialogForm.merchantLogo = URL.createObjectURL(file.raw);
     },
     resetSecret() {
       this.$confirm("确认重置App Secret?", "", {

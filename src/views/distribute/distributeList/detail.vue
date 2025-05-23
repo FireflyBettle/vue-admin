@@ -173,6 +173,7 @@ export default {
       this.tableForm = data;
       this.tableForm.status = this.tableForm.status.toString();
       this.tableForm.commissionRate = this.tableForm.commissionRate * 100;
+      this.tableForm.couponAmount = this.tableForm.couponAmount / 100;
     },
     async submitForm() {
       this.$refs.getTable.getTableRef().validate((valid) => {

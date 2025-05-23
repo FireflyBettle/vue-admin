@@ -1,5 +1,13 @@
+<!--
+ * @Author: chenyourong
+ * @Date: 2025-05-08 18:06:50
+ * @LastEditors: chenyourong
+ * @LastEditTime: 2025-05-23 18:26:50
+ * @Description: 
+ * @FilePath: /vue-admin-template-master/src/views/order/orderList/index.vue
+-->
 <template>
-  <div>
+  <div class="order-list">
     <Search v-bind="filterAttrs" v-on="filterEvent"></Search>
     <Table
       :list-query-params.sync="listQueryParams"
@@ -11,25 +19,117 @@
 
 <script>
 import Table from "@/components/Table/index.vue";
+import Detail from "@/components/Detail/index.vue";
 import Search from "@/components/Search/index.vue";
+import XLSX from "xlsx";
 
-import XLSX from 'xlsx'; 
+import { orderList, reverseOrder, expireOrder } from "@/api/order";
+import { merchantList } from "@/api/business.js";
+import { channelList } from "@/api/channel.js";
 
-import testData from "./data.json";
+import { storesList } from "@/api/business";
+
 const DefaultTableQuery = {
-  page: 1,
-  limit: 10,
-  total: 0,
+  pageNum: 1,
+  pageSize: 10,
 };
 
 export default {
-  name: "orderList",
+  name: "businessList",
   components: {
     Table,
     Search,
+    Detail,
   },
   data() {
     return {
+      // 参数
+      listQueryParams: { ...DefaultTableQuery },
+      tableData: [],
+      tableConfig: [
+        {
+          label: "券码ID",
+          width: "120",
+          value: "voucherId",
+        },
+        {
+          label: "金额",
+          width: "60",
+          value: "amount",
+        },
+        {
+          label: "券码描述",
+          width: "130",
+          value: "voucherDesc",
+        },
+        {
+          label: "商户",
+          width: "90",
+          value: "merchantName",
+        },
+        {
+          label: "核销门店",
+          width: "90",
+          value: "storeName",
+        },
+        {
+          label: "商户结款",
+          width: "77",
+          value: "merchantSettlement",
+        },
+        {
+          label: "渠道",
+          width: "90",
+          value: "channelName",
+        },
+        {
+          label: "预付款",
+          width: "70",
+          value: "advancePayment",
+        },
+        {
+          label: "创建时间",
+          width: "96",
+          format: "wrap",
+          value: "createTime",
+        },
+        {
+          label: "过期时间",
+          width: "96",
+          format: "wrap",
+          value: "expireTime",
+        },
+        {
+          label: "操作时间",
+          width: "96",
+          format: "wrap",
+          value: "operateTime",
+        },
+        {
+          label: "状态",
+          width: "70",
+          value: "specialStatus",
+        },
+      ],
+      // 表格加载loading
+      loadingStatus: false,
+      buttonsName: [
+        {
+          label: "查看",
+        },
+        {
+          label: "",
+        },
+      ],
+      optionWidth: 148,
+      // url参数
+      params: {
+        pageSize: 10,
+        pageNum: 0,
+        merchantId: "",
+        channelId: "",
+        storeId: "",
+      },
       filterButtonText: [
         {
           label: "导出Excel",
@@ -39,122 +139,69 @@ export default {
       filterOptions: [
         {
           type: "multiSelect",
-          placeholder: "商户名称",
+          placeholder: "商户",
           inputValue: "",
-          isSearch: true,
-          inputWidth: "264px",
-          selectWidth: "105px",
+          isSearch: false,
+          inputWidth: "136px",
+          selectWidth: "110px",
+          noShowInput: true,
+          options: [],
+        },
+        {
+          type: "multiSelect",
+          placeholder: "渠道",
+          inputValue: "",
+          isSearch: false,
+          inputWidth: "136px",
+          selectWidth: "110px",
+          noShowInput: true,
+          options: [],
+        },
+        {
+          type: "multiSelect",
+          placeholder: "门店",
+          inputValue: "",
+          isSearch: false,
+          inputWidth: "136px",
+          selectWidth: "110px",
+          noShowInput: true,
+          options: [],
+        },
+        {
+          type: "multiSelect",
+          placeholder: "状态",
+          inputValue: "",
+          isSearch: false,
+          inputWidth: "136px",
+          selectWidth: "110px",
+          noShowInput: true,
           options: [
             {
-              value: "选项1",
-              label: "黄金糕",
+              value: "0",
+              label: "待核销",
             },
             {
-              value: "选项2",
-              label: "双皮奶",
+              value: "1",
+              label: "已核销",
+            },
+            {
+              value: "2",
+              label: "冲正",
+            },
+            {
+              value: "3",
+              label: "作废",
             },
           ],
         },
-      ],
-      listQueryParams: { ...DefaultTableQuery },
-      tableConfig: [
         {
-          label: "ID",
-          width: "60",
-          prop: "id",
-        },
-        {
-          label: "商户",
-          width: "90",
-          prop: "name",
-        },
-        {
-          label: "门店数",
-          width: "80",
-          prop: "storeNumber",
-        },
-        {
-          label: "折扣率",
-          width: "80",
-          prop: "rate",
-        },
-        {
-          label: "配置渠道",
-          width: "80",
-          prop: "configureChannels",
-        },
-        {
-          label: "佣金率",
-          width: "80",
-          prop: "commissionRate",
-        },
-        {
-          label: "券码类型",
-          width: "90",
-          prop: "couponCodeType",
-        },
-        {
-          label: "券码描述",
-          width: "105",
-          prop: "couponCodeDescription",
-        },
-        {
-          label: "券码有效时间",
-          width: "105",
-          prop: "couponValidTime",
-        },
-        {
-          label: "创建金额",
-          width: "80",
-          prop: "createAnAmount",
-        },
-        {
-          label: "待核销金额",
-          width: "80",
-          prop: "amountToBeWrittenOff",
-        },
-        {
-          label: "核销金额",
-          width: "80",
-          prop: "writeOffAmount",
-        },
-        // 最后一个不给宽度让表格自适应
-        {
-          label: "状态",
-          prop: "status",
+          type: "button",
         },
       ],
-      // 列表数据
-      tableData: [],
-      // 表格加载loading
-      loadingStatus: false,
-      // 操作栏按钮
-      buttonsName: ["查看", "编辑", "删除"],
-      //  操作栏宽度
-      optionWidth: 148,
-      params: {
-        pageInfo: {
-          pageSize: 10,
-          pageNo: 1,
-        },
-      },
+      multipleSelection: [],
     };
   },
   computed: {
-    filterAttrs() {
-      return {
-        // 按钮名称
-        filterButtonText: this.filterButtonText,
-        filterOptions: this.filterOptions,
-      };
-    },
-    filterEvent() {
-      return {
-        // 选择数据回调
-        handleFilterButton: this.exportExcel,
-        clickSearch: this.clickSearch,
-      };
-    },
     // 表格属性
     tableAttrs() {
       return {
@@ -170,6 +217,9 @@ export default {
         optionColumnWidth: this.optionWidth,
         // 是否需要选择
         isSelection: true,
+        isStatusButtons: true,
+        isHasButtons: false,
+        isShowNumber: true,
       };
     },
     // 表格事件
@@ -183,64 +233,334 @@ export default {
         subSelected: this.handleSelectionChange,
       };
     },
+    filterAttrs() {
+      return {
+        // 按钮名称
+        filterButtonText: this.filterButtonText,
+        filterOptions: this.filterOptions,
+      };
+    },
+    filterEvent() {
+      return {
+        // 选择数据回调
+        handleFilter: this.handleFilter,
+        handleFilterButton: this.handleFilterButton,
+        clickSearch: this.clickSearch,
+      };
+    },
   },
   created() {
+    this.init();
     this.getList();
   },
   methods: {
+    init() {
+      const params = {
+        ...this.params,
+        pageSize: 1000,
+        pageNum: 0,
+      };
+      merchantList(params).then((res) => {
+        this.filterOptions[0].options = res.data.list.map((val) => {
+          return {
+            value: val.merchantId,
+            label: val.merchantName,
+          };
+        });
+      });
+      channelList(params).then((res) => {
+        this.filterOptions[1].options = res.data.list.map((val) => {
+          return {
+            value: val.channelId,
+            label: val.channelName,
+          };
+        });
+      });
+      storesList(params).then((res) => {
+        this.filterOptions[2].options = res.data.list.map((val) => {
+          return {
+            value: val.storeId,
+            label: val.storeName,
+          };
+        });
+      });
+    },
     // 获取列表
-    getList() {
+    async getList(storeId) {
       try {
         // 表格加载loading
         this.loadingStatus = true;
         // 分页数据作为参数给服务端
-        this.params.pageInfo.pageSize = this.listQueryParams.limit;
-        this.params.pageInfo.pageNo = this.listQueryParams.page;
+        this.params.pageSize = this.listQueryParams.pageSize;
+        this.params.pageNum = this.listQueryParams.pageNum - 1;
         // 发送请求,请求到的数据格式见下文，
-        // const { data, cntData } = await TalentServe.getTalentList(this.params)
-        const { data, cntData } = testData;
-        const tableData = data || [];
-        // 分页组件显示  this.listQueryParams.total 值大于0才会出现
-        this.listQueryParams.total = cntData;
+        const { data } = await orderList(this.params);
+        const statusType = {
+          0: "待核销",
+          1: "已核销",
+          2: "冲正",
+          3: "作废",
+        };
+        if (data.list) {
+          data.list.forEach((item) => {
+            item.status = item.status.toString();
+            item.amount = item.amount / 100;
+            item.advancePayment = item.advancePayment / 100;
+            item.merchantSettlement = item.merchantSettlement / 100;
+            item.specialStatus = statusType[item.status];
+          });
+        }
+        this.listQueryParams.total = data.total;
         // 数据给表格
-        this.tableData = data;
+        this.tableData = data.list || [];
         this.loadingStatus = false;
       } catch (error) {
         console.log(error);
       }
     },
-    // 表格操作功能 index：表格索引, row：表格行数据, option：按钮名称
-    handleTableOption(index, row, option) {
-      this.operationalData = { ...row };
-      if (option === "查看") {
-        console.log(index, row, option);
-      } else if (option === "编辑") {
-        console.log(index, row, option);
-      } else if (option === "删除") {
-        console.log(index, row, option);
+    handleFilter(val) {
+      this.params.merchantId =
+        val.placeholder === "商户" ? val.selectValue : this.params.merchantId;
+      this.params.channelId =
+        val.placeholder === "渠道" ? val.selectValue : this.params.channelId;
+      this.params.storeId =
+        val.placeholder === "门店" ? val.selectValue : this.params.storeId;
+      this.params.status =
+        val.placeholder === "状态" ? +val.selectValue : +this.params.status;
+    },
+    // 多选框
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
+    // 点击编辑
+    async handleTableOption(row) {
+      // 0-待核销状态， 可以操作作废
+      if (row.specialStatus === "待核销") {
+        this.$confirm("确认冲正吗?", "", {
+          type: "warning",
+          confirmButtonText: "是",
+          cancelButtonText: "否",
+        })
+          .then(async () => {
+            await reverseOrder({
+              voucherId: row.voucherId,
+            });
+            this.$message.success(" 冲正成功");
+          })
+          .catch(() => {
+            this.$message.info(" 已取消冲正");
+          });
       }
+      // 1-已核销状态， 可以操作冲正
+      if (row.specialStatus === "已核销") {
+        this.$confirm("确认冲正吗?", "", {
+          type: "warning",
+          confirmButtonText: "是",
+          cancelButtonText: "否",
+        })
+          .then(async () => {
+            await expireOrder({
+              voucherId: row.voucherId,
+            });
+            this.$message.success(" 冲正成功");
+          })
+          .catch(() => {
+            this.$message.info(" 已取消冲正");
+          });
+      }
+      console.log("🚀 ~ handleTableOption ~ row:", row);
     },
-    // 选择的数据回调
-    handleSelectionChange(data) {
-      console.log("🚀 ~ handleSelectionChange ~ data:", data);
-    },
-
     // 分页操作
     handleRefreshList() {
       this.getList();
     },
-    exportExcel() { 
-      const ws = XLSX.utils.json_to_sheet(this.tableData);  
-      const wb = XLSX.utils.book_new();  
-      XLSX.utils.book_append_sheet(wb,  ws, 'Sheet1'); 
-      XLSX.writeFile(wb,  'table_data.xlsx');  
-    },
     clickSearch() {
-      console.log("🚀 ~ clickSearch ~ val:", "clickSearch");
+      this.getList();
+    },
+    async exportExcel() {
+      const headers = [
+        "券码ID",
+        "金额",
+        "券码描述",
+        "商户",
+        "核销门店",
+        "商户结款",
+        "渠道",
+        "预付款",
+        "创建时间",
+        "过期时间",
+        "操作时间",
+        "状态",
+      ];
+      const keys = [
+        "voucherId",
+        "amount",
+        "voucherDesc",
+        "merchantName",
+        "storeName",
+        "merchantSettlement",
+        "channelName",
+        "advancePayment",
+        "createTime",
+        "expireTime",
+        "operateTime",
+        "specialStatus",
+      ];
+      const statusType = {
+        0: "待核销",
+        1: "已核销",
+        2: "冲正",
+        3: "作废",
+      };
+      let exportData = [];
+      let arr = [];
+      if (this.multipleSelection.length) {
+        arr = this.multipleSelection;
+      } else {
+        const { data } = await orderList({
+          pageSize: 1000,
+          pageNum: 0,
+        });
+        data.list.forEach((item) => {
+          item.status = item.status.toString();
+          item.amount = item.amount / 100;
+          item.advancePayment = item.advancePayment / 100;
+          item.merchantSettlement = item.merchantSettlement / 100;
+        });
+        arr = data.list;
+      }
+      exportData = arr.map((item) => {
+        item.specialStatus = statusType[item.status];
+        return keys.map((key) => item[key]);
+      });
+      // 将表头添加到数据的第一行
+      exportData.unshift(headers);
+      // 创建工作簿
+      const ws = XLSX.utils.aoa_to_sheet(exportData);
+      // 设置列宽度
+      ws["!cols"] = [
+        { wch: 15 }, // 第一列宽度为 15 个字符宽度
+        { wch: 10 },
+        { wch: 25 },
+        { wch: 15 },
+        { wch: 15 },
+        { wch: 15 },
+        { wch: 10 },
+        { wch: 10 },
+        { wch: 21 },
+        { wch: 21 },
+        { wch: 21 },
+        { wch: 10 },
+      ];
+      const wb = XLSX.utils.book_new();
+      // 将工作表添加到工作簿
+      XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+
+      // 导出文件
+      XLSX.writeFile(wb, "table_export.xlsx");
+    },
+    // 点击右上角添加门店或者删除门店按钮
+    async handleFilterButton(val) {
+      if (val === "导出Excel") {
+        this.exportExcel();
+      }
     },
   },
 };
 </script>
+<style lang="scss">
+.order-list {
+  .filter-container {
+    .el-input {
+      width: 265px;
+      input {
+        height: 32px;
+      }
+      .el-input__inner {
+        height: 32px;
+        line-height: 32px;
+      }
+    }
+    .el-select {
+      margin-right: 0px;
+      .el-input {
+        width: 106px;
+      }
+    }
+    .el-input-group__append {
+      background: #fff;
+    }
+    .el-button {
+      padding: 12px;
+    }
+    .filter-container__right {
+      .el-button {
+        width: 88px;
+        height: 32px;
+        line-height: 32px;
+        padding: 0;
+        font-size: 14px;
+      }
+      .el-button--primary {
+        background: #1890ff;
+      }
+      .el-button--info {
+        background: #f5f5f5;
+        color: rgba(0, 0, 0, 0.25);
+      }
+    }
+  }
+  .deleteShopDialog {
+    .el-dialog__header {
+      display: none;
+    }
+    .el-dialog__body {
+      display: flex;
+      align-items: center;
+      border: none;
+    }
+    .el-icon-warning-outline {
+      font-size: 22px;
+      color: #faad14;
+      margin-right: 16px;
+    }
+    .el-dialog__footer {
+      padding: 0px 20px 20px;
+    }
+  }
+}
+</style>
 
-<style>
+<style lang="scss" scoped>
+@import "~@/styles/mixin.scss";
+.order-list {
+  .filter-container {
+    @include flex;
+    justify-content: space-between;
+    padding: 0 24px;
+    width: 100%;
+    height: 80px;
+    background: #fff;
+  }
+  .show-pwd {
+    position: absolute;
+    right: 60px;
+    top: 0;
+    font-size: 16px;
+    color: #000;
+    cursor: pointer;
+    user-select: none;
+  }
+  .char-count {
+    text-align: right;
+    color: #666;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  .limit-reached {
+    color: #f56c6c;
+    font-weight: bold;
+  }
+}
 </style>
