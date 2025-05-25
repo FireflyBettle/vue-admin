@@ -26,6 +26,7 @@
         :styleType="styleType"
         :tableData="dialogForm"
         :tableFormAttrs="dialogFormAttrs"
+        formLabelWidth="92px"
         @resetSecret="resetSecret"
         @handleAvatarSuccess="handleAvatarSuccess"
       >

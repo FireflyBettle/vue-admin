@@ -10,6 +10,8 @@ const getDefaultState = () => {
     name: '',
     avatar: '',
     roles: [],
+    type: '', //用户权限 1-平台，2-渠道，3-商户，4-门店
+    uid: '',
   }
 }
 
@@ -30,6 +32,12 @@ const mutations = {
   },
   SET_ROLES: (state, roles) => {
     state.roles = roles
+  },
+  SET_TYPE: (state, type) => {
+    state.type = type
+  },
+  SET_UID: (state, uid) => {
+    state.uid = uid
   }
 }
 
@@ -43,9 +51,16 @@ const actions = {
         commit('SET_TOKEN', data.token)
         commit('SET_NAME', data.name)
         commit('SET_AVATAR', data.avatar)
+        commit('SET_TYPE', type);
+        commit('SET_TYPE', data.uid);
         setToken(data.token)
+        Cookies.set("type", type)
         Cookies.set("username", data.name)
         Cookies.set("avatar", data.avatar)
+        Cookies.set("channelId", data.channelId)
+        Cookies.set("merchantId", data.merchantId)
+        Cookies.set("storeId", data.storeId)
+        Cookies.set("uid", data.uid)
         resolve()
       }).catch(error => {
         reject(error)
@@ -58,9 +73,10 @@ const actions = {
     return new Promise((resolve, reject) => {
       // commit('SET_NAME', 'Normal Editor')
         // commit('SET_AVATAR', '')
-        commit('SET_ROLES', ['admin'])
+        let roles = state.type.length ? state.type : +Cookies.get('type');
+        commit('SET_ROLES', [roles])
         resolve({
-          roles: ['admin'],
+          roles: [roles],
         })
     })
   },
@@ -86,6 +102,7 @@ const actions = {
       removeToken() // must remove  token  first
       commit('RESET_STATE')
       commit('SET_ROLES', [])
+
       resolve()
     })
   },

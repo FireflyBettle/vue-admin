@@ -240,6 +240,11 @@ export default {
               width: "120",
               value: "merchantId",
             },
+            {
+              label: "手机号",
+              width: "120",
+              value: "phone",
+            },
           ],
         },
       ],

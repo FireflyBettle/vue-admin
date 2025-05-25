@@ -16,17 +16,65 @@ export function login(data) {
   })
 }
 
-export function getInfo(token) {
-  return request({
-    url: '/vue-admin-template/user/info',
-    method: 'get',
-    params: { token }
-  })
-}
+// export function getInfo(token) {
+//   return request({
+//     url: '/vue-admin-template/user/info',
+//     method: 'get',
+//     params: { token }
+//   })
+// }
 
 export function logout() {
   return request({
     url: '/web/account/logout',
     method: 'get'
+  })
+}
+// 发送短信
+export function sendSms(data) {
+  return request({
+    url: '/web/send/sms',
+    method: 'post',
+    data
+  })
+}
+// 短信验证码验证
+export function verifySms(data) {
+  return request({
+    url: '/web/verify/sms',
+    method: 'post',
+    data
+  })
+}
+// 修改账户信息
+export function setUserProfile(data) {
+  return request({
+    url: '/web/user/profile/set',
+    method: 'post',
+    data
+  })
+}
+// 删除账户信息  ???
+export function deleteInfo(data) {
+  return request({
+    url: '/web/verify/sms',
+    method: 'post',
+    data
+  })
+}
+// 账户重置密码
+export function passwdForget(data) {
+  return request({
+    url: '/web/passwd/forget',
+    method: 'post',
+    data
+  })
+}
+// 修改账户信息
+export function accountProfile(data) {
+  return request({
+    url: '/web/account/profile',
+    method: 'post',
+    data
   })
 }

@@ -50,7 +50,11 @@
         </span>
       </el-form-item>
       <div class="info">
-        <el-checkbox v-model="isRememberTheAccount" @change="changeRememberTheAccount">记住账号</el-checkbox>
+        <el-checkbox
+          v-model="isRememberTheAccount"
+          @change="changeRememberTheAccount"
+          >记住账号</el-checkbox
+        >
         <div class="forgetThePassword" @click="forgetPassword">忘记密码 ？</div>
       </div>
 
@@ -63,33 +67,36 @@
         >登录</el-button
       >
     </el-form>
-    <Forget :isForget="isForget" :isReset="isReset" v-on="handleClickEvent"></Forget>
-    
+    <Forget
+      :isForget="isForget"
+      :isReset="isReset"
+      v-on="handleClickEvent"
+    ></Forget>
   </div>
 </template>
 
 <script>
 import { validUsername } from "@/utils/validate";
-import Forget from './forget.vue'
+import Forget from "./forget.vue";
 import Cookies from "js-cookie";
 
 const validateUsername = (rule, value, callback) => {
-      console.log("🚀 ~ validateUsername ~ value:", value)
-      if (!value) {
-        callback(new Error("请输入手机号"));
-      }else if (!/^(1[3-9]\d{9})$/.test(value)) {
-        callback(new Error("请输入正确的手机号格式"));
-      } else {
-        callback();
-      }
-    };
-    const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error("请输入密码"));
-      } else {
-        callback();
-      }
-    };
+  console.log("🚀 ~ validateUsername ~ value:", value);
+  if (!value) {
+    callback(new Error("请输入手机号"));
+  } else if (!/^(1[3-9]\d{9})$/.test(value)) {
+    callback(new Error("请输入正确的手机号格式"));
+  } else {
+    callback();
+  }
+};
+const validatePassword = (rule, value, callback) => {
+  if (value.length < 6) {
+    callback(new Error("请输入密码"));
+  } else {
+    callback();
+  }
+};
 
 export default {
   name: "Login",
@@ -102,8 +109,8 @@ export default {
       isReset: false,
       loginForm: {
         username: Cookies.get("name") || "",
-        password: "123456",
-        type: 1
+        password: "admin111",
+        type: "",
       },
       loginRules: {
         username: [
@@ -133,10 +140,14 @@ export default {
       return {
         submitNext: this.submitNext,
         submitPrevious: this.submitPrevious,
-        resetPasswordEvent: this.resetPasswordEvent,
+        resetPasswordEvent: this.sureSubmit,
         sureSubmit: this.sureSubmit,
       };
     },
+  },
+  created() {
+    this.loginForm.type = 1;
+    // this.$store.dispatch("user/authType", this.type)
   },
   methods: {
     forgetPassword() {
@@ -147,14 +158,10 @@ export default {
       this.isForget = false;
       this.isLogin = true;
     },
-    resetPasswordEvent() {
-      this.isReset = false;
-      this.isForget = true;
-    },
     sureSubmit() {
-      alert(1)
-      // this.isReset = false;
-      // this.isForget = true;
+      this.isReset = false;
+      this.isForget = false;
+      this.isLogin = true;
     },
     submitNext() {
       this.isReset = true;
@@ -183,12 +190,17 @@ export default {
           this.loading = true;
           // let a = md5(this.loginForm.password);
           // console.log("🚀 ~ this.$refs.loginForm.validate ~ a:", md5(md5(this.loginForm.password)))
-          // return 
+          // return
           this.$store
             .dispatch("user/login", this.loginForm)
             .then(() => {
-              this.$router.push({ path: this.redirect || "/" });
               this.loading = false;
+              if (+this.loginForm.type === 1) {
+                return this.$router.push({
+                  path: this.redirect || "/business",
+                });
+              }
+              return this.$router.push({ path: this.redirect || "/" });
             })
             .catch(() => {
               this.loading = false;

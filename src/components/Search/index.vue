@@ -22,7 +22,7 @@
               filterable
               :placeholder="item.placeholder"
               @change="handleFilter(item)"
-              :style="{width: item.selectWidth}"
+              :style="{ width: item.selectWidth }"
             >
               <el-option
                 v-for="val in item.options"
@@ -38,22 +38,38 @@
               type="text"
               v-model="input"
               placeholder="请输入内容"
-              @keyup.enter.native="clickSearch({
+              @keyup.enter.native="
+                clickSearch({
                   selectValue: item.selectValue,
                   inputValue: input,
-                })"
+                })
+              "
             >
               <el-button
                 v-if="item.isSearch"
                 slot="append"
                 icon="el-icon-search"
-                @click="clickSearch({
-                  selectValue: item.selectValue,
-                  inputValue: input,
-                })"
+                @click="
+                  clickSearch({
+                    selectValue: item.selectValue,
+                    inputValue: input,
+                  })
+                "
               ></el-button>
             </el-input>
           </template>
+
+          <template v-else-if="item.format === 'date'">
+            <el-date-picker
+              placeholder="请选择日期"
+              v-model="dateValue"
+              value-format="yyyy-MM-dd"
+              :picker-options="pickerOptions"
+              type="date"
+              @change="changeDate"
+            ></el-date-picker>
+          </template>
+
           <template v-else-if="item.format === 'select'">
             <el-select
               v-model="value"
@@ -114,11 +130,21 @@ export default {
     return {
       value: "",
       input: "",
+      dateValue: "",
+      pickerOptions: {
+        disabledDate(time) {
+          // 禁用今天之后的日期
+          return time.getTime() > Date.now();
+        },
+      },
     };
   },
   methods: {
     handleFilterButton(val) {
       this.$emit("handleFilterButton", val);
+    },
+    changeDate(val) {
+      this.$emit("changeDate", val);
     },
     deleteShopDialog() {
       this.$confirm("确定删除吗?", "", {

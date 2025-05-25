@@ -16,9 +16,10 @@
           v-model="forgetForm.phone"
           placeholder="请输入手机号"
           name="phone"
-          type="text"
+          type="number"
           tabindex="1"
           auto-complete="on"
+          maxlength="11"
           prefix-icon="el-icon-mobile"
         />
       </el-form-item>
@@ -46,14 +47,13 @@
       </el-form-item>
       <div class="next">
         <el-button
-          :loading="loading"
           class="login"
           style="width: 100%"
           @click.native.prevent="submitPrevious"
           >取消找回</el-button
         >
         <el-button
-          :loading="loading"
+          :loading="nextLoading"
           type="primary"
           class="login"
           style="width: 100%"
@@ -78,7 +78,7 @@
         <el-input
           ref="password"
           v-model="resetForm.password"
-          placeholder="请输入密码(至少6位字符)"
+          placeholder="请输入密码(至少8位字符)"
           name="password"
           type="text"
           tabindex="1"
@@ -101,10 +101,9 @@
       </el-form-item>
       <div class="next">
         <el-button
-          :loading="loading"
           class="login"
           style="width: 100%"
-          @click.native.prevent="resetPasswordEvent"
+          @click.native.prevent="cannelReset"
           >取消重置</el-button
         >
         <el-button
@@ -121,6 +120,16 @@
 </template>
 
 <script>
+import {
+  sendSms,
+  verifySms,
+  passwdForget,
+  accountProfile,
+  setUserProfile,
+  deleteInfo,
+} from "@/api/user";
+import md5 from "js-md5";
+
 export default {
   name: "forget",
   props: {
@@ -135,15 +144,19 @@ export default {
   },
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (value.length < 6) {
+      if (!value.length) {
         callback(new Error("请输入密码"));
+      } else if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d\W]{8,}$/.test(value)) {
+        callback(new Error("密码至少为8位且包含字符和数字"));
       } else {
         callback();
       }
     };
     const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
+      if (!value.length) {
         callback(new Error("请输入密码"));
+      } else if (value !== this.resetForm.password) {
+        callback(new Error("两次输入的密码不一致"));
       } else {
         callback();
       }
@@ -151,6 +164,8 @@ export default {
     const validatePhone = (rule, value, callback) => {
       if (value.length <= 0) {
         callback(new Error("请输入手机号"));
+      } else if (!/^1[3-9]\d{9}$/.test(value)) {
+        return callback(new Error("请输入正确的手机号"));
       } else {
         callback();
       }
@@ -178,27 +193,19 @@ export default {
       loading: false,
       resetPasswordType: "password",
       redirect: undefined,
-      isRememberTheAccount: false,
       // isReset: false,
-
 
       forgetForm: {
         phone: "",
         code: "",
       },
       forgetRules: {
-        phone: [
-          { required: true, trigger: "blur", validator: validatePhone },
-          {
-            pattern: /^1[3-9]\d{9}$/,
-            message: "请输入正确的手机号码",
-            trigger: "blur",
-          },
-        ],
+        phone: [{ required: true, trigger: "blur", validator: validatePhone }],
         code: [{ required: true, trigger: "blur", validator: validateCode }],
       },
       // isForget: false,
       isSendingCode: false,
+      nextLoading: false,
       buttonText: "发送验证码",
       countdown: 0,
     };
@@ -214,36 +221,48 @@ export default {
         this.$refs.resetPassword.focus();
       });
     },
+    // 重置
     sureSubmit() {
       this.$refs.resetForm.validate((valid) => {
-        console.log("🚀 ~ this.$refs.resetForm.validate ~ valid:", valid)
+        console.log("🚀 ~ this.$refs.resetForm.validate ~ valid:", valid);
         if (valid) {
-          this.$emit("submitNext");
           this.loading = true;
-          this.$store
-            .dispatch("user/login", this.resetForm)
-            .then(() => {
-              this.$router.push({ path: this.redirect || "/" });
-              this.loading = false;
-            })
-            .catch(() => {
-              this.loading = false;
-            });
+          passwdForget({
+            type: this.$store.state.type,
+            phone: this.forgetForm.phone.toString(),
+            passwd: md5(md5(this.resetForm.password)),
+            smsToken: this.sms_token,
+          }).then((res) => {
+            this.$emit("sureSubmit");
+            this.isSendingCode = false;
+            this.countdown = 0;
+            this.$router.push({ path: this.redirect || "/" });
+            this.loading = false;
+          });
+
+          // this.$emit("submitNext");
+          // this.loading = true;
+          // this.$store
+          //   .dispatch("user/login", this.resetForm)
+          //   .then(() => {
+          //     this.$router.push({ path: this.redirect || "/" });
+          //     this.loading = false;
+          //   })
+          //   .catch(() => {
+          //     this.loading = false;
+          //   });
         } else {
           console.log("error submit!!");
           return false;
         }
       });
     },
+    //点击发送验证码
     sendCode() {
       this.$refs.forgetForm.validateField("phone", (valid) => {
-        console.log(
-          "🚀 ~ this.$refs.forgetForm.validateField ~ this.$refs.forgetForm:",
-          this.$refs.forgetForm
-        );
-        console.log("🚀 ~ this.$refs.forgetPassword.validate ~ valid:", !valid);
         if (!valid) {
           this.isSendingCode = true;
+          this.nextLoading = false;
           this.buttonText = "60s后重试";
           this.countdown = 60;
           let timer = setInterval(() => {
@@ -257,57 +276,46 @@ export default {
             }
           }, 1000);
           // 这里调用发送验证码的接口
-          // axios.post('/sendCode',  { phone: this.loginForm.phone  })
-          //   .then(response => {
-          //     // 处理响应
-          //   })
-          //   .catch(error => {
-          //     // 处理错误
-          //   });
-        }
-      });
-    },
-    sendCode() {
-      this.$refs.forgetForm.validateField("phone", (valid) => {
-        console.log(
-          "🚀 ~ this.$refs.forgetForm.validateField ~ this.$refs.forgetForm:",
-          this.$refs.forgetForm
-        );
-        console.log("🚀 ~ this.$refs.forgetPassword.validate ~ valid:", !valid);
-        if (!valid) {
-          this.isSendingCode = true;
-          this.buttonText = "60s后重试";
-          this.countdown = 60;
-          let timer = setInterval(() => {
-            if (this.countdown > 0) {
-              this.countdown--;
-              this.buttonText = `${this.countdown}s 后重试`;
-            } else {
-              clearInterval(timer);
-              this.isSendingCode = false;
-              this.buttonText = "发送验证码";
-            }
-          }, 1000);
-          // 这里调用发送验证码的接口
-          // axios.post('/sendCode',  { phone: this.loginForm.phone  })
-          //   .then(response => {
-          //     // 处理响应
-          //   })
-          //   .catch(error => {
-          //     // 处理错误
-          //   });
+          sendSms({
+            phone: this.forgetForm.phone,
+            sign: md5(this.forgetForm.phone + "|qifutong"),
+          })
+            .then((res) => {
+              this.$message.success("验证码发送成功");
+            })
+            .catch((err) => {
+              this.$message.error(err);
+            });
         }
       });
     },
     submitPrevious() {
+      this.isSendingCode = false;
+      this.countdown = 0;
       this.$emit("submitPrevious");
     },
+    // 下一步
     submitNext() {
       this.$refs.forgetForm.validate((valid) => {
-        console.log("🚀 ~ this.$refs.forgetForm.validate ~ valid:", valid);
         if (valid) {
-          
-          this.$emit("submitNext");
+          this.nextLoading = true;
+          verifySms({
+            phone: this.forgetForm.phone.toString(),
+            code: "666666",
+          })
+            .then((res) => {
+              this.sms_token = res.data.sms_token;
+              if (res.data) {
+                this.$emit("submitNext");
+                this.nextLoading = false;
+              } else {
+                this.$message.error("验证码错误");
+                this.nextLoading = false;
+              }
+            })
+            .catch((err) => {
+              this.$message.error(err);
+            });
           // 调用登录接口
           // axios.post('/login',  this.loginForm)
           //   .then(response => {
@@ -319,21 +327,20 @@ export default {
         }
       });
     },
-    resetPasswordEvent() {
-      debugger
-      this.$emit("resetPasswordEvent");
+    cannelReset() {
+      this.isSendingCode = false;
+      this.countdown = 0;
+      this.$emit("sureSubmit");
     },
   },
 };
 </script>
 
-
 <style lang="scss">
 .forget {
   width: 360px;
   .el-form-item:nth-child(3) {
-    margin-bottom: 69px!important;
-
+    margin-bottom: 69px !important;
   }
   .des {
     font-family: Roboto;

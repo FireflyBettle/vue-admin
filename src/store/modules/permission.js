@@ -64,7 +64,7 @@ const actions = {
   }, roles) {
       return new Promise(resolve => {
           let accessedRoutes
-          if (roles.includes('admin')) {
+          if (roles.includes(1)) {
               // admin用户
               // 工作经验：工作中的管理系统，admin一般只用看到功能性页面，不需要看那些业务性页面。
               // accessedRoutes = asyncRoutes || []
@@ -72,7 +72,8 @@ const actions = {
           } else {
               // 非admin用户
               accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
-          }
+            }
+            console.log("🔍 ~ generateRoutes ~ src/store/modules/permission.js:76 ~ accessedRoutes:", accessedRoutes)
           // 把当前用户可访问的路由规则放在vuex中
           commit('SET_ROUTES', accessedRoutes)
           // 把当前用户可访问的路由规则给到.then()

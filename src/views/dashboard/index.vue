@@ -1,31 +1,267 @@
 <template>
-  <div class="dashboard-container">
-    <div class="dashboard-text">name: {{ name }}</div>
-    <div>12222223110</div>
+  <div class="dashboard-detail">
+    <div v-if="$route.meta" class="header">{{ title }}</div>
+    <Detail
+      ref="getTable"
+      :tableData="tableForm"
+      :tableFormAttrs="tableFormAttrs"
+      :filterDataRules="filterDataRules"
+      formLabelWidth="90px"
+    >
+    </Detail>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-
+import Detail from "@/components/Detail/index.vue";
+import Cookies from "js-cookie";
+import { channelDetail } from "@/api/channel.js";
+import { merchantDetail } from "@/api/business";
 export default {
-  name: 'Dashboard',
-  computed: {
-    ...mapGetters([
-      'name'
-    ])
-  }
-}
+  name: "channelDetail",
+  components: {
+    Detail,
+  },
+  data() {
+    return {
+      title: "",
+      tableForm: {},
+      tableFormAttrs: [],
+      filterDataRules: [""],
+    };
+  },
+  created() {
+    // type为3 商户 , 4为门店
+    if ([2, 3].includes(+Cookies.get("type"))) {
+      this.title = +Cookies.get("type") === 3 ? "商户详情" : '门店详情';
+      this.getMerchantDetail();
+    }
+    // type为2渠道
+    if ([2].includes(+Cookies.get("type"))) {
+      this.title = "门店详情";
+      this.getChannelDetail();
+    }
+    
+    // this.getMerchantDetail();
+  },
+  methods: {
+    async getMerchantDetail() {
+      const params = {};
+      if (+Cookies.get("type") === 3) {
+        params.merchantId = Cookies.get("merchantId");
+      }
+      if (+Cookies.get("type") === 4) {
+        params.storeId = Cookies.get("storeId");
+      }
+      const { data } = await merchantDetail(params);
+      this.tableForm = data;
+      this.tableForm.status = this.tableForm.status.toString();
+      this.tableForm.discountRate = this.tableForm.discountRate * 100;
+      this.tableFormAttrs = [
+        {
+          title: "商户名称:",
+          placeholder: "请输入商户名称",
+          type: "input",
+          value: "merchantName",
+          disabled: true,
+        },
+        {
+          title: "Logo:",
+          type: "upload",
+          value: "merchantLogo",
+          disabled: true,
+        },
+        {
+          title: "商户描述:",
+          placeholder: "请输入商户描述",
+          type: "textarea",
+          value: "merchantDesc",
+          disabled: true,
+        },
+        {
+          title: "商户ID:",
+          placeholder: "系统自动生成",
+          type: "input",
+          value: "merchantId",
+          disabled: true,
+        },
+        {
+          title: "折扣率:",
+          placeholder: "请输入折扣率",
+          type: "input",
+          inputType: "number",
+          slot: "%",
+          value: "discountRate",
+          disabled: true,
+        },
+        {
+          title: "联系人:",
+          placeholder: "请输入联系人",
+          type: "input",
+          value: "contact",
+          disabled: true,
+        },
+        {
+          title: "手机号:",
+          placeholder: "请输入手机号",
+          type: "input",
+          value: "phone",
+          inputType: "number",
+          disabled: true,
+        },
+        {
+          title: "邮箱:",
+          placeholder: "请输入邮箱",
+          type: "input",
+          value: "email",
+          disabled: true,
+        },
+        {
+          title: "状态:",
+          placeholder: "请输入邮箱",
+          type: "radio",
+          value: "status",
+          disabled: true,
+        },
+        {
+          title: "密码:",
+          placeholder: "••••••••",
+          type: "input",
+          // inputType: "text",
+          value: "passwd",
+          isClosePwd: false,
+          disabled: true,
+        },
+      ];
+    },
+    async getChannelDetail() {
+      const { data } = await channelDetail({
+        channelId: Cookies.get("merchantId"),
+      });
+      this.tableForm = data;
+      this.tableForm.status = this.tableForm.status.toString();
+      this.tableForm.predepositAmount = this.tableForm.predepositAmount / 100;
+      this.tableForm.availablePredeposit =
+        this.tableForm.availablePredeposit / 100;
+      this.tableForm.lockedPredeposit = this.tableForm.lockedPredeposit / 100;
+      this.tableFormAttrs = [
+        {
+          title: "渠道名称:",
+          placeholder: "请输入渠道名称",
+          type: "input",
+          value: "channelName",
+          disabled: true,
+        },
+        {
+          title: "渠道描述:",
+          placeholder: "请输入渠道描述",
+          type: "textarea",
+          value: "channelDesc",
+          disabled: true,
+        },
+        {
+          title: "App Secret:",
+          placeholder: "请输入App Secret",
+          type: "input",
+          value: "appSecret",
+          icon: "el-icon-refresh-right",
+          disabled: true,
+        },
+        {
+          title: "渠道ID:",
+          placeholder: "请输入预存款金额",
+          type: "input",
+          inputType: "number",
+          value: "channelId",
+          disabled: true,
+          disabled: true,
+        },
+        {
+          title: "联系人:",
+          placeholder: "请输入联系人",
+          type: "input",
+          value: "contact",
+          disabled: true,
+        },
+        {
+          title: "手机号:",
+          placeholder: "请输入手机号",
+          type: "input",
+          value: "phone",
+          inputType: "number",
+          disabled: true,
+        },
+        {
+          title: "邮箱:",
+          placeholder: "请输入邮箱",
+          type: "input",
+          value: "email",
+          disabled: true,
+        },
+        {
+          title: "状态:",
+          placeholder: "请输入邮箱",
+          type: "radio",
+          value: "status",
+          disabled: true,
+        },
+        {
+          title: "密码:",
+          placeholder: "••••••••",
+          type: "input",
+          inputType: "password",
+          value: "passwd",
+          disabled: true,
+          isClosePwd: true,
+        },
+        {
+          title: "预存款金额:",
+          placeholder: "0",
+          type: "input",
+          value: "predepositAmount",
+          inputType: "number",
+          disabled: true,
+        },
+        {
+          title: "锁定预存款:",
+          placeholder: "0",
+          type: "input",
+          value: "lockedPredeposit",
+          inputType: "number",
+          disabled: true,
+        },
+        {
+          title: "可用预存款:",
+          placeholder: "0",
+          type: "input",
+          value: "availablePredeposit",
+          inputType: "number",
+          disabled: true,
+        },
+      ]
+    },
+  },
+};
 </script>
 
-<style lang="scss" scoped>
-.dashboard {
-  &-container {
-    margin: 30px;
+<style lang="scss">
+.dashboard-detail {
+  position: relative;
+  .content {
+    padding-bottom: 26px;
   }
-  &-text {
-    font-size: 30px;
-    line-height: 46px;
+  .header {
+    color: rgba(0, 0, 0, 0.85);
+    padding: 0 0 24px 24px;
+    border-bottom: 1px solid rgba(240, 240, 240, 1);
+    background: #fff;
+    padding-top: 20px;
+  }
+  .el-dialog__wrapper {
+    .el-input,
+    .el-textarea {
+      width: 348px !important;
+    }
   }
 }
 </style>

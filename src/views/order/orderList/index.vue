@@ -286,7 +286,7 @@ export default {
       });
     },
     // 获取列表
-    async getList(storeId) {
+    async getList() {
       try {
         // 表格加载loading
         this.loadingStatus = true;
@@ -336,7 +336,7 @@ export default {
     async handleTableOption(row) {
       // 0-待核销状态， 可以操作作废
       if (row.specialStatus === "待核销") {
-        this.$confirm("确认冲正吗?", "", {
+        this.$confirm("确认作废吗?", "", {
           type: "warning",
           confirmButtonText: "是",
           cancelButtonText: "否",
@@ -345,10 +345,11 @@ export default {
             await reverseOrder({
               voucherId: row.voucherId,
             });
-            this.$message.success(" 冲正成功");
+            this.getList();
+            this.$message.success("作废成功");
           })
           .catch(() => {
-            this.$message.info(" 已取消冲正");
+            this.$message.info(" 已取消作废");
           });
       }
       // 1-已核销状态， 可以操作冲正
@@ -362,6 +363,7 @@ export default {
             await expireOrder({
               voucherId: row.voucherId,
             });
+            this.getList();
             this.$message.success(" 冲正成功");
           })
           .catch(() => {

@@ -182,7 +182,7 @@
               <span>查看</span>
             </router-link>
           </span>
-          <span class="button-margin-left">
+          <span :class="['button-margin-left', [2,3].includes(+scope.row.status) ? 'gray' : '']">
             <span
               @click="
                 handleCustomClickOption(scope.row)
@@ -448,6 +448,9 @@ export default {
   cursor: pointer;
   color: #1890ff;
   font-size: 14px;
+}
+.gray {
+  color: #606266;
 }
 .button-margin-left:not(:first-child) {
   margin-left: 16px;
