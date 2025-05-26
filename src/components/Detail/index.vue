@@ -10,7 +10,6 @@
           :value="item.required ? item.value : ''"
           :key="index"
           :prop="item.value"
-          :required="item.required"
         >
           <!-- 输入框 -->
           <template v-if="item.type === 'input'">
@@ -25,7 +24,11 @@
                 item.slot
               }}</template>
               <template slot="append" v-if="item.icon">
-                <el-button slot="append" :icon="item.icon" @click="resetSecret"></el-button>
+                <el-button
+                  slot="append"
+                  :icon="item.icon"
+                  @click="resetSecret"
+                ></el-button>
               </template>
             </el-input>
             <template v-if="item.isClosePwd && !item.disabled">
@@ -124,21 +127,6 @@
 </template>
 
 <script>
-// 定义手机号的正则表达式，用于匹配中国手机号格式
-const validatePhone = (rule, value, callback) => {
-  const phoneReg = /^1[3-9]\d{9}$/;
-  if (!value) {
-    // 如果手机号为空，触发原有的提示信息
-    return callback(new Error("请输入手机号"));
-  }
-  if (!phoneReg.test(value)) {
-    // 如果手机号格式不符合正则表达式，给出格式错误的提示
-    callback(new Error("请输入正确的手机号"));
-  } else {
-    // 手机号格式正确，通过验证
-    callback();
-  }
-};
 export default {
   props: {
     tableData: {
@@ -152,6 +140,9 @@ export default {
     styleType: {
       type: String,
     },
+    isEdit: {
+      type: Boolean,
+    },
     formLabelWidth: {
       type: String,
       default: "84px",
@@ -162,8 +153,45 @@ export default {
     },
   },
   data() {
+    // 定义手机号的正则表达式，用于匹配中国手机号格式
+    const validatePhone = (rule, value, callback) => {
+      const phoneReg = /^1[3-9]\d{9}$/;
+      if (!value) {
+        // 如果手机号为空，触发原有的提示信息
+        return callback(new Error("请输入手机号"));
+      }
+      if (!phoneReg.test(value)) {
+        // 如果手机号格式不符合正则表达式，给出格式错误的提示
+        callback(new Error("请输入正确的手机号"));
+      } else {
+        // 手机号格式正确，通过验证
+        callback();
+      }
+    };
+    const validatePasswd = (rule, value, callback) => {
+      const passwd = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d\W]{8,}$/;
+      if (this.isEdit && !value) {
+        console.log("🚀 ~ validatePasswd ~ this.isEdit:", this.isEdit)
+        callback();
+      }
+      if (!value) {
+        // 如果手机号为空，触发原有的提示信息
+        return callback(new Error("请输入密码"));
+      }
+      if (!passwd.test(value)) {
+        // 如果手机号格式不符合正则表达式，给出格式错误的提示
+        callback(new Error("密码至少为8位且包含字符和数字"));
+      } else {
+        // 手机号格式正确，通过验证
+        callback();
+      }
+    };
     return {
       tableDataRules: {
+        passwd: [
+        { required: !this.isEdit, message: "请输入密码", trigger: "blur" },
+        { validator: validatePasswd, trigger: "blur" }
+      ],
         amount: [
           { required: true, message: "请输入充值金额", trigger: "blur" },
         ],
@@ -191,7 +219,9 @@ export default {
         storeName: [
           { required: true, message: "请输入门店名称", trigger: "blur" },
         ],
-        area: [{ required: true, message: "请选择省市区/县", trigger: "blur" }],
+        area: [
+          { required: true, message: "请选择省市区/县", trigger: "blur" },
+        ],
         storeAddr: [
           { required: true, message: "请输入详细地址", trigger: "blur" },
         ],
@@ -204,14 +234,20 @@ export default {
         discountRate: [
           { required: true, message: "请输入折扣率", trigger: "blur" },
         ],
-        contact: [{ required: true, message: "请输入联系人", trigger: "blur" }],
+        contact: [
+          { required: true, message: "请输入联系人", trigger: "blur" },
+        ],
         phone: [
           { required: true, message: "请输入手机号", trigger: "blur" },
           { validator: validatePhone, trigger: "blur" },
         ],
         email: [
           { required: true, message: "请输入邮箱", trigger: "blur" },
-          { type: "email", message: "请输入正确的邮箱地址", trigger: ["blur"] },
+          {
+            type: "email",
+            message: "请输入正确的邮箱地址",
+            trigger: ["blur"],
+          },
         ],
         shopPerson: [
           { required: true, message: "请选择券码类型", trigger: "blur" },
@@ -230,13 +266,13 @@ export default {
   created() {
     if (this.filterDataRules.length) {
       let obj = {};
-      this.filterDataRules.forEach(item => {
-        Object.keys(this.tableDataRules).forEach(key => {
+      this.filterDataRules.forEach((item) => {
+        Object.keys(this.tableDataRules).forEach((key) => {
           if (key === item) {
             obj[item] = this.tableDataRules[item];
           }
-        })
-      })
+        });
+      });
       this.tableDataRules = obj;
     }
   },

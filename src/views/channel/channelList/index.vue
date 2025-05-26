@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-21 15:07:18
+ * @LastEditTime: 2025-05-26 16:27:46
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/channel/channelList/index.vue
 -->
@@ -28,12 +28,15 @@
         :tableFormAttrs="dialogFormAttrs"
         formLabelWidth="92px"
         @resetSecret="resetSecret"
+        :isEdit="title === '编辑渠道'"
         @handleAvatarSuccess="handleAvatarSuccess"
       >
       </Detail>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitForm()">{{ buttonName }}</el-button>
+        <el-button type="primary" @click="submitForm()">{{
+          buttonName
+        }}</el-button>
       </div>
     </el-dialog>
   </div>
@@ -45,7 +48,12 @@ import Detail from "@/components/Detail/index.vue";
 import Search from "@/components/Search/index.vue";
 import md5 from "js-md5";
 
-import { createChannel, channelList, updateChannel, channelSecretReset } from "@/api/channel.js";
+import {
+  createChannel,
+  channelList,
+  updateChannel,
+  channelSecretReset,
+} from "@/api/channel.js";
 
 const DefaultTableQuery = {
   pageNum: 1,
@@ -62,7 +70,7 @@ export default {
   data() {
     return {
       title: "添加渠道",
-      buttonName: '添加',
+      buttonName: "添加",
       styleType: "dialog",
       // 参数
       listQueryParams: { ...DefaultTableQuery },
@@ -324,7 +332,7 @@ export default {
             item.availablePredeposit = item.availablePredeposit / 100;
             item.lockedPredeposit = item.lockedPredeposit / 100;
             item.predepositAmount = item.predepositAmount / 100;
-            item.status = item.status.toString();
+            item.status = item.status ? item.status.toString() : "0";
           });
         }
         this.listQueryParams.total = data.total;
@@ -364,12 +372,13 @@ export default {
         if (valid) {
           const params = {
             ...this.dialogForm,
-            passwd: this.dialogForm.passwd
-              ? md5(md5(this.dialogForm.passwd))
-              : md5(md5("")),
+            // passwd: this.dialogForm.passwd
+            //   ? md5(md5(this.dialogForm.passwd))
+            //   : md5(md5("")),
             status: Number(this.dialogForm.status),
           };
           if (this.title === "添加渠道") {
+            params.passwd = md5(md5(this.dialogForm.passwd));
             createChannel(params).then((res) => {
               this.getList();
               this.$message({
@@ -380,6 +389,11 @@ export default {
             });
           }
           if (this.title === "编辑渠道") {
+            if (this.dialogForm.passwd) {
+              params.passwd = md5(md5(this.dialogForm.passwd));
+            } else {
+              delete params.passwd;
+            }
             updateChannel(params).then((res) => {
               this.getList();
               this.$message({
@@ -410,7 +424,10 @@ export default {
         });
     },
     handleFilter(val) {
-    console.log("🔍 ~ handleFilter ~ src/views/channel/channelList/index.vue:411 ~ val:", val)
+      console.log(
+        "🔍 ~ handleFilter ~ src/views/channel/channelList/index.vue:411 ~ val:",
+        val
+      );
       this.params.searchKey = val.selectValue;
     },
     // 多选框
@@ -423,6 +440,7 @@ export default {
       if (option.label === "查看") {
         console.log(index, row, option);
       } else if (option.label === "编辑") {
+        var row = JSON.parse(JSON.stringify(row));
         this.dialogFormVisible = true;
         this.title = "编辑渠道";
         this.buttonName = "确定";
@@ -432,7 +450,7 @@ export default {
           if (val.isClosePwd) {
             val.title = "重置密码:";
           }
-          if(val.value === 'appSecret') {
+          if (val.value === "appSecret") {
             val.icon = "el-icon-refresh-right";
           }
         });
@@ -456,14 +474,14 @@ export default {
         this.title = "添加渠道";
         this.buttonName = "添加";
         this.dialogForm = {};
-        this.dialogForm.email = "140@qq.co"; // 测试，后面去掉
+        // this.dialogForm.email = "140@qq.co"; // 测试，后面去掉
         // this.dialogForm.phone = "19412345671";
         this.dialogFormAttrs.forEach((val) => {
           if (val.isClosePwd) {
             val.title = "初始密码:";
           }
-          if(val.value === 'appSecret') {
-            val.icon = ''
+          if (val.value === "appSecret") {
+            val.icon = "";
           }
         });
       }

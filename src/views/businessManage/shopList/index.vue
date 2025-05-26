@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-21 16:35:16
+ * @LastEditTime: 2025-05-26 16:36:53
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/businessManage/shopList/index.vue
 -->
@@ -28,6 +28,7 @@
         :tableFormAttrs="dialogFormAttrs"
         formLabelWidth="91px"
         @resetSecret="resetSecret"
+        :isEdit="title === '编辑门店'"
         @handleAreaChange="handleAreaChange"
       >
       </Detail>
@@ -434,13 +435,14 @@ export default {
             phone: this.dialogForm.phone,
             email: this.dialogForm.email,
             ipWhiteList: this.dialogForm.ipWhiteList,
-            passwd: this.dialogForm.passwd
-              ? md5(md5(this.dialogForm.passwd))
-              : md5(md5("")),
+            // passwd: this.dialogForm.passwd
+            //   ? md5(md5(this.dialogForm.passwd))
+            //   : md5(md5("")),
             status: Number(this.dialogForm.status),
           };
           params.storeAddr = this.selectedAreaText + this.dialogForm.storeAddr;
           if (this.title === "添加门店") {
+            params.passwd = md5(md5(this.dialogForm.passwd));
             createStores(params).then((res) => {
               this.getList();
               this.$message({
@@ -451,6 +453,11 @@ export default {
             this.dialogFormVisible = false;
           }
           if (this.title === "编辑门店") {
+            if (this.dialogForm.passwd) {
+              params.passwd = md5(md5(this.dialogForm.passwd));
+            }else {
+              delete params.passwd;
+            }
             params.storeId = this.dialogStoreId;
             changeStores(params).then((res) => {
               this.getList();
@@ -507,6 +514,7 @@ export default {
       if (option.label === "查看") {
         console.log(index, row, option);
       } else if (option.label === "编辑") {
+        var row = JSON.parse(JSON.stringify(row));
         this.dialogFormVisible = true;
         this.title = "编辑门店";
         this.sureButtonsName = "确定";

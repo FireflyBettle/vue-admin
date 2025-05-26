@@ -2,9 +2,9 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-23 18:26:50
+ * @LastEditTime: 2025-05-26 10:46:33
  * @Description: 
- * @FilePath: /vue-admin-template-master/src/views/order/orderList/index.vue
+ * @FilePath: /vue-admin-template-master/src/views/bill/billRecord/index.vue
 -->
 <template>
   <div class="bill-list">
@@ -56,9 +56,6 @@ export default {
       params: {
         pageSize: 10,
         pageNum: 0,
-        merchantId: "",
-        channelId: "",
-        storeId: "",
       },
       filterButtonText: [
         {
@@ -249,6 +246,7 @@ export default {
         item.verifyAmount = item.verifyAmount / 100;
         item.reverseAmount = item.reverseAmount / 100;
         item.merchantSettlement = item.merchantSettlement / 100;
+        item.StoreSettlement = item.StoreSettlement / 100;
       });
     },
     async getMerchantOrStoreList() {
@@ -259,14 +257,22 @@ export default {
         this.params.pageSize = this.listQueryParams.pageSize;
         this.params.pageNum = this.listQueryParams.pageNum - 1;
         this.params.date = this.dateValue;
+        let tableData = [];
         // 发送请求,请求到的数据格式见下文，
-        const { data } = await billMerchantList(this.params);
-        if (data.list) {
-          this.getMerchantOrStoreListFilter(data.list);
+        if (this.type === 3) {
+          const { data } = await billMerchantList(this.params);
+          tableData = data.list;
         }
-        this.listQueryParams.total = data.total;
+        if (this.type === 4) {
+          const { data } = await billStoreList(this.params);
+          tableData = data.list;
+        }
+        if (tableData) {
+          this.getMerchantOrStoreListFilter(tableData);
+        }
+        this.listQueryParams.total = tableData.total;
         // 数据给表格
-        this.tableData = data.list || [];
+        this.tableData = tableData || [];
         this.loadingStatus = false;
         this.tableConfig = [
           {
@@ -290,9 +296,9 @@ export default {
             value: "reverseQuantity",
           },
           {
-            label: "商户结款",
+            label: this.type === 3? "商户结款" : '门店结款',
             width: "167",
-            value: "merchantSettlement",
+            value: this.type === 3 ? "merchantSettlement" : 'StoreSettlement',
           },
           {
             label: "开始时间",

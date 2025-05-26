@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-23 18:26:50
+ * @LastEditTime: 2025-05-26 17:33:06
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/order/orderList/index.vue
 -->
@@ -22,6 +22,7 @@ import Table from "@/components/Table/index.vue";
 import Detail from "@/components/Detail/index.vue";
 import Search from "@/components/Search/index.vue";
 import XLSX from "xlsx";
+import Cookies from "js-cookie";
 
 import { orderList, reverseOrder, expireOrder } from "@/api/order";
 import { merchantList } from "@/api/business.js";
@@ -199,6 +200,7 @@ export default {
         },
       ],
       multipleSelection: [],
+      type: +Cookies.get('type'),
     };
   },
   computed: {
@@ -300,6 +302,7 @@ export default {
           1: "已核销",
           2: "冲正",
           3: "作废",
+          4: "过期",
         };
         if (data.list) {
           data.list.forEach((item) => {
@@ -332,17 +335,17 @@ export default {
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    // 点击编辑
+    // 点击编辑  渠道2，平台1只能操作作废   门店4,商户3只能操作冲正
     async handleTableOption(row) {
-      // 0-待核销状态， 可以操作作废
-      if (row.specialStatus === "待核销") {
+      // 0-待核销状态，4过期状态 可以操作作废
+      if ([0,4].includes(+row.status) && [1,2].includes(this.type)) {
         this.$confirm("确认作废吗?", "", {
           type: "warning",
           confirmButtonText: "是",
           cancelButtonText: "否",
         })
           .then(async () => {
-            await reverseOrder({
+            await expireOrder({
               voucherId: row.voucherId,
             });
             this.getList();
@@ -353,14 +356,14 @@ export default {
           });
       }
       // 1-已核销状态， 可以操作冲正
-      if (row.specialStatus === "已核销") {
+      if (+row.status === 1  && [3,4].includes(this.type)) {
         this.$confirm("确认冲正吗?", "", {
           type: "warning",
           confirmButtonText: "是",
           cancelButtonText: "否",
         })
           .then(async () => {
-            await expireOrder({
+            await reverseOrder({
               voucherId: row.voucherId,
             });
             this.getList();
@@ -370,7 +373,6 @@ export default {
             this.$message.info(" 已取消冲正");
           });
       }
-      console.log("🚀 ~ handleTableOption ~ row:", row);
     },
     // 分页操作
     handleRefreshList() {
@@ -413,6 +415,7 @@ export default {
         1: "已核销",
         2: "冲正",
         3: "作废",
+        4: "过期",
       };
       let exportData = [];
       let arr = [];

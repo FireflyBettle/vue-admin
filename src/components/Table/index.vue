@@ -182,13 +182,15 @@
               <span>查看</span>
             </router-link>
           </span>
-          <span :class="['button-margin-left', [2,3].includes(+scope.row.status) ? 'gray' : '']">
-            <span
-              @click="
-                handleCustomClickOption(scope.row)
-              "
-              >{{ scope.row.specialStatus }}</span
-            >
+          <span
+            :class="[
+              'button-margin-left',
+              filterColor(scope.row) ? '' : 'gray',
+            ]"
+          >
+            <span @click="handleCustomClickOption(scope.row)">{{
+              scope.row.specialStatus
+            }}</span>
           </span>
         </template>
       </el-table-column>
@@ -214,6 +216,7 @@
 </template>
 
 <script>
+import Cookies from "js-cookie";
 export default {
   name: "AppTable",
   props: {
@@ -316,7 +319,7 @@ export default {
       checkAll: false,
       allData: [],
       checkData: [],
-      radio: "50008",
+      radio: "",
     };
   },
   // filters: {
@@ -351,6 +354,14 @@ export default {
     // 获取当前loading的状态
     listLoading: function () {
       return this.loadingStatus;
+    },
+    filterColor: function (row) {
+      return function (row) {
+        const type = +Cookies.get("type");
+        if (+row.status === 1 && [3, 4].includes(type)) return true;
+        if ([0, 4].includes(+row.status) && [1, 2].includes(type)) return true;
+        return false;
+      };
     },
   },
   methods: {

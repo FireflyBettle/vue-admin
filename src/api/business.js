@@ -82,3 +82,12 @@ export function resetStoresSecret(data) {
     data
   })
 }
+
+// 图片上传
+export function uploadImg(data) {
+  return request({
+    url: '/web/fs/upload',
+    method: 'post',
+    data
+  })
+}

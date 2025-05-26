@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-21 17:43:05
+ * @LastEditTime: 2025-05-26 10:20:30
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/businessManage/businessList/detail.vue
 -->
@@ -553,6 +553,8 @@ export default {
         // 分页数据作为参数给服务端
         this.params.pageSize = this.listQueryParams.pageSize;
         this.params.pageSize = this.listQueryParams.pageSize;
+        this.params.searchKey = 'merchantId';
+        this.params.searchVal = this.$route.params.id;
         // this.params.searchKey = 'merchantId';
         // this.params.searchVal = this.$route.params.id;
         // 发送请求,请求到的数据格式见下文，

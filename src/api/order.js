@@ -9,7 +9,7 @@
 import request from '@/utils/request'
 
 // 失效订单
-export function reverseOrder(data) {
+export function expireOrder(data) {
   return request({
     url: '/web/order/expire',
     method: 'post',
@@ -17,7 +17,7 @@ export function reverseOrder(data) {
   })
 }
 // 冲正订单
-export function expireOrder(data) {
+export function reverseOrder(data) {
   return request({
     url: '/web/order/reverse',
     method: 'post',

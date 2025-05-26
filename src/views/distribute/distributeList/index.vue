@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-23 14:56:16
+ * @LastEditTime: 2025-05-26 16:20:30
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/distribute/distributeList/index.vue
 -->
@@ -737,6 +737,7 @@ export default {
       if (option.label === "查看") {
         console.log(index, row, option);
       } else if (option.label === "编辑") {
+        var row = JSON.parse(JSON.stringify(row));
         this.createIndex = 0;
         this.dialogFormVisible = true;
         this.isEdit = true;

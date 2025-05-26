@@ -16,7 +16,7 @@
 import Detail from "@/components/Detail/index.vue";
 import Cookies from "js-cookie";
 import { channelDetail } from "@/api/channel.js";
-import { merchantDetail } from "@/api/business";
+import { merchantDetail, batchStoreInformation } from "@/api/business";
 export default {
   name: "channelDetail",
   components: {
@@ -28,16 +28,18 @@ export default {
       tableForm: {},
       tableFormAttrs: [],
       filterDataRules: [""],
+      type: '',
     };
   },
   created() {
     // type为3 商户 , 4为门店
-    if ([2, 3].includes(+Cookies.get("type"))) {
-      this.title = +Cookies.get("type") === 3 ? "商户详情" : '门店详情';
-      this.getMerchantDetail();
+    this.type = +Cookies.get("type");
+    if ([3, 4].includes(this.type)) {
+      this.title = this.type === 3 ? "商户详情" : '门店详情';
+      this.getMerchantOrStoreDetail();
     }
     // type为2渠道
-    if ([2].includes(+Cookies.get("type"))) {
+    if ([2].includes(this.type)) {
       this.title = "门店详情";
       this.getChannelDetail();
     }
@@ -45,16 +47,21 @@ export default {
     // this.getMerchantDetail();
   },
   methods: {
-    async getMerchantDetail() {
-      const params = {};
-      if (+Cookies.get("type") === 3) {
-        params.merchantId = Cookies.get("merchantId");
+    async getMerchantOrStoreDetail() {
+      let formData = [];
+      if (this.type === 3) {
+        const { data } = await merchantDetail({
+          merchantId: Cookies.get("merchantId")
+        });
+        formData = data;
       }
-      if (+Cookies.get("type") === 4) {
-        params.storeId = Cookies.get("storeId");
+      if (this.type === 4) {
+        const { data } = await batchStoreInformation({
+          storeIds: [Cookies.get("storeId")]
+        });
+        formData = data.list[0];
       }
-      const { data } = await merchantDetail(params);
-      this.tableForm = data;
+      this.tableForm = formData;
       this.tableForm.status = this.tableForm.status.toString();
       this.tableForm.discountRate = this.tableForm.discountRate * 100;
       this.tableFormAttrs = [
@@ -136,7 +143,7 @@ export default {
     },
     async getChannelDetail() {
       const { data } = await channelDetail({
-        channelId: Cookies.get("merchantId"),
+        channelId: Cookies.get("channelId"),
       });
       this.tableForm = data;
       this.tableForm.status = this.tableForm.status.toString();

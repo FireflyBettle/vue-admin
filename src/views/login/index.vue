@@ -91,7 +91,7 @@ const validateUsername = (rule, value, callback) => {
   }
 };
 const validatePassword = (rule, value, callback) => {
-  if (value.length < 6) {
+  if (!value.length) {
     callback(new Error("请输入密码"));
   } else {
     callback();
@@ -146,7 +146,7 @@ export default {
     },
   },
   created() {
-    this.loginForm.type = 1;
+    this.loginForm.type = +Cookies.get('type') ? +Cookies.get('type') : 1;
     // this.$store.dispatch("user/authType", this.type)
   },
   methods: {
@@ -196,8 +196,9 @@ export default {
             .then(() => {
               this.loading = false;
               if (+this.loginForm.type === 1) {
+                console.log("🚀 ~ .then ~ this.loginForm.type:", this.loginForm.type)
                 return this.$router.push({
-                  path: this.redirect || "/business",
+                  path: "/business",
                 });
               }
               return this.$router.push({ path: this.redirect || "/" });

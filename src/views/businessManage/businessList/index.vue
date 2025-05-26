@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-20 11:08:48
+ * @LastEditTime: 2025-05-26 18:15:49
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/businessManage/businessList/index.vue
 -->
@@ -26,12 +26,15 @@
         :styleType="styleType"
         :tableData="dialogForm"
         :tableFormAttrs="dialogFormAttrs"
+        :isEdit="title === '编辑商户'"
         @handleAvatarSuccess="handleAvatarSuccess"
       >
       </Detail>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="submitForm()">{{ sureButtonsName }}</el-button>
+        <el-button type="primary" @click="submitForm()">{{
+          sureButtonsName
+        }}</el-button>
       </div>
     </el-dialog>
   </div>
@@ -43,7 +46,12 @@ import Detail from "@/components/Detail/index.vue";
 import Search from "@/components/Search/index.vue";
 import md5 from "js-md5";
 
-import { createMerchant, merchantList, changeMerchant } from "@/api/business";
+import {
+  createMerchant,
+  merchantList,
+  changeMerchant,
+  uploadImg,
+} from "@/api/business";
 
 const DefaultTableQuery = {
   pageNum: 1,
@@ -60,7 +68,7 @@ export default {
   data() {
     return {
       title: "添加商户",
-      sureButtonsName: '添加',
+      sureButtonsName: "添加",
       styleType: "dialog",
       // 参数
       listQueryParams: { ...DefaultTableQuery },
@@ -313,7 +321,7 @@ export default {
         if (data.list) {
           data.list.forEach((item) => {
             item.discountRate = parseInt(item.discountRate * 100);
-            item.status = item.status.toString();
+            item.status = item.status ? item.status.toString() : "0";
           });
         }
         this.listQueryParams.total = data.total;
@@ -326,8 +334,57 @@ export default {
     },
     // 点击上传
     handleAvatarSuccess(file) {
-      console.log("🚀 ~ handleAvatarSuccess ~ file:", file);
-      this.dialogForm.merchantLogo = URL.createObjectURL(file.raw);
+      // 1. 获取文件类型
+      const fileType = file.raw.type;
+      console.log("🚀 ~ handleAvatarSuccess ~ file.type:", file)
+
+      // 2. 将文件转换为base64
+      const reader = new FileReader();
+      reader.readAsDataURL(file.raw);
+
+      reader.onload = () => {
+        // 3. 获取base64数据（去掉前面的data:image/png;base64,前缀）
+        const base64Data = reader.result.split(",")[1];
+
+        // 4. 调用API接口
+        uploadImg({
+          file_type: fileType,
+          file_data: base64Data,
+        }).
+        then((res) => {
+            console.log("🚀 ~ handleAvatarSuccess ~ res:", res);
+            const a = URL.createObjectURL(res.data.download_url)
+            console.log("🚀 ~ then ~ a:", a)
+          });
+
+        // 5. 预览图片
+        this.imageUrl = URL.createObjectURL(file.raw);
+      };
+
+      return;
+      // 获取文件类型
+      const file_type = file.type;
+      let file_data = "";
+
+      // 读取文件内容并进行 Base64 编码
+      // const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        console.log(
+          "🚀 ~ handleAvatarSuccess ~ reader.result.split(','):",
+          reader.result.split(",")
+        );
+        const base64Data = reader.result.split(",")[1];
+        file_data = base64Data;
+      };
+      uploadImg({
+        file_type,
+        file_data,
+      }).then((res) => {
+        console.log("🚀 ~ handleAvatarSuccess ~ res:", res);
+      });
+      // console.log("🚀 ~ handleAvatarSuccess ~ file:", file);
+      // this.dialogForm.merchantLogo = URL.createObjectURL(file.raw);
     },
     // 点击添加按钮
     submitForm() {
@@ -336,12 +393,10 @@ export default {
           const params = {
             ...this.dialogForm,
             discountRate: this.dialogForm.discountRate / 100,
-            passwd: this.dialogForm.passwd
-              ? md5(md5(this.dialogForm.passwd))
-              : md5(md5("")),
             status: Number(this.dialogForm.status),
           };
           if (this.title === "添加商户") {
+            params.passwd = md5(md5(this.dialogForm.passwd));
             createMerchant(params).then((res) => {
               this.getList();
               this.$message({
@@ -351,6 +406,11 @@ export default {
             });
           }
           if (this.title === "编辑商户") {
+            if (this.dialogForm.passwd) {
+              params.passwd = md5(md5(this.dialogForm.passwd));
+            } else {
+              delete params.passwd;
+            }
             changeMerchant(params).then((res) => {
               this.getList();
               this.$message({
@@ -389,6 +449,7 @@ export default {
     },
     // 点击编辑
     handleTableOption(index, row, option) {
+      var row = JSON.parse(JSON.stringify(row));
       this.operationalData = { ...row };
       if (option.label === "查看") {
         console.log(index, row, option);
