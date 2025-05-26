@@ -85,11 +85,14 @@ const actions = {
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
       logout(state.token).then(() => {
-        removeToken() // must remove  token  first
-        resetRouter()
         commit('RESET_STATE')
         commit('SET_ROLES', [])
+        removeToken() // must remove  token  first
+        resetRouter()
         resolve()
+        setTimeout(() => {
+          window.location.reload()
+        }, 10); // 为了刷新页面，清除vuex缓存
       }).catch(error => {
         reject(error)
       })

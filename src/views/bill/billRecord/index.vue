@@ -261,18 +261,18 @@ export default {
         // 发送请求,请求到的数据格式见下文，
         if (this.type === 3) {
           const { data } = await billMerchantList(this.params);
-          tableData = data.list;
+          tableData = data;
         }
         if (this.type === 4) {
           const { data } = await billStoreList(this.params);
-          tableData = data.list;
+          tableData = data;
         }
-        if (tableData) {
-          this.getMerchantOrStoreListFilter(tableData);
+        if (tableData.list.length) {
+          this.getMerchantOrStoreListFilter(tableData.list);
         }
         this.listQueryParams.total = tableData.total;
         // 数据给表格
-        this.tableData = tableData || [];
+        this.tableData = tableData.list || [];
         this.loadingStatus = false;
         this.tableConfig = [
           {

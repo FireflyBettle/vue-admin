@@ -329,9 +329,9 @@ export default {
             if (item.channelId === channelId) {
               this.dialogForm.appSecret = item.appSecret;
             }
-            item.availablePredeposit = item.availablePredeposit / 100;
-            item.lockedPredeposit = item.lockedPredeposit / 100;
-            item.predepositAmount = item.predepositAmount / 100;
+            item.availablePredeposit = item.availablePredeposit ? item.availablePredeposit / 100 : 0;
+            item.lockedPredeposit = item.lockedPredeposit ? item.lockedPredeposit / 100 : 0;
+            item.predepositAmount = item.predepositAmount ? item.predepositAmount / 100 : 0;
             item.status = item.status ? item.status.toString() : "0";
           });
         }

@@ -202,7 +202,7 @@ export default {
         {
           label: "门店数",
           width: "80",
-          value: "storeIds",
+          value: "storeNumber",
         },
         {
           label: "折扣率",
@@ -603,6 +603,7 @@ export default {
           data.list.forEach((item) => {
             item.discountRate = parseInt(item.discountRate * 100);
             item.status = item.status.toString();
+            item.storeNumber = item.storeIds.split(",").length;
             item.couponAmount = parseInt(item.couponAmount / 100);
             item.pendingAmount = parseInt(item.pendingAmount / 100);
             item.pendedAmount = parseInt(item.pendedAmount / 100);

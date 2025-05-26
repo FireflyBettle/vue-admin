@@ -47,17 +47,14 @@
           <template v-if="item.type === 'upload'">
             <el-upload
               class="avatar-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/"
+              action="http://www.jifeng.online:8871/web/fs/upload"
               :show-file-list="false"
               :disabled="item.disabled"
               :on-success="handleAvatarSuccess"
               :before-upload="beforeAvatarUpload"
             >
-              <img
-                v-if="tableData[item.value]"
-                :src="tableData[item.value]"
-                class="avatar"
-              />
+              <img v-if="urlImg" :src="urlImg" class="avatar" />
+
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
           </template>
@@ -127,6 +124,7 @@
 </template>
 
 <script>
+import { uploadImg } from "@/api/business";
 export default {
   props: {
     tableData: {
@@ -146,6 +144,10 @@ export default {
     formLabelWidth: {
       type: String,
       default: "84px",
+    },
+    merchantLogo: {
+      type: String,
+      default: "",
     },
     filterDataRules: {
       type: Array,
@@ -171,7 +173,7 @@ export default {
     const validatePasswd = (rule, value, callback) => {
       const passwd = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d\W]{8,}$/;
       if (this.isEdit && !value) {
-        console.log("🚀 ~ validatePasswd ~ this.isEdit:", this.isEdit)
+        console.log("🚀 ~ validatePasswd ~ this.isEdit:", this.isEdit);
         callback();
       }
       if (!value) {
@@ -189,9 +191,9 @@ export default {
     return {
       tableDataRules: {
         passwd: [
-        { required: !this.isEdit, message: "请输入密码", trigger: "blur" },
-        { validator: validatePasswd, trigger: "blur" }
-      ],
+          { required: !this.isEdit, message: "请输入密码", trigger: "blur" },
+          { validator: validatePasswd, trigger: "blur" },
+        ],
         amount: [
           { required: true, message: "请输入充值金额", trigger: "blur" },
         ],
@@ -219,9 +221,7 @@ export default {
         storeName: [
           { required: true, message: "请输入门店名称", trigger: "blur" },
         ],
-        area: [
-          { required: true, message: "请选择省市区/县", trigger: "blur" },
-        ],
+        area: [{ required: true, message: "请选择省市区/县", trigger: "blur" }],
         storeAddr: [
           { required: true, message: "请输入详细地址", trigger: "blur" },
         ],
@@ -234,9 +234,7 @@ export default {
         discountRate: [
           { required: true, message: "请输入折扣率", trigger: "blur" },
         ],
-        contact: [
-          { required: true, message: "请输入联系人", trigger: "blur" },
-        ],
+        contact: [{ required: true, message: "请输入联系人", trigger: "blur" }],
         phone: [
           { required: true, message: "请输入手机号", trigger: "blur" },
           { validator: validatePhone, trigger: "blur" },
@@ -261,9 +259,11 @@ export default {
       },
       isLimitReached: false,
       passwordType: "",
+      urlImg: "",
     };
   },
   created() {
+    this.urlImg = this.merchantLogo;
     if (this.filterDataRules.length) {
       let obj = {};
       this.filterDataRules.forEach((item) => {
@@ -278,7 +278,27 @@ export default {
   },
   methods: {
     handleAvatarSuccess(res, file) {
-      this.$emit("handleAvatarSuccess", file);
+      // 1. 获取文件类型
+      const fileType = file.raw.type;
+
+      // 2. 将文件转换为base64
+      const reader = new FileReader();
+      reader.readAsDataURL(file.raw);
+
+      reader.onload = () => {
+        // 3. 获取base64数据（去掉前面的data:image/png;base64,前缀）
+        const base64Data = reader.result.split(",")[1];
+
+        // 4. 调用API接口
+        uploadImg({
+          file_data: base64Data,
+        }).then((res) => {
+          this.urlImg = res.data.download_url; // 假设返回的URL在res.data.url中
+          this.$emit("handleAvatarSuccess", this.urlImg);
+        });
+
+        // 5. 预览图片
+      };
     },
     handleAreaChange(val) {
       this.$emit("handleAreaChange", val);

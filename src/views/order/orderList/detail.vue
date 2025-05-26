@@ -9,16 +9,15 @@
       @submitForm="submitForm"
       @handleAvatarSuccess="handleAvatarSuccess"
     >
-      <el-button type="primary" @click="reverseOrder()">作废</el-button>
+      <el-button type="primary" @click="expireOrder()">作废</el-button>
     </Detail>
   </div>
 </template>
 
 <script>
 import Detail from "@/components/Detail/index.vue";
-import md5 from "js-md5";
 
-import { orderDetail, reverseOrder } from "@/api/order";
+import { orderDetail, expireOrder } from "@/api/order";
 export default {
   name: "distributeDetail",
   components: {
@@ -159,14 +158,14 @@ export default {
       this.tableForm.amount = this.tableForm.amount / 100;
       this.tableForm.advancePayment = this.tableForm.advancePayment / 100;
     },
-    async reverseOrder() {
+    async expireOrder() {
       this.$confirm("确认作废吗?", "", {
         type: "warning",
         confirmButtonText: "是",
         cancelButtonText: "否",
       })
         .then(async () => {
-          await reverseOrder({
+          await expireOrder({
             voucherId: this.$route.params.id,
           });
           this.getList();

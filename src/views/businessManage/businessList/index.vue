@@ -26,6 +26,7 @@
         :styleType="styleType"
         :tableData="dialogForm"
         :tableFormAttrs="dialogFormAttrs"
+        :merchantLogo="dialogForm.merchantLogo"
         :isEdit="title === '编辑商户'"
         @handleAvatarSuccess="handleAvatarSuccess"
       >
@@ -333,58 +334,8 @@ export default {
       }
     },
     // 点击上传
-    handleAvatarSuccess(file) {
-      // 1. 获取文件类型
-      const fileType = file.raw.type;
-      console.log("🚀 ~ handleAvatarSuccess ~ file.type:", file)
-
-      // 2. 将文件转换为base64
-      const reader = new FileReader();
-      reader.readAsDataURL(file.raw);
-
-      reader.onload = () => {
-        // 3. 获取base64数据（去掉前面的data:image/png;base64,前缀）
-        const base64Data = reader.result.split(",")[1];
-
-        // 4. 调用API接口
-        uploadImg({
-          file_type: fileType,
-          file_data: base64Data,
-        }).
-        then((res) => {
-            console.log("🚀 ~ handleAvatarSuccess ~ res:", res);
-            const a = URL.createObjectURL(res.data.download_url)
-            console.log("🚀 ~ then ~ a:", a)
-          });
-
-        // 5. 预览图片
-        this.imageUrl = URL.createObjectURL(file.raw);
-      };
-
-      return;
-      // 获取文件类型
-      const file_type = file.type;
-      let file_data = "";
-
-      // 读取文件内容并进行 Base64 编码
-      // const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        console.log(
-          "🚀 ~ handleAvatarSuccess ~ reader.result.split(','):",
-          reader.result.split(",")
-        );
-        const base64Data = reader.result.split(",")[1];
-        file_data = base64Data;
-      };
-      uploadImg({
-        file_type,
-        file_data,
-      }).then((res) => {
-        console.log("🚀 ~ handleAvatarSuccess ~ res:", res);
-      });
-      // console.log("🚀 ~ handleAvatarSuccess ~ file:", file);
-      // this.dialogForm.merchantLogo = URL.createObjectURL(file.raw);
+    handleAvatarSuccess(img) {
+      this.dialogForm.merchantLogo = img; // 假设返回的URL在res.data.url中
     },
     // 点击添加按钮
     submitForm() {
@@ -403,6 +354,7 @@ export default {
                 message: "添加成功",
                 type: "success",
               });
+              this.dialogFormVisible = false;
             });
           }
           if (this.title === "编辑商户") {
@@ -417,9 +369,9 @@ export default {
                 message: "修改成功",
                 type: "success",
               });
+              this.dialogFormVisible = false;
             });
           }
-          this.dialogFormVisible = false;
         } else {
           console.log("error submit!!");
           return false;
@@ -450,6 +402,10 @@ export default {
     // 点击编辑
     handleTableOption(index, row, option) {
       var row = JSON.parse(JSON.stringify(row));
+      console.log(
+        "🔍 ~ handleTableOption ~ src/views/businessManage/businessList/index.vue:450 ~ row:",
+        row
+      );
       this.operationalData = { ...row };
       if (option.label === "查看") {
         console.log(index, row, option);
