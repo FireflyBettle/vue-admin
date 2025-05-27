@@ -76,6 +76,7 @@ export default {
         {
           title: "券码金额",
           placeholder: "请输入券码金额",
+          type: "input",
           inputType: "number",
           value: "couponAmount",
           disabled: true,
@@ -115,6 +116,7 @@ export default {
           inputType: "number",
           placeholder: "请输入佣金率",
           type: "input",
+          slot: "%",
           value: "commissionRate",
           disabled: true,
         },
@@ -173,7 +175,11 @@ export default {
       this.tableForm = data;
       this.tableForm.status = this.tableForm.status.toString();
       this.tableForm.commissionRate = this.tableForm.commissionRate * 100;
+      this.tableForm.discountRate = this.tableForm.discountRate * 100;
       this.tableForm.couponAmount = this.tableForm.couponAmount / 100;
+      this.tableForm.createAmount = this.tableForm.createAmount / 100;
+      this.tableForm.pendingAmount = this.tableForm.pendingAmount / 100;
+      this.tableForm.pendedAmount = this.tableForm.pendedAmount / 100;
     },
     async submitForm() {
       this.$refs.getTable.getTableRef().validate((valid) => {

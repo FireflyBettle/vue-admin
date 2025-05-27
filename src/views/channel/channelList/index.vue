@@ -159,6 +159,13 @@ export default {
           disabled: true,
         },
         {
+          title: "IP白名单:",
+          placeholder: "请输入IP白名单",
+          type: "textarea",
+          value: "ipWhiteList",
+          required: true,
+        },
+        {
           title: "联系人:",
           placeholder: "请输入联系人",
           type: "input",
@@ -465,6 +472,7 @@ export default {
     clickSearch(val) {
       this.params.searchKey = val.selectValue;
       this.params.searchVal = val.inputValue;
+      this.listQueryParams.pageNum = 1; // 重置页码
       this.getList();
     },
     // 点击添加渠道弹窗

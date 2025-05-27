@@ -53,6 +53,7 @@
       </template>
       <template v-if="createIndex === 1">
         <Table
+          v-if="Object.keys(dialogTableDataSecond).length"
           listLoading="loadingStatusSecond"
           :list-query-params.sync="secondListQueryParams"
           :config="dialogTableConfigSecond"
@@ -60,10 +61,11 @@
           :isMulSelect="true"
           :isHasButtons="false"
           :isShowNumber="true"
-          :initCheckData="initCheckData"
+          :initCheckData="checkData"
           :initRadio="initRadio"
+          @subClickPagination="handleSizeChange"
           @subCheckAll="subCheckAll"
-          @subCheckedData="subCheckedData"
+          @subCheckedData="handleCurrentChange"
         />
         <div slot="footer" class="dialog-footer">
           <el-button class="previousButton" @click="createIndex = 0"
@@ -83,6 +85,8 @@
           :isRadio="true"
           :isHasButtons="false"
           :isShowNumber="true"
+          @subClickPagination="handleSizeChangeThird"
+          @subCheckedData="handleCurrentChangeThird"
           @getCurrentRow="getCurrentRow"
         />
         <div slot="footer" class="dialog-footer">
@@ -455,6 +459,7 @@ export default {
       filterDataRules: ["merchantId", "couponAmount", "effectiveTime"],
       currentCannelId: "",
       initCheckData: [],
+      checkData: [],
       initRadio: "",
       isEdit: false,
     };
@@ -541,13 +546,12 @@ export default {
       this.secondListQueryParams.pageSize = val;
       this.getStoreList();
     },
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
     handleSizeChangeThird(val) {
       this.thirdListQueryParams.pageSize = val;
       this.getCannelList();
-    },
-    handleCurrentChange(val) {
-      this.secondListQueryParams.pageNum = val;
-      this.getStoreList();
     },
     handleCurrentChangeThird(val) {
       this.thirdListQueryParams.pageNum = val;
@@ -603,7 +607,9 @@ export default {
           data.list.forEach((item) => {
             item.discountRate = parseInt(item.discountRate * 100);
             item.status = item.status.toString();
-            item.storeNumber = item.storeIds.split(",").length;
+            item.storeNumber = item.storeIds
+              ? item.storeIds.split(",").length
+              : 0;
             item.couponAmount = parseInt(item.couponAmount / 100);
             item.pendingAmount = parseInt(item.pendingAmount / 100);
             item.pendedAmount = parseInt(item.pendedAmount / 100);
@@ -629,11 +635,13 @@ export default {
       };
       this.dialogTableDataThird.forEach((item) => {
         if (this.currentCannelId === item.channelId) {
-          params.commissionRate = item.commissionRate ? item.commissionRate / 100 : '';
+          params.commissionRate = item.commissionRate
+            ? item.commissionRate / 100
+            : "";
           params.channelId = item.channelId;
         }
       });
-      if (params.commissionRate === '') {
+      if (params.commissionRate === "") {
         this.$message.error("请填写佣金率");
         return;
       }
@@ -649,6 +657,7 @@ export default {
       this.$message.success("发布成功");
       this.shopForm = {};
       this.initCheckData = [];
+      this.checkData = [];
       this.createIndex = 0;
       this.dialogFormVisible = false;
     },
@@ -656,15 +665,28 @@ export default {
     async getStoreList() {
       try {
         // 表格加载loading
+        this.dialogTableDataSecond = [];
         this.loadingStatusSecond = true;
         const params = {};
         // 分页数据作为参数给服务端
         params.pageSize = this.secondListQueryParams.pageSize;
         params.pageNum = this.secondListQueryParams.pageNum - 1;
-        // 发送请求,请求到的数据格式见下文，
+        params.searchKey = "merchantId";
+        params.searchVal = this.shopForm.merchantId;
         const { data } = await storesList(params);
         this.secondListQueryParams.total = data.total;
-        // 数据给表格
+        if (data.list) {
+          const storeIds = data.list.map((val) => val.storeId);
+          const intersection = storeIds.filter((item) =>
+            this.initCheckData.includes(item)
+          );
+          this.checkData = intersection;
+        }else {
+          this.shopForm.storeIds = "";
+        }
+        // this.shopForm.storeIds = this.initCheckData.join(",");
+
+        // this.initCheckData = [];
         this.dialogTableDataSecond = data.list || [];
         this.loadingStatusSecond = false;
       } catch (error) {
@@ -684,11 +706,11 @@ export default {
         const { data } = await channelList(params);
         this.thirdListQueryParams.total = data.total;
         // 数据给表格
-        data.list.forEach(val => {
-         if (this.shopForm.channelId === val.channelId) {
-           val.commissionRate = this.shopForm.commissionRate;
-         }
-       })
+        data.list.forEach((val) => {
+          if (this.shopForm.channelId === val.channelId) {
+            val.commissionRate = this.shopForm.commissionRate;
+          }
+        });
         this.dialogTableDataThird = data.list || [];
         // this.dialogTableDataThird[0].commissionRate = 20;
         this.loadingStatusThird = false;
@@ -697,10 +719,28 @@ export default {
       }
     },
     subCheckAll(val) {
+      console.log(
+        "🔍 ~ subCheckAll ~ src/views/distribute/distributeList/index.vue:721 ~ val:",
+        val
+      );
       let params = val.join(",");
       this.shopForm.storeIds = params;
     },
+    handleCurrentChange(val) {
+      console.log(
+        "🔍 ~ handleCurrentChange ~ src/views/distribute/distributeList/index.vue:719 ~ val:",
+        val
+      );
+      let params = val.join(",");
+      this.shopForm.storeIds = params;
+      // this.secondListQueryParams.pageNum = val;
+      // this.getStoreList();
+    },
     subCheckedData(val) {
+      console.log(
+        "🔍 ~ subCheckedData ~ src/views/distribute/distributeList/index.vue:726 ~ val:",
+        val
+      );
       let params = val.join(",");
       this.shopForm.storeIds = params;
     },
@@ -728,10 +768,6 @@ export default {
       this.params.channelId =
         val.placeholder === "渠道" ? val.selectValue : this.params.channelId;
     },
-    // 多选框
-    handleSelectionChange(val) {
-      this.multipleSelection = val;
-    },
     // 点击编辑
     handleTableOption(index, row, option) {
       this.operationalData = { ...row };
@@ -754,7 +790,10 @@ export default {
     handleRefreshList() {
       this.getList();
     },
-    clickSearch() {
+    clickSearch(val) {
+      this.params.searchKey = val.selectValue;
+      this.params.searchVal = val.inputValue;
+      this.listQueryParams.pageNum = 1; // 重置页码
       this.getList();
     },
     // 点击创建分发按钮

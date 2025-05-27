@@ -432,6 +432,7 @@ export default {
     clickSearch(val) {
       this.params.searchKey = val.selectValue;
       this.params.searchVal = val.inputValue;
+      this.listQueryParams.pageNum = 1; // 重置页码
       this.getList();
     },
     // 点击添加商户弹窗
