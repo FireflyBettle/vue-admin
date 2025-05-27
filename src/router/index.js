@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2021-11-18 23:21:54
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-15 18:09:15
+ * @LastEditTime: 2025-05-27 15:47:38
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/router/index.js
  */
@@ -41,7 +41,22 @@ import syncRoutes from './auth.js'
  */
 export const constantRoutes = [
   {
-    path: '/login',
+    path: '/login/platform',
+    component: () => import('@/views/login/index'),
+    hidden: true
+  },
+  {
+    path: '/login/merchant',
+    component: () => import('@/views/login/index'),
+    hidden: true
+  },
+  {
+    path: '/login/channel',
+    component: () => import('@/views/login/index'),
+    hidden: true
+  },
+  {
+    path: '/login/store',
     component: () => import('@/views/login/index'),
     hidden: true
   },

@@ -2,10 +2,12 @@
   <div class="dashboard-detail">
     <div v-if="$route.meta" class="header">{{ title }}</div>
     <Detail
+    v-if="Object.keys(tableForm).length"
       ref="getTable"
       :tableData="tableForm"
       :tableFormAttrs="tableFormAttrs"
       :filterDataRules="filterDataRules"
+      :merchantLogo="tableForm.merchantLogo"
       formLabelWidth="90px"
     >
     </Detail>

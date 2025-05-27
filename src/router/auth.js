@@ -2,19 +2,25 @@
  * @Author: chenyourong
  * @Date: 2025-04-25 16:44:47
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-26 17:26:02
+ * @LastEditTime: 2025-05-27 15:59:30
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/router/auth.js
  */
 import Layout from '@/layout'
 import Cookies from "js-cookie";
+import { getPathParam } from '@/utils'
+// const urlType = getUrlParam(window.location.href,"type");
+const type = getPathParam();
+console.log("🚀 ~ type:", type)
+
+
 
 const asyncRoutes = [
     {
       path: '/',
       component: Layout,
       redirect: '/dashboard',
-      hidden: [1].includes(+Cookies.get('type')),
+      hidden: [1].includes(type),
       children: [
         {
           path: 'dashboard',
@@ -29,7 +35,7 @@ const asyncRoutes = [
       component: Layout,
       redirect: '/business/businessList',
       alwaysShow: true,
-      hidden: [2].includes(+Cookies.get('type')),
+      hidden: [2].includes(type),
       meta: {
         title: '商户管理',
         icon: 'el-icon-school',
@@ -60,6 +66,7 @@ const asyncRoutes = [
       path: '/channel',
       component: Layout,
       redirect: '/channel',
+      hidden: [3,4].includes(type),
       meta: {
         title: '渠道管理',
         icon: 'el-icon-monitor'
@@ -69,13 +76,13 @@ const asyncRoutes = [
           path: '/channel/channelList',
           component: () => import('@/views/channel/channelList/index'),
           name: 'businessList',
-          meta: { title: '渠道列表', icon: 'edit',roles: [1] }
+          meta: { title: '渠道列表', icon: 'edit',roles: [1,2] }
         },
         {
           path: '/channel/channelList/:id',
           component: () => import('@/views/channel/channelList/detail'),
           name: 'orderDetail',
-          meta: { title: '渠道详情', icon: 'edit',activeMenu: '/channel/channelList',roles: [1] },
+          meta: { title: '渠道详情', icon: 'edit',activeMenu: '/channel/channelList',roles: [1,2] },
           hidden: true,
         },
         {
@@ -92,6 +99,7 @@ const asyncRoutes = [
       title: '分发管理',
       icon: 'el-icon-wallet'
     },
+    hidden: [3,4].includes(type),
     children: [
       {
         path: '/distribute/distributeList',

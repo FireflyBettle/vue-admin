@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2021-11-18 23:21:54
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-16 14:23:34
+ * @LastEditTime: 2025-05-27 15:45:53
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/permission.js
  */
@@ -16,7 +16,7 @@ import getPageTitle from '@/utils/get-page-title'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const whiteList = ['/login'] // no redirect whitelist
+const whiteList = ['/login/platform','/login/channel','/login/merchant','/login/store'] // no redirect whitelist
 
 router.beforeEach(async(to, from, next) => {
 // console.log("🔍 ~ router.beforeEach() callback ~ src/permission.js:21 ~ to:", to)

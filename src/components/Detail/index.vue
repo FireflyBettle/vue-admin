@@ -264,6 +264,7 @@ export default {
   },
   created() {
     this.urlImg = this.merchantLogo;
+    console.log("🚀 ~ created ~ this.merchantLogo:", this.merchantLogo)
     if (this.filterDataRules.length) {
       let obj = {};
       this.filterDataRules.forEach((item) => {

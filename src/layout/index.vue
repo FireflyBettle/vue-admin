@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2021-11-18 23:21:54
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-09 15:21:43
+ * @LastEditTime: 2025-05-27 16:06:53
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/layout/index.vue
 -->
@@ -80,8 +80,9 @@ export default {
       this.$store.dispatch("app/closeSideBar", { withoutAnimation: false });
     },
     async logout() {
+      const arr = ['/login/platform','/login/channel','/login/merchant','/login/store'];
       await this.$store.dispatch('user/logout')
-      this.$router.push(`/login`)
+      this.$router.push(arr[Cookies.get("type") - 1]);
     }
   },
 };

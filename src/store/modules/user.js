@@ -90,9 +90,9 @@ const actions = {
         removeToken() // must remove  token  first
         resetRouter()
         resolve()
-        setTimeout(() => {
-          window.location.reload()
-        }, 10); // 为了刷新页面，清除vuex缓存
+        // setTimeout(() => {
+        //   window.location.reload()
+        // }, 100); // 为了刷新页面，清除vuex缓存
       }).catch(error => {
         reject(error)
       })

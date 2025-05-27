@@ -79,6 +79,7 @@
 import { validUsername } from "@/utils/validate";
 import Forget from "./forget.vue";
 import Cookies from "js-cookie";
+import { getPathParam } from '@/utils'
 
 const validateUsername = (rule, value, callback) => {
   console.log("🚀 ~ validateUsername ~ value:", value);
@@ -146,7 +147,8 @@ export default {
     },
   },
   created() {
-    this.loginForm.type = +Cookies.get('type') ? +Cookies.get('type') : 1;
+    // this.loginForm.type = +Cookies.get('type') ? +Cookies.get('type') : 1;
+    this.loginForm.type = getPathParam();
     // this.$store.dispatch("user/authType", this.type)
   },
   methods: {
