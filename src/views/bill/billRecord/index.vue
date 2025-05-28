@@ -267,7 +267,7 @@ export default {
           const { data } = await billStoreList(this.params);
           tableData = data;
         }
-        if (tableData.list.length) {
+        if (tableData.list) {
           this.getMerchantOrStoreListFilter(tableData.list);
         }
         this.listQueryParams.total = tableData.total;
@@ -439,6 +439,7 @@ export default {
         this.$message.warning(" 请选择日期");
         return;
       }
+      this.listQueryParams.pageNum = 1; // 重置页码
       this.requestInitData();
     },
     async exportExcel() {

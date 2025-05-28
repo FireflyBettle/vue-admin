@@ -229,6 +229,7 @@ export default {
         this.$message.warning(" 请选择日期");
         return;
       }
+      this.listQueryParams.pageNum = 1; // 重置页码
       this.getList();
     },
     async exportExcel() {

@@ -58,10 +58,14 @@ export default {
         formData = data;
       }
       if (this.type === 4) {
-        const { data } = await batchStoreInformation({
-          storeIds: [Cookies.get("storeId")]
+        // const { data } = await batchStoreInformation({
+        //   storeIds: [Cookies.get("storeId")]
+        // });
+        const { data } = await merchantDetail({
+          merchantId: Cookies.get("merchantId")
         });
-        formData = data.list[0];
+        // formData = data.list[0];
+        formData = data;
       }
       this.tableForm = formData;
       this.tableForm.status = this.tableForm.status.toString();

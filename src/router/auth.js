@@ -10,7 +10,7 @@ import Layout from '@/layout'
 import Cookies from "js-cookie";
 import { getPathParam } from '@/utils'
 // const urlType = getUrlParam(window.location.href,"type");
-const type = getPathParam();
+const type = getPathParam() || +Cookies.get("type"); // 默认值为1
 console.log("🚀 ~ type:", type)
 
 

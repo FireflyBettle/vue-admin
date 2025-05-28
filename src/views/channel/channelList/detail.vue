@@ -187,7 +187,7 @@ export default {
           disabled: true,
         },
         {
-          title: "充值金额:",
+          title: "冲正金额:",
           placeholder: "请输入充值金额",
           type: "input",
           value: "amount",

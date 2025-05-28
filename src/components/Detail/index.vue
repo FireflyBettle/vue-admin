@@ -277,6 +277,11 @@ export default {
       this.tableDataRules = obj;
     }
   },
+  mounted() {
+    this.$nextTick(() => {
+      this.urlImg = this.merchantLogo;
+    });
+  },
   methods: {
     handleAvatarSuccess(res, file) {
       // 1. 获取文件类型

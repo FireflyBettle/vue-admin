@@ -10,10 +10,12 @@
   <div class="distribute-detail">
     <div v-if="$route.meta" class="header">{{ $route.meta.title }}</div>
     <Detail
+      v-if="Object.keys(tableForm).length"
       ref="getDetail"
       :tableData="tableForm"
       :tableFormAttrs="tableFormAttrs"
       :filterDataRules="filterDataRules"
+      :merchantLogo="tableForm.merchantLogo"
       @submitForm="submitForm"
       @handleAvatarSuccess="handleAvatarSuccess"
     >
@@ -48,7 +50,6 @@
           :tableFormAttrs="dialogFormAttrs"
           formLabelWidth="91px"
           @resetSecret="resetSecret"
-          @handleAvatarSuccess="handleAvatarSuccess"
           @handleAreaChange="handleAreaChange"
         >
         </Detail>
@@ -96,20 +97,8 @@ export default {
   data() {
     return {
       isEdit: false,
-      tableForm: {
-        name: "",
-        des: "",
-        logo: "",
-        des: "",
-        shopName: "",
-        rate: "",
-        contactPerson: "",
-        phoneNumber: "",
-        email: "",
-        status: "1",
-        password: "",
-      },
-      filterDataRules: ['discountRate'],
+      tableForm: {},
+      filterDataRules: ["discountRate"],
       tableFormAttrs: [
         {
           title: "商户名称:",
@@ -313,13 +302,6 @@ export default {
           disabled: true,
         },
         {
-          title: "IP白名单:",
-          placeholder: "请输入IP白名单",
-          type: "textarea",
-          value: "ipWhiteList",
-          required: true,
-        },
-        {
           title: "所属商户:",
           placeholder: "请输入所属商户",
           type: "select",
@@ -397,7 +379,7 @@ export default {
       filterOptions: [],
       selectedAreaText: "",
       dialogStoreId: "",
-      multipleSelection: []
+      multipleSelection: [],
     };
   },
   computed: {
@@ -449,11 +431,11 @@ export default {
   watch: {
     multipleSelection: {
       handler: function (val) {
-        this.filterButtonText.forEach(item => {
-          if (item.label === '删除门店') {
-            item.type = val.length ? 'primary' : 'info'
+        this.filterButtonText.forEach((item) => {
+          if (item.label === "删除门店") {
+            item.type = val.length ? "primary" : "info";
           }
-        })
+        });
       },
       immediate: true,
     },
@@ -463,14 +445,17 @@ export default {
         if (item.value === "merchantId") {
           item.disabled = true;
         }
-        if (item.value === 'passwd') {
-          console.log("🚀 ~ this.tableFormAttrs.forEach ~ item.value:", item.value)
-          item.placeholder = '••••••••';
-          item.title = '密码'
+        if (item.value === "passwd") {
+          console.log(
+            "🚀 ~ this.tableFormAttrs.forEach ~ item.value:",
+            item.value
+          );
+          item.placeholder = "••••••••";
+          item.title = "密码";
           item.isClosePwd = false;
-          if (!val) return false
-          item.placeholder = '请输入新密码';
-          item.title = '重置密码'
+          if (!val) return false;
+          item.placeholder = "请输入新密码";
+          item.title = "重置密码";
           item.isClosePwd = true;
         }
       });
@@ -505,6 +490,7 @@ export default {
         merchantId: this.$route.params.id,
       });
       this.tableForm = data;
+      this.tableForm.merchantLogo = this.tableForm.merchantLogo;
       this.tableForm.status = this.tableForm.status.toString();
       this.tableForm.discountRate = this.tableForm.discountRate * 100;
     },
@@ -513,11 +499,13 @@ export default {
         console.log(valid);
         if (valid) {
           const params = {
-            ... this.tableForm,
+            ...this.tableForm,
             discountRate: this.tableForm.discountRate / 100,
             status: +this.tableForm.status,
-            passwd: this.tableForm.passwd ? md5(md5(this.tableForm.passwd)) : md5(md5(''))
-          }
+            passwd: this.tableForm.passwd
+              ? md5(md5(this.tableForm.passwd))
+              : md5(md5("")),
+          };
           // params.discountRate = this.tableForm.discountRate / 100;
           // params.status = +this.tableForm.status
           // params.passwd  = this.tableForm.passwd ? md5(md5(this.tableForm.passwd)) : md5(md5(''));
@@ -533,8 +521,8 @@ export default {
         }
       });
     },
-    handleAvatarSuccess(file) {
-      this.tableForm.merchantLogo = URL.createObjectURL(file.raw);
+    handleAvatarSuccess(img) {
+      this.tableForm.merchantLogo = img;
     },
     cancel() {
       this.isEdit = false;
@@ -552,8 +540,8 @@ export default {
         this.loadingStatus = true;
         // 分页数据作为参数给服务端
         this.params.pageSize = this.listQueryParams.pageSize;
-        this.params.pageSize = this.listQueryParams.pageSize;
-        this.params.searchKey = 'merchantId';
+        this.params.pageNum = this.listQueryParams.pageNum - 1;
+        this.params.searchKey = "merchantId";
         this.params.searchVal = this.$route.params.id;
         // this.params.searchKey = 'merchantId';
         // this.params.searchVal = this.$route.params.id;
@@ -576,9 +564,8 @@ export default {
       }
     },
     // 点击上传
-    handleAvatarSuccess(file) {
-      console.log("🚀 ~ handleAvatarSuccess ~ file:", file);
-      this.dialogForm.merchantLogo = URL.createObjectURL(file.raw);
+    handleAvatarSuccess(img) {
+      this.tableForm.merchantLogo = img;
     },
     resetSecret() {
       this.$confirm("确认重置App Secret?", "", {
@@ -675,7 +662,10 @@ export default {
     // 多选框
     handleSelectionChange(val) {
       this.multipleSelection = val;
-      console.log("🚀 ~ handleSelectionChange ~ this.multipleSelection:", this.multipleSelection)
+      console.log(
+        "🚀 ~ handleSelectionChange ~ this.multipleSelection:",
+        this.multipleSelection
+      );
     },
     // 点击编辑
     handleTableOption(index, row, option) {
@@ -743,6 +733,7 @@ export default {
     clickSearch(val) {
       this.params.searchKey = val.selectValue;
       this.params.searchVal = val.inputValue;
+      this.listQueryParams.pageNum = 1; // 重置页码
       this.getList();
     },
     // 点击右上角添加门店或者删除门店按钮
@@ -769,9 +760,9 @@ export default {
           cancelButtonText: "取消",
         })
           .then(async () => {
-            const storeIds = this.multipleSelection.map(val => val.storeId);
+            const storeIds = this.multipleSelection.map((val) => val.storeId);
             await deleteStores({
-              storeIds
+              storeIds,
             });
             this.getList();
             this.$message.success(" 删除成功");

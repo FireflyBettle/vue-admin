@@ -184,13 +184,6 @@ export default {
           disabled: true,
         },
         {
-          title: "IP白名单:",
-          placeholder: "请输入IP白名单",
-          type: "textarea",
-          value: "ipWhiteList",
-          required: true,
-        },
-        {
           title: "所属商户:",
           placeholder: "请输入所属商户",
           type: "select",
@@ -575,6 +568,7 @@ export default {
     clickSearch(val) {
       this.params.searchKey = val.selectValue;
       this.params.searchVal = val.inputValue;
+      this.listQueryParams.pageNum = 1; // 重置页码
       this.getList();
     },
     // 点击右上角添加门店或者删除门店按钮
