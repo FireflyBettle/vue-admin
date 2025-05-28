@@ -22,6 +22,7 @@ import Table from "@/components/Table/index.vue";
 import Detail from "@/components/Detail/index.vue";
 import Search from "@/components/Search/index.vue";
 import XLSX from "xlsx";
+import { getPathName } from "@/utils/index.js";
 import Cookies from "js-cookie";
 
 import {
@@ -72,7 +73,7 @@ export default {
         },
       ],
       multipleSelection: [],
-      dateValue: this.formatDate(new Date()),
+      dateValue: '',
       type: +Cookies.get("type"), //// 1-平台，2-渠道，3-商户，4-门店，5-门店店员
     };
   },
@@ -175,14 +176,24 @@ export default {
             value: "createQuantity",
           },
           {
-            label: "取消/过期金额",
+            label: "取消金额",
             width: "83",
             value: "invalidAmount",
           },
           {
-            label: "取消/过期数量",
+            label: "取消数量",
             width: "83",
             value: "invalidQuantity",
+          },
+          {
+            label: "过期金额",
+            width: "83",
+            value: "expireAmount",
+          },
+           {
+            label: "过期数量",
+            width: "83",
+            value: "expireQuantity",
           },
           {
             label: "核销金额",
@@ -446,8 +457,10 @@ export default {
       const headers = [
         "创建金额",
         "创建数量",
-        "取消/过期金额",
-        "取消/过期数量",
+        "取消金额",
+        "取消数量",
+        "过期金额",
+        "过期数量",
         "核销金额",
         "核销数量",
         "冲正金额",
@@ -464,6 +477,8 @@ export default {
         "createQuantity",
         "invalidAmount",
         "invalidQuantity",
+        "expireAmount",
+        "expireQuantity",
         "verifyAmount",
         "verifyQuantity",
         "reverseAmount",
@@ -499,8 +514,10 @@ export default {
       ws["!cols"] = [
         { wch: 10 },
         { wch: 10 },
-        { wch: 12 },
-        { wch: 12 },
+        { wch: 10 },
+        { wch: 10 },
+        { wch: 10 },
+        { wch: 10 },
         { wch: 10 },
         { wch: 10 },
         { wch: 10 },
@@ -517,7 +534,7 @@ export default {
       XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
 
       // 导出文件
-      XLSX.writeFile(wb, "table_export.xlsx");
+      XLSX.writeFile(wb,`账单记录${getPathName()}.xlsx`);
     },
     async exportChannelList() {
       const headers = [
@@ -588,7 +605,7 @@ export default {
       XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
 
       // 导出文件
-      XLSX.writeFile(wb, "table_export.xlsx");
+      XLSX.writeFile(wb,`账单记录${getPathName()}.xlsx`);
     },
     async exportMerchantOrStoreList() {
       const headers = [
@@ -596,7 +613,7 @@ export default {
         "核销数量",
         "冲正金额",
         "冲正数量",
-        "商户结款",
+        `${this.type === 3 ? "商户结款" : "门店结款"}`,
         "开始时间",
         "结束时间",
       ];
@@ -621,6 +638,7 @@ export default {
             date: this.dateValue,
           });
           this.getMerchantOrStoreListFilter(data.list);
+          arr = data.list;
         }
         if (this.type === 4) {
           const { data } = await billStoreList({
@@ -629,8 +647,10 @@ export default {
             date: this.dateValue,
           });
           this.getMerchantOrStoreListFilter(data.list);
+          arr = data.list;
         }
-        arr = data.list;
+        // console.log("🔍 ~ exportMerchantOrStoreList ~ src/views/bill/billRecord/index.vue:650 ~ data:", data)
+        // arr = data.list;
       }
       exportData = arr.map((item) => {
         return keys.map((key) => item[key]);
@@ -654,7 +674,7 @@ export default {
       XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
 
       // 导出文件
-      XLSX.writeFile(wb, "table_export.xlsx");
+      XLSX.writeFile(wb,`账单记录${getPathName()}.xlsx`);
     },
     // 点击右上角添加门店或者删除门店按钮
     async handleFilterButton(val) {

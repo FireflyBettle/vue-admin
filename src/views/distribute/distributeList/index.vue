@@ -107,6 +107,7 @@ import Table from "@/components/Table/index.vue";
 import Detail from "@/components/Detail/index.vue";
 import Search from "@/components/Search/index.vue";
 import DialogTable from "@/components/DialogTable/index.vue";
+import Cookies from 'js-cookie'; 
 
 import {
   createDistribution,
@@ -562,6 +563,9 @@ export default {
     },
     // 获取列表
     init() {
+      if (+Cookies.get("type") === 2) {
+        this.filterButtonText = [];
+      }
       const params = {
         ...this.params,
         pageSize: 1000,
@@ -611,6 +615,7 @@ export default {
               ? item.storeIds.split(",").length
               : 0;
             item.couponAmount = parseInt(item.couponAmount / 100);
+            item.createAmount = parseInt(item.createAmount / 100);
             item.pendingAmount = parseInt(item.pendingAmount / 100);
             item.pendedAmount = parseInt(item.pendedAmount / 100);
             item.commissionRate = parseInt(item.commissionRate * 100);

@@ -35,7 +35,7 @@ const asyncRoutes = [
       component: Layout,
       redirect: '/business/businessList',
       alwaysShow: true,
-      hidden: [2].includes(type),
+      hidden: [2,4].includes(type),
       meta: {
         title: '商户管理',
         icon: 'el-icon-school',
@@ -66,7 +66,7 @@ const asyncRoutes = [
       path: '/channel',
       component: Layout,
       redirect: '/channel',
-      hidden: [3,4].includes(type),
+      hidden: [2,3,4].includes(type),
       meta: {
         title: '渠道管理',
         icon: 'el-icon-monitor'

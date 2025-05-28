@@ -14,7 +14,7 @@
 
 <script>
 import Detail from "@/components/Detail/index.vue";
-
+import Cookies from 'js-cookie';
 import { orderDetail, expireOrder } from "@/api/order";
 export default {
   name: "distributeDetail",
@@ -24,19 +24,7 @@ export default {
   data() {
     return {
       isEdit: false,
-      tableForm: {
-        name: "",
-        des: "",
-        logo: "",
-        des: "",
-        shopName: "",
-        rate: "",
-        contactPerson: "",
-        phoneNumber: "",
-        email: "",
-        status: "1",
-        password: "",
-      },
+      tableForm: {},
       filterDataRules: ["discountRate"],
       tableFormAttrs: [
         {
@@ -151,12 +139,17 @@ export default {
         2: "冲正",
         3: "作废",
       };
-      this.tableForm = data;
-      this.tableForm.status = statusType[this.tableForm.status];
-      this.tableForm.amount = this.tableForm.amount / 100;
-      this.tableForm.advancePayment = this.tableForm.advancePayment / 100;
-      this.tableForm.merchantSettlement = this.tableForm.merchantSettlement / 100;
-    },
+      // if ([3,4].includes(this.type)) {
+        // }
+        this.tableForm = data;
+        this.tableForm.status = statusType[this.tableForm.status];
+        this.tableForm.amount = this.tableForm.amount / 100;
+        this.tableForm.advancePayment = this.tableForm.advancePayment / 100;
+        this.tableForm.merchantSettlement = this.tableForm.merchantSettlement / 100;
+        if ([3,4].includes(+Cookies.get("type"))) {
+          this.tableFormAttrs = this.tableFormAttrs.filter(item => !['channelName','advancePayment'].includes(item.value));
+        }
+      },
     async expireOrder() {
       this.$confirm("确认作废吗?", "", {
         type: "warning",

@@ -99,7 +99,7 @@ export default {
         {
           label: "门店数",
           width: "70",
-          value: "storeNumber",
+          value: "storeCnt",
         },
         {
           label: "联系人",
@@ -321,7 +321,7 @@ export default {
         const { data } = await merchantList(this.params);
         if (data.list) {
           data.list.forEach((item) => {
-            item.discountRate = parseInt(item.discountRate * 100);
+            item.discountRate = item.discountRate ? parseInt(item.discountRate * 100) : 0;
             item.status = item.status ? item.status.toString() : "0";
           });
         }

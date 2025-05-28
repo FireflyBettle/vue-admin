@@ -22,6 +22,7 @@ import Table from "@/components/Table/index.vue";
 import Detail from "@/components/Detail/index.vue";
 import Search from "@/components/Search/index.vue";
 import XLSX from "xlsx";
+import { getPathName } from "@/utils/index.js";
 
 import { billSerialList } from "@/api/bill";
 
@@ -130,7 +131,7 @@ export default {
         },
       ],
       multipleSelection: [],
-      dateValue: this.formatDate(new Date()),
+      dateValue: '',
     };
   },
   computed: {
@@ -303,7 +304,7 @@ export default {
       XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
 
       // 导出文件
-      XLSX.writeFile(wb, "table_export.xlsx");
+      XLSX.writeFile(wb,`流水记录${getPathName()}.xlsx`);
     },
     // 点击右上角添加门店或者删除门店按钮
     async handleFilterButton(val) {

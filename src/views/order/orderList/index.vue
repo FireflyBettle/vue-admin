@@ -200,7 +200,7 @@ export default {
         },
       ],
       multipleSelection: [],
-      type: +Cookies.get('type'),
+      type: +Cookies.get("type"),
     };
   },
   computed: {
@@ -306,15 +306,15 @@ export default {
         };
         const operationStatusStatusType = {};
         if ([1].includes(this.type)) {
-          operationStatusStatusType[0] = '作废';
+          operationStatusStatusType[0] = "作废";
           if ([1].includes(this.type)) {
-            operationStatusStatusType[1] = '冲正';
+            operationStatusStatusType[1] = "冲正";
           }
         }
-        if ([3,4].includes(this.type)) {
-          operationStatusStatusType[1] = '冲正';
+        if ([3, 4].includes(this.type)) {
+          operationStatusStatusType[1] = "冲正";
         }
-        
+
         if (data.list) {
           data.list.forEach((item) => {
             item.status = item.status.toString();
@@ -322,12 +322,18 @@ export default {
             item.advancePayment = item.advancePayment / 100;
             item.merchantSettlement = item.merchantSettlement / 100;
             item.specialStatus = specialStatusStatusType[item.status];
-            item.operationSpecialStatus = operationStatusStatusType[item.status];
+            item.operationSpecialStatus =
+              operationStatusStatusType[item.status];
           });
         }
         this.listQueryParams.total = data.total;
         // 数据给表格
         this.tableData = data.list || [];
+        if ([3, 4].includes(this.type)) {
+          this.tableConfig = this.tableConfig.filter(
+            (item) => !["channelName", "advancePayment"].includes(item.value)
+          );
+        }
         this.loadingStatus = false;
       } catch (error) {
         console.log(error);
@@ -350,7 +356,7 @@ export default {
     // 点击编辑  渠道2，平台1只能操作作废   门店4,商户3只能操作冲正
     async handleTableOption(row) {
       // 0-待核销状态，4过期状态 可以操作作废
-      if ([0].includes(+row.status) && [1,2].includes(this.type)) {
+      if ([0].includes(+row.status) && [1, 2].includes(this.type)) {
         this.$confirm("确认作废吗?", "", {
           type: "warning",
           confirmButtonText: "是",
@@ -368,7 +374,7 @@ export default {
           });
       }
       // 1-已核销状态， 可以操作冲正
-      if (+row.status === 1  && [1,3,4].includes(this.type)) {
+      if (+row.status === 1 && [1, 3, 4].includes(this.type)) {
         this.$confirm("确认冲正吗?", "", {
           type: "warning",
           confirmButtonText: "是",
@@ -390,14 +396,14 @@ export default {
     handleRefreshList() {
       this.getList();
     },
-    clickSearch() {
+    clickSearch(val) {
       this.params.searchKey = val.selectValue;
       this.params.searchVal = val.inputValue;
       this.listQueryParams.pageNum = 1; // 重置页码
       this.getList();
     },
     async exportExcel() {
-      const headers = [
+      let headers = [
         "券码ID",
         "金额",
         "券码描述",
@@ -411,7 +417,7 @@ export default {
         "操作时间",
         "状态",
       ];
-      const keys = [
+      let keys = [
         "voucherId",
         "amount",
         "voucherDesc",
@@ -432,6 +438,14 @@ export default {
         3: "作废",
         4: "过期",
       };
+      if ([3, 4].includes(this.type)) {
+        keys = keys.filter((item) => {
+          return !["channelName", "advancePayment"].includes(item);
+        });
+        headers = headers.filter((item) => {
+          return !["渠道", "预付款"].includes(item);
+        });
+      }
       let exportData = [];
       let arr = [];
       if (this.multipleSelection.length) {
@@ -472,6 +486,12 @@ export default {
         { wch: 21 },
         { wch: 10 },
       ];
+      if ([3,4].includes(this.type)) {
+        ws["!cols"] = ws["!cols"].filter((col, index) => {
+          return ![6, 7].includes(index); // 移除渠道和预付款列
+        });
+        console.log("🔍 ~ exportExcordervue:490:", ws["!cols"])
+      }
       const wb = XLSX.utils.book_new();
       // 将工作表添加到工作簿
       XLSX.utils.book_append_sheet(wb, ws, "Sheet1");

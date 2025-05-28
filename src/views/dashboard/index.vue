@@ -37,12 +37,12 @@ export default {
     // type为3 商户 , 4为门店
     this.type = +Cookies.get("type");
     if ([3, 4].includes(this.type)) {
-      this.title = this.type === 3 ? "商户详情" : '门店详情';
+      this.title = this.type === 3 ? "商户详情" :  '门店详情';
       this.getMerchantOrStoreDetail();
     }
     // type为2渠道
     if ([2].includes(this.type)) {
-      this.title = "门店详情";
+      this.title = "渠道详情";
       this.getChannelDetail();
     }
     
@@ -80,9 +80,9 @@ export default {
         },
         {
           title: "Logo:",
-          type: "upload",
+          type: "img",
           value: "merchantLogo",
-          disabled: true,
+          disabled: false,
         },
         {
           title: "商户描述:",

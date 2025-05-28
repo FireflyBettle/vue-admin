@@ -184,6 +184,12 @@ export default {
           disabled: true,
         },
         {
+          title: "IP白名单:",
+          placeholder: "请输入IP白名单",
+          type: "textarea",
+          value: "ipWhiteList",
+        },
+        {
           title: "所属商户:",
           placeholder: "请输入所属商户",
           type: "select",
@@ -288,7 +294,7 @@ export default {
       ],
       selectedAreaText: "",
       dialogStoreId: "",
-      multipleSelection: []
+      multipleSelection: [],
     };
   },
   computed: {
@@ -340,11 +346,11 @@ export default {
   watch: {
     multipleSelection: {
       handler: function (val) {
-        this.filterButtonText.forEach(item => {
-          if (item.label === '删除门店') {
-            item.type = val.length ? 'primary' : 'info'
+        this.filterButtonText.forEach((item) => {
+          if (item.label === "删除门店") {
+            item.type = val.length ? "primary" : "info";
           }
-        })
+        });
       },
       immediate: true,
     },
@@ -448,7 +454,7 @@ export default {
           if (this.title === "编辑门店") {
             if (this.dialogForm.passwd) {
               params.passwd = md5(md5(this.dialogForm.passwd));
-            }else {
+            } else {
               delete params.passwd;
             }
             params.storeId = this.dialogStoreId;
@@ -499,7 +505,10 @@ export default {
     // 多选框
     handleSelectionChange(val) {
       this.multipleSelection = val;
-      console.log("🚀 ~ handleSelectionChange ~ this.multipleSelection:", this.multipleSelection)
+      console.log(
+        "🚀 ~ handleSelectionChange ~ this.multipleSelection:",
+        this.multipleSelection
+      );
     },
     // 点击编辑
     handleTableOption(index, row, option) {
@@ -595,9 +604,9 @@ export default {
           cancelButtonText: "取消",
         })
           .then(async () => {
-            const storeIds = this.multipleSelection.map(val => val.storeId);
+            const storeIds = this.multipleSelection.map((val) => val.storeId);
             await deleteStores({
-              storeIds
+              storeIds,
             });
             this.getList();
             this.$message.success(" 删除成功");

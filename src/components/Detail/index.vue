@@ -43,6 +43,16 @@
               </span>
             </template>
           </template>
+          <!-- 图片 -->
+          <template v-if="item.type === 'img'">
+            <el-image
+              :src="tableData[item.value]"
+              :preview-src-list="[tableData[item.value]]"
+              fit="cover"
+              :hide-on-click-modal="true"
+            ></el-image>
+            <!-- <img @click="enlargeImg(tableData[item.value])" class="img" :src="tableData[item.value]" alt=""> -->
+          </template>
           <!-- 上传 -->
           <template v-if="item.type === 'upload'">
             <el-upload
@@ -228,9 +238,9 @@ export default {
         merchantId: [
           { required: true, message: "请选择所属商户", trigger: "blur" },
         ],
-        ipWhiteList: [
-          { required: true, message: "请输入IP白名单", trigger: "blur" },
-        ],
+        // ipWhiteList: [
+        //   { required: true, message: "请输入IP白名单", trigger: "blur" },
+        // ],
         discountRate: [
           { required: true, message: "请输入折扣率", trigger: "blur" },
         ],
@@ -264,7 +274,7 @@ export default {
   },
   created() {
     this.urlImg = this.merchantLogo;
-    console.log("🚀 ~ created ~ this.merchantLogo:", this.merchantLogo)
+    console.log("🚀 ~ created ~ this.merchantLogo:", this.merchantLogo);
     if (this.filterDataRules.length) {
       let obj = {};
       this.filterDataRules.forEach((item) => {
@@ -305,6 +315,9 @@ export default {
 
         // 5. 预览图片
       };
+    },
+    enlargeImg(val) {
+      this.$emit("enlargeImg", val);
     },
     handleAreaChange(val) {
       this.$emit("handleAreaChange", val);
@@ -413,6 +426,11 @@ export default {
     height: 32px;
     line-height: 32px;
     text-align: center;
+  }
+  .img,
+  .el-image {
+    width: 32px !important;
+    height: 32px !important;
   }
   .avatar {
     width: 32px;

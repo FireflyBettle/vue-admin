@@ -10,7 +10,7 @@ const getDefaultState = () => {
     name: '',
     avatar: '',
     roles: [],
-    type: '', //用户权限 1-平台，2-渠道，3-商户，4-门店
+    type: +Cookies.get('type'),  //用户权限 1-平台，2-渠道，3-商户，4-门店
     uid: '',
   }
 }
