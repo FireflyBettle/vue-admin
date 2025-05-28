@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-26 17:33:06
+ * @LastEditTime: 2025-05-28 10:28:22
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/order/orderList/index.vue
 -->
@@ -304,6 +304,14 @@ export default {
           3: "作废",
           4: "过期",
         };
+        if ([1,2].includes(this.type)) {
+          statusType[0] = '作废';
+          statusType[4] = '作废';
+        }
+        if ([3,4].includes(this.type)) {
+          statusType[1] = '冲正';
+        }
+        
         if (data.list) {
           data.list.forEach((item) => {
             item.status = item.status.toString();
@@ -338,7 +346,7 @@ export default {
     // 点击编辑  渠道2，平台1只能操作作废   门店4,商户3只能操作冲正
     async handleTableOption(row) {
       // 0-待核销状态，4过期状态 可以操作作废
-      if ([0,4].includes(+row.status) && [1,2].includes(this.type)) {
+      if ([0].includes(+row.status) && [1,2].includes(this.type)) {
         this.$confirm("确认作废吗?", "", {
           type: "warning",
           confirmButtonText: "是",
