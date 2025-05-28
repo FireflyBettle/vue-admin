@@ -14,7 +14,6 @@ const getDefaultState = () => {
     uid: '',
   }
 }
-
 const state = getDefaultState()
 
 const mutations = {
@@ -38,7 +37,7 @@ const mutations = {
   },
   SET_UID: (state, uid) => {
     state.uid = uid
-  }
+  },
 }
 
 const actions = {
@@ -79,6 +78,12 @@ const actions = {
           roles: [roles],
         })
     })
+  },
+  changeName({ commit, state }) {
+    return new Promise(resolve => {
+      commit('SET_NAME', Cookies.get('username'))
+      resolve()
+    }) 
   },
 
   // user logout

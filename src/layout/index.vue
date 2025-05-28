@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2021-11-18 23:21:54
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-27 16:06:53
+ * @LastEditTime: 2025-05-28 15:15:37
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/layout/index.vue
 -->
@@ -53,7 +53,6 @@ export default {
   data() {
     return {
       avatar: Cookies.get("avatar"),
-      username: Cookies.get("username"),
     };
   },
   computed: {
@@ -74,6 +73,12 @@ export default {
         mobile: this.device === "mobile",
       };
     },
+    username() {
+      return this.$store.state.user.name || Cookies.get("username");
+    }
+  },
+  created() {
+    // this.username = this.$store.state.name || Cookies.get("username");
   },
   methods: {
     handleClickOutside() {

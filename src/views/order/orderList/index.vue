@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-28 10:28:22
+ * @LastEditTime: 2025-05-28 11:34:11
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/order/orderList/index.vue
 -->
@@ -297,19 +297,22 @@ export default {
         this.params.pageNum = this.listQueryParams.pageNum - 1;
         // 发送请求,请求到的数据格式见下文，
         const { data } = await orderList(this.params);
-        const statusType = {
+        const specialStatusStatusType = {
           0: "待核销",
           1: "已核销",
           2: "冲正",
           3: "作废",
           4: "过期",
         };
-        if ([1,2].includes(this.type)) {
-          statusType[0] = '作废';
-          statusType[4] = '作废';
+        const operationStatusStatusType = {};
+        if ([1].includes(this.type)) {
+          operationStatusStatusType[0] = '作废';
+          if ([1].includes(this.type)) {
+            operationStatusStatusType[1] = '冲正';
+          }
         }
         if ([3,4].includes(this.type)) {
-          statusType[1] = '冲正';
+          operationStatusStatusType[1] = '冲正';
         }
         
         if (data.list) {
@@ -318,7 +321,8 @@ export default {
             item.amount = item.amount / 100;
             item.advancePayment = item.advancePayment / 100;
             item.merchantSettlement = item.merchantSettlement / 100;
-            item.specialStatus = statusType[item.status];
+            item.specialStatus = specialStatusStatusType[item.status];
+            item.operationSpecialStatus = operationStatusStatusType[item.status];
           });
         }
         this.listQueryParams.total = data.total;
@@ -364,7 +368,7 @@ export default {
           });
       }
       // 1-已核销状态， 可以操作冲正
-      if (+row.status === 1  && [3,4].includes(this.type)) {
+      if (+row.status === 1  && [1,3,4].includes(this.type)) {
         this.$confirm("确认冲正吗?", "", {
           type: "warning",
           confirmButtonText: "是",

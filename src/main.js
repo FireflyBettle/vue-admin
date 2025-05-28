@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-12 09:51:02
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-12 10:39:25
+ * @LastEditTime: 2025-05-28 14:09:52
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/main.js
  */
@@ -19,6 +19,15 @@ import '@/styles/index.scss' // global css
 import App from './App'
 import store from './store'
 import router from './router'
+
+import Cookies from 'js-cookie'; 
+ 
+// // 设置 Cookie，SameSite 属性为 'Strict' 
+// Cookies.set('myCookie',  'cookieValue', { 
+//     sameSite: 'Strict', 
+//     path: '/', // 可选，指定 Cookie 的路径 
+//     expires: 7 // 可选，指定 Cookie 的过期时间（天） 
+// }); 
 
 import '@/icons' // icon
 import '@/permission' // permission control

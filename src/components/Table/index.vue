@@ -189,7 +189,7 @@
             ]"
           >
             <span @click="handleCustomClickOption(scope.row)">{{
-              scope.row.specialStatus
+              scope.row.operationSpecialStatus
             }}</span>
           </span>
         </template>
@@ -358,8 +358,8 @@ export default {
     filterColor: function (row) {
       return function (row) {
         const type = +Cookies.get("type");
-        if (+row.status === 1 && [3, 4].includes(type)) return true;
-        if ([0, 4].includes(+row.status) && [1, 2].includes(type)) return true;
+        if (+row.status === 0 && [1, 2].includes(type)) return true;
+        if ([1].includes(+row.status) && [1,3, 4].includes(type)) return true;
         return false;
       };
     },
