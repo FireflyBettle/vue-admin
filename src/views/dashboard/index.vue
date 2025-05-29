@@ -2,7 +2,7 @@
   <div class="dashboard-detail">
     <div v-if="$route.meta" class="header">{{ title }}</div>
     <Detail
-    v-if="Object.keys(tableForm).length"
+      v-if="Object.keys(tableForm).length"
       ref="getTable"
       :tableData="tableForm"
       :tableFormAttrs="tableFormAttrs"
@@ -30,44 +30,134 @@ export default {
       tableForm: {},
       tableFormAttrs: [],
       filterDataRules: [""],
-      type: '',
+      type: "",
     };
   },
   created() {
     // type为3 商户 , 4为门店
     this.type = +Cookies.get("type");
-    if ([3, 4].includes(this.type)) {
-      this.title = this.type === 3 ? "商户详情" :  '门店详情';
-      this.getMerchantOrStoreDetail();
-    }
     // type为2渠道
     if ([2].includes(this.type)) {
       this.title = "渠道详情";
       this.getChannelDetail();
     }
-    
+    if ([3].includes(this.type)) {
+      this.title = "商户详情";
+      this.getMerchantDetail();
+    }
+    if ([4].includes(this.type)) {
+      this.title = "门店详情";
+      this.getStoreDetail();
+    }
+
     // this.getMerchantDetail();
   },
   methods: {
-    async getMerchantOrStoreDetail() {
-      let formData = [];
-      if (this.type === 3) {
-        const { data } = await merchantDetail({
-          merchantId: Cookies.get("merchantId")
-        });
-        formData = data;
-      }
-      if (this.type === 4) {
-        // const { data } = await batchStoreInformation({
-        //   storeIds: [Cookies.get("storeId")]
-        // });
-        const { data } = await merchantDetail({
-          merchantId: Cookies.get("merchantId")
-        });
-        // formData = data.list[0];
-        formData = data;
-      }
-      this.tableForm = formData;
+    async getStoreDetail() {
+      const { data } = await batchStoreInformation({
+        storeIds: [Cookies.get("storeId")],
+      });
+      this.tableForm = data.list[0];
+      this.tableForm.status = this.tableForm.status.toString();
+      this.tableForm.discountRate = this.tableForm.discountRate * 100;
+      this.tableFormAttrs = [
+        {
+          title: "门店名称:",
+          placeholder: "请输入门店名称",
+          type: "input",
+          value: "storeName",
+          disabled: true,
+        },
+        {
+          title: "详细地址:",
+          placeholder: "请输入详细地址",
+          type: "input",
+          value: "storeAddr",
+          disabled: true,
+        },
+        {
+          title: "门店ID:",
+          placeholder: "系统自动生成",
+          type: "input",
+          inputType: "number",
+          value: "storeId",
+          disabled: true,
+        },
+        {
+          title: "App ID:",
+          placeholder: "系统自动生成",
+          type: "input",
+          value: "AppId",
+          disabled: true,
+        },
+        {
+          title: "App Secret:",
+          placeholder: "系统自动生成",
+          type: "input",
+          value: "AppSecret",
+          icon: "el-icon-refresh-right",
+          disabled: true,
+        },
+        {
+          title: "IP白名单:",
+          placeholder: "请输入IP白名单",
+          type: "input",
+          value: "ipWhiteList",
+          disabled: true,
+        },
+        {
+          title: "所属商户:",
+          placeholder: "请输入所属商户",
+          type: "select",
+          value: "merchantId",
+          disabled: true,
+          options: [],
+        },
+        {
+          title: "联系人:",
+          placeholder: "请输入联系人",
+          type: "input",
+          value: "contact",
+          disabled: true,
+        },
+        {
+          title: "手机号:",
+          placeholder: "请输入手机号",
+          type: "input",
+          value: "phone",
+          inputType: "number",
+          disabled: true,
+        },
+        {
+          title: "邮箱:",
+          placeholder: "请输入邮箱",
+          type: "input",
+          value: "email",
+          disabled: true,
+        },
+        {
+          title: "状态:",
+          placeholder: "请输入邮箱",
+          type: "radio",
+          value: "status",
+          disabled: true,
+        },
+        {
+          title: "密码:",
+          placeholder: "••••••••",
+          type: "input",
+          // inputType: "text",
+          value: "passwd",
+          isClosePwd: false,
+          disabled: true,
+        },
+      ];
+    },
+    async getMerchantDetail() {
+      const { data } = await merchantDetail({
+        merchantId: Cookies.get("merchantId"),
+      });
+      this.tableForm = data;
       this.tableForm.status = this.tableForm.status.toString();
       this.tableForm.discountRate = this.tableForm.discountRate * 100;
       this.tableFormAttrs = [
@@ -251,7 +341,7 @@ export default {
           inputType: "number",
           disabled: true,
         },
-      ]
+      ];
     },
   },
 };

@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-26 10:20:30
+ * @LastEditTime: 2025-05-29 17:03:46
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/businessManage/businessList/detail.vue
 -->
@@ -29,7 +29,7 @@
         </template>
       </template>
     </Detail>
-    <div class="shop-list">
+    <div class="shop-list" v-if="+type !== 4">
       <Search v-bind="filterAttrs" v-on="filterEvent"></Search>
       <Table
         :list-query-params.sync="listQueryParams"
@@ -69,6 +69,7 @@ import Table from "@/components/Table/index.vue";
 import Detail from "@/components/Detail/index.vue";
 import Search from "@/components/Search/index.vue";
 import md5 from "js-md5";
+import Cookies from "js-cookie";
 import { regionData } from "element-china-area-data";
 
 import {
@@ -96,6 +97,7 @@ export default {
   },
   data() {
     return {
+      type: +Cookies.get("type"),
       isEdit: false,
       tableForm: {},
       filterDataRules: ["discountRate"],
@@ -531,6 +533,10 @@ export default {
       });
     },
     edit() {
+      if (this.type === 4) {
+        this.$message.error("没有编辑权限");
+        return false;
+      }
       this.isEdit = true;
     },
     // 获取列表

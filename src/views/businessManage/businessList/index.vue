@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-28 10:45:54
+ * @LastEditTime: 2025-05-29 17:26:10
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/businessManage/businessList/index.vue
 -->
@@ -53,6 +53,7 @@ import {
   changeMerchant,
   uploadImg,
 } from "@/api/business";
+import Cookies from "js-cookie";
 
 const DefaultTableQuery = {
   pageNum: 1,
@@ -68,6 +69,7 @@ export default {
   },
   data() {
     return {
+      type: +Cookies.get("type"),
       title: "添加商户",
       sureButtonsName: "添加",
       styleType: "dialog",
@@ -321,7 +323,9 @@ export default {
         const { data } = await merchantList(this.params);
         if (data.list) {
           data.list.forEach((item) => {
-            item.discountRate = item.discountRate ? parseInt(item.discountRate * 100) : 0;
+            item.discountRate = item.discountRate
+              ? parseInt(item.discountRate * 100)
+              : 0;
             item.status = item.status ? item.status.toString() : "0";
           });
         }
@@ -401,11 +405,11 @@ export default {
     },
     // 点击编辑
     handleTableOption(index, row, option) {
+      if (this.type === 4) {
+        this.$message.error("没有编辑权限");
+        return false;
+      }
       var row = JSON.parse(JSON.stringify(row));
-      console.log(
-        "🔍 ~ handleTableOption ~ src/views/businessManage/businessList/index.vue:450 ~ row:",
-        row
-      );
       this.operationalData = { ...row };
       if (option.label === "查看") {
         console.log(index, row, option);
@@ -437,6 +441,10 @@ export default {
     },
     // 点击添加商户弹窗
     handleFilterButton(val) {
+      if (this.type === 4) {
+        this.$message.error("没有添加商户权限");
+        return false;
+      }
       if (val === "添加商户") {
         this.dialogFormVisible = true;
         this.title = "添加商户";

@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-04-25 16:44:47
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-27 15:59:30
+ * @LastEditTime: 2025-05-29 16:56:17
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/router/auth.js
  */
@@ -35,7 +35,7 @@ const asyncRoutes = [
       component: Layout,
       redirect: '/business/businessList',
       alwaysShow: true,
-      hidden: [2,4].includes(type),
+      hidden: [2].includes(type),
       meta: {
         title: '商户管理',
         icon: 'el-icon-school',
@@ -45,19 +45,19 @@ const asyncRoutes = [
           path: '/business/businessList',
           component: () => import('@/views/businessManage/businessList/index'),
           name: 'businessList',
-          meta: { title: '商户列表', icon: 'edit',roles: [1] }
+          meta: { title: '商户列表', icon: 'edit',roles: [1, 4] }
         },
         {
           path: '/business/shopList',
           component: () => import('@/views/businessManage/shopList/index'),
           name: 'shopList',
-          meta: { title: '门店列表', icon: 'list',roles: [1,3,4] }
+          meta: { title: '门店列表', icon: 'list',roles: [1,3] }
         },
         {
           path: '/business/businessList/:id',
           component: () => import('@/views/businessManage/businessList/detail'),
           name: 'businessDetail',
-          meta: { title: '商户详情', icon: 'edit',activeMenu: '/business/businessList', roles: [1] },
+          meta: { title: '商户详情', icon: 'edit',activeMenu: '/business/businessList', roles: [1, 4] },
           hidden: true,
         },
       ]
