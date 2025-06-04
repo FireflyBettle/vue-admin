@@ -67,6 +67,9 @@
           @subCheckAll="subCheckAll"
           @subCheckedData="handleCurrentChange"
         />
+        <template v-else>
+          <div class="empty">暂无数据</div>
+        </template>
         <div slot="footer" class="dialog-footer">
           <el-button class="previousButton" @click="createIndex = 0"
             >上一步</el-button
@@ -892,6 +895,11 @@ export default {
     color: #666;
     font-size: 12px;
     margin-top: 4px;
+  }
+  .empty {
+    text-align: center;
+    margin-top: 20px;
+    color: #939393;
   }
 
   .limit-reached {
