@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-12 09:51:02
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-28 14:09:52
+ * @LastEditTime: 2025-06-04 16:54:01
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/main.js
  */
@@ -40,10 +40,10 @@ import '@/permission' // permission control
  * Currently MockJs will be used in the production environment,
  * please remove it before going online ! ! !
  */
-if (process.env.NODE_ENV === 'production') {
-  const { mockXHR } = require('../mock')
-  mockXHR()
-}
+// if (process.env.NODE_ENV === 'production') {
+//   const { mockXHR } = require('../mock')
+//   mockXHR()
+// }
 
 // main.js 
 import * as filters from '@/filters'

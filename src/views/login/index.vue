@@ -110,7 +110,7 @@ export default {
       isReset: false,
       loginForm: {
         username: Cookies.get("name") || "",
-        password: "admin111",
+        password: "",
         type: "",
       },
       loginRules: {
@@ -149,6 +149,7 @@ export default {
   created() {
     // this.loginForm.type = +Cookies.get('type') ? +Cookies.get('type') : 1;
     this.loginForm.type = getPathParam();
+    console.log("🚀 ~ created ~ this.loginForm.type:", this.loginForm.type)
     // this.$store.dispatch("user/authType", this.type)
   },
   methods: {

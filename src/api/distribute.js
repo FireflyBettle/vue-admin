@@ -32,3 +32,11 @@ export function distributionDetail(data) {
     data
   })
 }
+// 申请券码
+export function applyCoupon(data) {
+  return request({
+    url: '/web/coupon/apply',
+    method: 'post',
+    data
+  })
+}

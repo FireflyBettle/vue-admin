@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-26 16:20:30
+ * @LastEditTime: 2025-06-04 18:11:31
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/distribute/distributeList/index.vue
 -->
@@ -113,6 +113,7 @@ import {
   createDistribution,
   distributionList,
   updateDistribution,
+  applyCoupon
 } from "@/api/distribute.js";
 import { channelList } from "@/api/channel.js";
 import { merchantList, storesList } from "@/api/business.js";
@@ -381,6 +382,9 @@ export default {
         },
         {
           label: "编辑",
+        },
+        {
+          label: process.env.NODE_ENV === 'production' ? '' : "发券",
         },
       ],
       optionWidth: 148,
@@ -787,7 +791,12 @@ export default {
         this.initCheckData = row.storeIds.split(",");
         this.initRadio = row.channelId;
         console.log(index, row, option);
-      } else if (option === "删除") {
+      } else if (option.label === "发券") {
+        applyCoupon({
+          distributeId: row.distributeId
+        }).then( res => {
+          this.$message.success('发券成功');
+        });
         console.log(index, row, option);
       }
     },

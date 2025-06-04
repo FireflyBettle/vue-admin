@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2021-11-18 23:21:54
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-27 15:47:38
+ * @LastEditTime: 2025-06-04 17:04:36
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/router/index.js
  */

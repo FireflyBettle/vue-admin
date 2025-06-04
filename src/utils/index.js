@@ -163,7 +163,7 @@ export function getPathParam() {
   // 获取完整的 URL
   const url = window.location.href;
   let pathAfterLogin = ''
-  const parts = url.split("#/login");
+  const parts = url.split("/login");
   if (parts.length > 1) {
      pathAfterLogin = parts[1].slice(1);
   }

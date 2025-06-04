@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-04-25 16:44:47
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-29 16:56:17
+ * @LastEditTime: 2025-06-04 15:46:40
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/router/auth.js
  */
@@ -65,7 +65,7 @@ const asyncRoutes = [
     {
       path: '/channel',
       component: Layout,
-      redirect: '/channel',
+      redirect: '/channel/channelList',
       hidden: [2,3,4].includes(type),
       meta: {
         title: '渠道管理',
@@ -123,7 +123,7 @@ const asyncRoutes = [
   {
     path: '/order',
     component: Layout,
-    redirect: '/order',
+    redirect: '/order/orderList',
     meta: {
       title: '订单管理',
       icon: 'el-icon-news'
@@ -150,7 +150,7 @@ const asyncRoutes = [
   {
     path: '/bill',
     component: Layout,
-    redirect: '/bill',
+    redirect: '/bill/billRecord',
     meta: {
       title: '账单流水统计',
       icon: 'el-icon-discount'

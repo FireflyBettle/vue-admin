@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-09 15:07:11
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-16 15:09:29
+ * @LastEditTime: 2025-06-04 16:40:48
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/utils/request.js
  */
@@ -52,10 +52,11 @@ service.interceptors.response.use(
    */
   response => {
     const res = response.data
+    console.log("🚀 ~ res:", res)
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== 0) {
       Message({
-        message: res.msg || 'Error',
+        message: res.msg || 'Error1',
         type: 'error',
         duration: 5 * 1000
       })
