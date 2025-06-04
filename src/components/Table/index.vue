@@ -400,7 +400,6 @@ export default {
 
     // 点击按钮传递给父组件
     handleClickOption(index, row, option) {
-      console.log("🚀 ~ handleClickOption ~ row:", row)
       this.$emit("subOpitonButton", index, row, option);
     },
     // 点击自定义按钮传递给父组件

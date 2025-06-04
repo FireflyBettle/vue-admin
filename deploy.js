@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-06-04 10:35:33
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-04 18:29:53
+ * @LastEditTime: 2025-06-04 18:33:38
  * @Description: 
  * @FilePath: /vue-admin-template-master/deploy.js
  */
