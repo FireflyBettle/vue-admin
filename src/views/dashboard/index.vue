@@ -8,7 +8,7 @@
       :tableFormAttrs="tableFormAttrs"
       :filterDataRules="filterDataRules"
       :merchantLogo="tableForm.merchantLogo"
-      formLabelWidth="90px"
+      formLabelWidth="98px"
     >
     </Detail>
   </div>
@@ -260,6 +260,13 @@ export default {
           placeholder: "请输入渠道描述",
           type: "textarea",
           value: "channelDesc",
+          disabled: true,
+        },
+        {
+          title: "App ID:",
+          placeholder: "系统自动生成",
+          type: "input",
+          value: "AppId",
           disabled: true,
         },
         {

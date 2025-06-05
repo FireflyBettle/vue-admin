@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2021-11-18 23:21:54
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-27 15:45:53
+ * @LastEditTime: 2025-06-05 10:30:59
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/permission.js
  */
@@ -66,8 +66,10 @@ router.beforeEach(async(to, from, next) => {
       // in the free login whitelist, go directly
       next()
     } else {
+      console.log("🚀 ~ router.beforeEach ~ next:", 111)
       // other pages that do not have permission to access are redirected to the login page.
-      next(`/login?redirect=${to.path}`)
+      // next(`/login/platform?redirect=${to.path}`)
+      next(`/login/platform`)
       NProgress.done()
     }
   }

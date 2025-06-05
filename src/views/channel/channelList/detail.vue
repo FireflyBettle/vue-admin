@@ -6,7 +6,7 @@
       :tableData="tableForm"
       :tableFormAttrs="tableFormAttrs"
       :filterDataRules="filterDataRules"
-      formLabelWidth="90px"
+      formLabelWidth="98px"
       @submitForm="submitForm"
       @resetSecret="resetSecret"
       @handleAvatarSuccess="handleAvatarSuccess"
@@ -34,7 +34,7 @@
         ref="getDialogTable"
         :title="title"
         styleType="572px"
-        formLabelWidth="90px"
+        formLabelWidth="98px"
         :tableData="dialogForm"
         :tableFormAttrs="dialogFormAttrs"
         :filterDataRules="filterDataRules"
@@ -87,6 +87,13 @@ export default {
           placeholder: "请输入渠道描述",
           type: "textarea",
           value: "channelDesc",
+          disabled: true,
+        },
+        {
+          title: "App ID:",
+          placeholder: "系统自动生成",
+          type: "input",
+          value: "AppId",
           disabled: true,
         },
         {
@@ -297,6 +304,7 @@ export default {
       this.tableForm.lockedPredeposit = this.tableForm.lockedPredeposit / 100;
     },
     resetSecret() {
+      if (!this.isEdit) return false;
       this.$confirm("确认重置App Secret?", "", {
         type: "warning",
         confirmButtonText: "是",

@@ -10,7 +10,7 @@ const getDefaultState = () => {
     name: '',
     avatar: '',
     roles: [],
-    type: +Cookies.get('type'),  //用户权限 1-平台，2-渠道，3-商户，4-门店
+    type: '', //用户权限 1-平台，2-渠道，3-商户，4-门店
     uid: '',
   }
 }
@@ -90,6 +90,11 @@ const actions = {
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
       logout(state.token).then(() => {
+        Cookies.remove("username")
+        Cookies.remove("avatar")
+        Cookies.remove("channelId")
+        Cookies.remove("merchantId")
+        Cookies.remove("storeId")
         commit('RESET_STATE')
         commit('SET_ROLES', [])
         removeToken() // must remove  token  first

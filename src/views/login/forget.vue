@@ -34,6 +34,7 @@
           tabindex="2"
           auto-complete="on"
           prefix-icon="el-icon-message"
+          maxlength="6"
           class="getCode"
           @keyup.enter.native="handleLogin"
         />
@@ -129,6 +130,7 @@ import {
   deleteInfo,
 } from "@/api/user";
 import md5 from "js-md5";
+import { getPathParam } from '@/utils'
 
 export default {
   name: "forget",
@@ -224,11 +226,10 @@ export default {
     // 重置
     sureSubmit() {
       this.$refs.resetForm.validate((valid) => {
-        console.log("🚀 ~ this.$refs.resetForm.validate ~ valid:", valid);
         if (valid) {
           this.loading = true;
           passwdForget({
-            type: this.$store.state.type,
+            type: getPathParam(),
             phone: this.forgetForm.phone.toString(),
             passwd: md5(md5(this.resetForm.password)),
             smsToken: this.sms_token,
@@ -292,6 +293,7 @@ export default {
     submitPrevious() {
       this.isSendingCode = false;
       this.countdown = 0;
+      this.nextLoading = false;
       this.$emit("submitPrevious");
     },
     // 下一步
@@ -330,6 +332,7 @@ export default {
     cannelReset() {
       this.isSendingCode = false;
       this.countdown = 0;
+      this.loading = false;
       this.$emit("sureSubmit");
     },
   },

@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-04-25 17:19:39
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-04-27 15:51:45
+ * @LastEditTime: 2025-06-05 18:26:16
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/store/modules/permission.js
  */
@@ -53,6 +53,7 @@ const mutations = {
   SET_ROUTES: (state, routes) => {
       state.addRoutes = routes
       state.routes = constantRoutes.concat(routes)
+      console.log("🚀 ~ state.routes:", state.routes)
   }
 }
 
@@ -81,6 +82,9 @@ const actions = {
           // 把当前用户可访问的路由规则给到.then()
           resolve(accessedRoutes)
       })
+  },
+  resetRoutes({ commit }) {
+    commit('SET_ROUTES', [])
   }
 }
 

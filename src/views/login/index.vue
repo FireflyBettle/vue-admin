@@ -114,9 +114,9 @@ export default {
         type: "",
       },
       loginRules: {
-        username: [
-          { required: true, trigger: "blur", validator: validateUsername },
-        ],
+        // username: [
+        //   { required: true, trigger: "blur", validator: validateUsername },
+        // ],
         password: [
           { required: true, trigger: "blur", validator: validatePassword },
         ],
@@ -131,6 +131,15 @@ export default {
   watch: {
     $route: {
       handler: function (route) {
+        this.$store.dispatch('user/logout')
+        this.$store.dispatch('permission/resetRoutes')
+        this.loginForm.type = getPathParam();
+        Cookies.set('type', this.loginForm.type)
+        setTimeout(() => {
+
+          console.log('permission_routers', this.$store.getters.permission_routers)
+        },100)
+        console.log("🚀 ~ this.loginForm.type:", this.loginForm.type)
         this.redirect = route.query && route.query.redirect;
       },
       immediate: true,
@@ -148,9 +157,11 @@ export default {
   },
   created() {
     // this.loginForm.type = +Cookies.get('type') ? +Cookies.get('type') : 1;
+    this.$store.dispatch('user/logout')
     this.loginForm.type = getPathParam();
-    console.log("🚀 ~ created ~ this.loginForm.type:", this.loginForm.type)
-    // this.$store.dispatch("user/authType", this.type)
+    // Cookies.set('type', this.loginForm.type);
+    // console.log("🚀 ~ created ~ this.loginForm.type:", this.loginForm.type)
+    this.$store.dispatch("user/authType", this.type)
   },
   methods: {
     forgetPassword() {

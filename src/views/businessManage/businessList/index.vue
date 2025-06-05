@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-29 17:26:10
+ * @LastEditTime: 2025-06-05 15:18:54
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/businessManage/businessList/index.vue
 -->
@@ -198,7 +198,7 @@ export default {
           route: "merchantId",
         },
         {
-          label: "编辑",
+          label: +Cookies.get('type') === 4 ? '' : "编辑",
         },
       ],
       optionWidth: 148,
@@ -308,6 +308,9 @@ export default {
     },
   },
   created() {
+    if (this.type === 4) {
+      this.filterButtonText = [];
+    }
     this.getList();
   },
   methods: {
