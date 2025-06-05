@@ -13,15 +13,21 @@ import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
 import { getToken } from '@/utils/auth' // get token from cookie
 import getPageTitle from '@/utils/get-page-title'
+import Cookies from 'js-cookie'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
 const whiteList = ['/login/platform','/login/channel','/login/merchant','/login/store'] // no redirect whitelist
 
 router.beforeEach(async(to, from, next) => {
+  Cookies.set('isLock', +Cookies.get('type'))
 // console.log("🔍 ~ router.beforeEach() callback ~ src/permission.js:21 ~ to:", to)
   // start progress bar
-  NProgress.start()
+  if (whiteList.indexOf(to.path) === -1) {
+    // in the free login whitelist, go directly
+    NProgress.start()
+  }
+  // NProgress.start()
 
   // set page title
   document.title = getPageTitle(to.meta.title)
@@ -44,6 +50,7 @@ router.beforeEach(async(to, from, next) => {
           // await store.dispatch('user/getInfo')
           // 这里修改权限
           const { roles } = await store.dispatch('user/getInfo')
+          // console.log("🔍 ~ router.beforeEach() callback ~ src/permission.js:46 ~ roles:", roles)
           // const roles = 'admin';
           
           const accessRoutes = await store.dispatch('permission/generateRoutes', roles)

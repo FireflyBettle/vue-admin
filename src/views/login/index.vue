@@ -131,16 +131,17 @@ export default {
   watch: {
     $route: {
       handler: function (route) {
-        this.$store.dispatch('user/logout')
-        this.$store.dispatch('permission/resetRoutes')
+        // this.$store.dispatch('user/logout')
+        // this.$store.dispatch('permission/resetRoutes')
         this.loginForm.type = getPathParam();
         Cookies.set('type', this.loginForm.type)
-        setTimeout(() => {
-
-          console.log('permission_routers', this.$store.getters.permission_routers)
-        },100)
         console.log("🚀 ~ this.loginForm.type:", this.loginForm.type)
         this.redirect = route.query && route.query.redirect;
+        // 为了解决asyncRoutes懒加载不更新导致切换角色没更新到对应权限
+        if (Cookies.get('isLock') !== Cookies.get('type')) {
+          window.location.reload();
+          return
+        }
       },
       immediate: true,
     },
