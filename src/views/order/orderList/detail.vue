@@ -160,8 +160,8 @@ export default {
           await expireOrder({
             voucherId: this.$route.params.id,
           });
-          this.getList();
           this.$message.success("作废成功");
+          this.getList();
         })
         .catch(() => {
           // this.$message.info(" 已取消作废");
