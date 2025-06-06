@@ -53,13 +53,22 @@ export default {
     // this.getMerchantDetail();
   },
   methods: {
+    commonFilter() {
+      this.tableForm.status = this.tableForm.status ? this.tableForm.status.toString(): '';
+      this.tableForm.discountRate = this.tableForm.discountRate ? this.tableForm.discountRate * 100 : '';
+      this.tableForm.predepositAmount = this.tableForm.predepositAmount ? this.tableForm.predepositAmount / 100 : '';
+      this.tableForm.availablePredeposit = this.tableForm.availablePredeposit ? 
+        this.tableForm.availablePredeposit / 100 : '';
+      this.tableForm.lockedPredeposit = this.tableForm.lockedPredeposit ? this.tableForm.lockedPredeposit / 100 : '';
+    },
     async getStoreDetail() {
       const { data } = await batchStoreInformation({
         storeIds: [Cookies.get("storeId")],
       });
       this.tableForm = data.list[0];
-      this.tableForm.status = this.tableForm.status.toString();
-      this.tableForm.discountRate = this.tableForm.discountRate * 100;
+      this.commonFilter()
+      // this.tableForm.status = this.tableForm.status.toString();
+      // this.tableForm.discountRate = this.tableForm.discountRate * 100;
       this.tableFormAttrs = [
         {
           title: "门店名称:",
@@ -106,9 +115,17 @@ export default {
           disabled: true,
         },
         {
+          title: "商户名称:",
+          placeholder: "请输入商户名称",
+          type: "input",
+          value: "merchantName",
+          disabled: true,
+          options: [],
+        },
+        {
           title: "所属商户:",
           placeholder: "请输入所属商户",
-          type: "select",
+          type: "input",
           value: "merchantId",
           disabled: true,
           options: [],
@@ -158,8 +175,7 @@ export default {
         merchantId: Cookies.get("merchantId"),
       });
       this.tableForm = data;
-      this.tableForm.status = this.tableForm.status.toString();
-      this.tableForm.discountRate = this.tableForm.discountRate * 100;
+      this.commonFilter()
       this.tableFormAttrs = [
         {
           title: "商户名称:",
@@ -242,11 +258,7 @@ export default {
         channelId: Cookies.get("channelId"),
       });
       this.tableForm = data;
-      this.tableForm.status = this.tableForm.status.toString();
-      this.tableForm.predepositAmount = this.tableForm.predepositAmount / 100;
-      this.tableForm.availablePredeposit =
-        this.tableForm.availablePredeposit / 100;
-      this.tableForm.lockedPredeposit = this.tableForm.lockedPredeposit / 100;
+      this.commonFilter()
       this.tableFormAttrs = [
         {
           title: "渠道名称:",

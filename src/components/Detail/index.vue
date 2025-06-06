@@ -245,10 +245,10 @@ export default {
           { required: true, message: "请输入折扣率", trigger: "blur" },
         ],
         contact: [{ required: true, message: "请输入联系人", trigger: "blur" }],
-        // phone: [
-        //   { required: true, message: "请输入手机号", trigger: "blur" },
-        //   { validator: validatePhone, trigger: "blur" },
-        // ],
+        phone: [
+          { required: true, message: "请输入手机号", trigger: "blur" },
+          { validator: validatePhone, trigger: "blur" },
+        ],
         email: [
           { required: true, message: "请输入邮箱", trigger: "blur" },
           {
