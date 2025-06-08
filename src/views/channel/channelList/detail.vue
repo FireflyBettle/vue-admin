@@ -257,7 +257,7 @@ export default {
           let message = "";
           if (this.buttonName === "充值") {
             params.type = "recharge";
-            des = `确认向渠道名称充值¥${this.dialogForm.amount}吗?`;
+            des = `确认向${this.dialogForm.channelName}充值¥${this.dialogForm.amount}吗?`;
             message = "充值成功";
           }
           if (this.buttonName === "冲正") {

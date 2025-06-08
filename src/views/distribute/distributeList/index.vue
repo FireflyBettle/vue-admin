@@ -110,13 +110,13 @@ import Table from "@/components/Table/index.vue";
 import Detail from "@/components/Detail/index.vue";
 import Search from "@/components/Search/index.vue";
 import DialogTable from "@/components/DialogTable/index.vue";
-import Cookies from 'js-cookie'; 
+import Cookies from "js-cookie";
 
 import {
   createDistribution,
   distributionList,
   updateDistribution,
-  applyCoupon
+  applyCoupon,
 } from "@/api/distribute.js";
 import { channelList } from "@/api/channel.js";
 import { merchantList, storesList } from "@/api/business.js";
@@ -387,7 +387,7 @@ export default {
           label: "编辑",
         },
         {
-          label: process.env.NODE_ENV === 'production' ? '' : "发券",
+          label: process.env.NODE_ENV === "production" ? "" : "发券",
         },
       ],
       optionWidth: 148,
@@ -693,7 +693,7 @@ export default {
             this.initCheckData.includes(item)
           );
           this.checkData = intersection;
-        }else {
+        } else {
           this.shopForm.storeIds = "";
         }
         // this.shopForm.storeIds = this.initCheckData.join(",");
@@ -796,9 +796,9 @@ export default {
         console.log(index, row, option);
       } else if (option.label === "发券") {
         applyCoupon({
-          distributeId: row.distributeId
-        }).then( res => {
-          this.$message.success('发券成功');
+          distributeId: row.distributeId,
+        }).then((res) => {
+          this.$message.success("发券成功");
         });
         console.log(index, row, option);
       }

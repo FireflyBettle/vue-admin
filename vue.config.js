@@ -50,6 +50,7 @@ module.exports = {
     }
   },
   chainWebpack(config) {
+    config.output.filename('[name].[contenthash:8].js') // 方便测试环境浏览器强缓存保持数据强制更新
     // it can improve the speed of the first screen, it is recommended to turn on preload
     config.plugin('preload').tap(() => [
       {
