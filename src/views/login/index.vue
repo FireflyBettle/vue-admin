@@ -3,8 +3,7 @@
     <div class="title-container">
       <div class="title">
         <img src="@/assets/logo.png" alt="" />
-        <h3>测试</h3>
-        <!-- <h3>测试数据中台系统</h3> -->
+        <h3>数据中台系统</h3>
       </div>
     </div>
     <el-form

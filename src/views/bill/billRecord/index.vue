@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-26 10:46:33
+ * @LastEditTime: 2025-06-06 16:29:55
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/bill/billRecord/index.vue
 -->
@@ -570,7 +570,7 @@ export default {
       if (this.multipleSelection.length) {
         arr = this.multipleSelection;
       } else {
-        const { data } = await billRecordList({
+        const { data } = await billChannelList({
           pageSize: 1000,
           pageNum: 0,
           date: this.dateValue,
@@ -676,7 +676,7 @@ export default {
       // 导出文件
       XLSX.writeFile(wb,`账单记录${getPathName()}.xlsx`);
     },
-    // 点击右上角添加门店或者删除门店按钮
+    // 点击右上角导出excel按钮
     async handleFilterButton(val) {
       if (val === "导出Excel") {
         if (this.type === 1) {

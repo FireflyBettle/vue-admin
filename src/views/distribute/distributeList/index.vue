@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-04 18:11:31
+ * @LastEditTime: 2025-06-06 16:48:28
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/distribute/distributeList/index.vue
 -->
@@ -54,7 +54,7 @@
       <template v-if="createIndex === 1">
         <Table
           v-if="Object.keys(dialogTableDataSecond).length"
-          listLoading="loadingStatusSecond"
+          :listLoading="loadingStatusSecond"
           :list-query-params.sync="secondListQueryParams"
           :config="dialogTableConfigSecond"
           :tableData="dialogTableDataSecond"
@@ -81,7 +81,7 @@
       </template>
       <template v-if="createIndex === 2">
         <Table
-          listLoading="loadingStatusThird"
+          :listLoading="loadingStatusThird"
           :list-query-params.sync="thirdListQueryParams"
           :config="dialogTableConfigThird"
           :tableData="dialogTableDataThird"
@@ -89,7 +89,6 @@
           :isHasButtons="false"
           :isShowNumber="true"
           @subClickPagination="handleSizeChangeThird"
-          @subCheckedData="handleCurrentChangeThird"
           @getCurrentRow="getCurrentRow"
         />
         <div slot="footer" class="dialog-footer">
@@ -470,6 +469,7 @@ export default {
       checkData: [],
       initRadio: "",
       isEdit: false,
+      type: +Cookies.get('type'),
     };
   },
   computed: {
@@ -551,26 +551,28 @@ export default {
   },
   methods: {
     handleSizeChange(val) {
-      this.secondListQueryParams.pageSize = val;
+      // console.log("🚀 ~ handleSizeChange ~ val:", val)
+      // this.secondListQueryParams.pageSize = val;
       this.getStoreList();
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
     handleSizeChangeThird(val) {
-      this.thirdListQueryParams.pageSize = val;
+      // this.thirdListQueryParams.pageSize = val;
       this.getCannelList();
     },
-    handleCurrentChangeThird(val) {
-      this.thirdListQueryParams.pageNum = val;
-      this.getCannelList();
-    },
+    // handleCurrentChangeThird(val) {
+    //   console.log("🚀 ~ handleCurrentChangeThird ~ val:", val)
+    //   this.thirdListQueryParams.pageNum = val;
+    //   this.getCannelList();
+    // },
     getCurrentRow(val) {
       this.currentCannelId = val;
     },
     // 获取列表
     init() {
-      if (+Cookies.get("type") === 2) {
+      if (this.type === 2) {
         this.filterButtonText = [];
       }
       const params = {
@@ -631,6 +633,11 @@ export default {
         this.listQueryParams.total = data.total;
         // 数据给表格
         this.tableData = data.list || [];
+        if ([2].includes(this.type)) {
+          this.tableConfig = this.tableConfig.filter(
+            (item) => !["discountRate"].includes(item.value)
+          );
+        }
         this.loadingStatus = false;
       } catch (error) {
         console.log(error);
@@ -796,9 +803,10 @@ export default {
         console.log(index, row, option);
       } else if (option.label === "发券") {
         applyCoupon({
-          distributeId: row.distributeId,
-        }).then((res) => {
-          this.$message.success("发券成功");
+          distributeId: row.distributeId
+        }).then( res => {
+          this.$message.success('发券成功');
+          this.getList();
         });
         console.log(index, row, option);
       }

@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-28 11:34:11
+ * @LastEditTime: 2025-06-06 16:40:32
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/order/orderList/index.vue
 -->
@@ -332,6 +332,11 @@ export default {
         if ([3, 4].includes(this.type)) {
           this.tableConfig = this.tableConfig.filter(
             (item) => !["channelName", "advancePayment"].includes(item.value)
+          );
+        }
+        if ([2].includes(this.type)) {
+          this.tableConfig = this.tableConfig.filter(
+            (item) => !["merchantSettlement"].includes(item.value)
           );
         }
         this.loadingStatus = false;

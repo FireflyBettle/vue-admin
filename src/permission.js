@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2021-11-18 23:21:54
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-05 10:30:59
+ * @LastEditTime: 2025-06-06 12:28:46
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/permission.js
  */
@@ -21,12 +21,13 @@ const whiteList = ['/login/platform','/login/channel','/login/merchant','/login/
 
 router.beforeEach(async(to, from, next) => {
   Cookies.set('isLock', +Cookies.get('type'))
-// console.log("🔍 ~ router.beforeEach() callback ~ src/permission.js:21 ~ to:", to)
-  // start progress bar
   if (whiteList.indexOf(to.path) === -1) {
     // in the free login whitelist, go directly
     NProgress.start()
   }
+
+// console.log("🔍 ~ router.beforeEach() callback ~ src/permission.js:21 ~ to:", to)
+  // start progress bar
   // NProgress.start()
 
   // set page title
@@ -50,7 +51,6 @@ router.beforeEach(async(to, from, next) => {
           // await store.dispatch('user/getInfo')
           // 这里修改权限
           const { roles } = await store.dispatch('user/getInfo')
-          // console.log("🔍 ~ router.beforeEach() callback ~ src/permission.js:46 ~ roles:", roles)
           // const roles = 'admin';
           
           const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
@@ -73,7 +73,6 @@ router.beforeEach(async(to, from, next) => {
       // in the free login whitelist, go directly
       next()
     } else {
-      console.log("🚀 ~ router.beforeEach ~ next:", 111)
       // other pages that do not have permission to access are redirected to the login page.
       // next(`/login/platform?redirect=${to.path}`)
       next(`/login/platform`)

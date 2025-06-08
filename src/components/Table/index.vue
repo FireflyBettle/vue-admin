@@ -386,7 +386,6 @@ export default {
       this.$emit("subCheckAll", this.checkData);
     },
     handleCheckedChange(value) {
-    console.log("🔍 ~ handleCheckedChange ~ src/components/Table/index.vue:388 ~ value:", value)
       let checkedCount = value.length;
       this.checkAll = checkedCount === this.allData.length;
       this.isIndeterminate =
