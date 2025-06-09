@@ -71,6 +71,8 @@ import Search from "@/components/Search/index.vue";
 import md5 from "js-md5";
 import Cookies from "js-cookie";
 import { regionData } from "element-china-area-data";
+import XLSX from "xlsx";
+import { getPathName } from "@/utils/index.js";
 
 import {
   createStores,
@@ -377,6 +379,10 @@ export default {
           label: "删除门店",
           type: "info",
         },
+        {
+          label: "导出Excel",
+          type: "primary",
+        },
       ],
       filterOptions: [],
       selectedAreaText: "",
@@ -559,6 +565,7 @@ export default {
               this.dialogForm.AppSecret = item.AppSecret;
             }
             item.status = item.status.toString();
+            item.statusDes = +item.status === 0 ? '启用' : '暂停';
           });
         }
         this.listQueryParams.total = data.total;
@@ -777,6 +784,79 @@ export default {
             this.$message.info(" 已取消删除");
           });
       }
+
+      if (val === '导出Excel') {
+        this.exportExcel()
+      }
+    },
+    async exportExcel() {
+      const headers = [
+        "门店名称",
+        "门店地址",
+        "门店ID",
+        "App ID",
+        "App Secret",
+        "IP白名单",
+        "所属商户",
+        "联系人",
+        "手机号",
+        "邮箱",
+        "状态",
+      ];
+      const keys = [
+        "storeName",
+        "storeAddr",
+        "merchantId",
+        "AppId",
+        "AppSecret",
+        "ipWhiteList",
+        "merchantName",
+        "contact",
+        "phone",
+        "email",
+        "statusDes",
+      ];
+      let exportData = [];
+      let arr = [];
+      if (this.multipleSelection.length) {
+        arr = this.multipleSelection;
+      } else {
+        this.params.pageSize = 1000;
+        this.params.pageNum = 0;
+        const { data } = await storesList(this.params);
+        data.list.forEach((item) => {
+          item.amount = item.amount / 100;
+          item.statusDes = +item.status === 0 ? '启用' : '暂停';
+        });
+        arr = data.list;
+      }
+      exportData = arr.map((item) => {
+        return keys.map((key) => item[key]);
+      });
+      // 将表头添加到数据的第一行
+      exportData.unshift(headers);
+      // 创建工作簿
+      const ws = XLSX.utils.aoa_to_sheet(exportData);
+      // 设置列宽度
+      ws["!cols"] = [
+        { wch: 18 },
+        { wch: 45 },
+        { wch: 12 },
+        { wch: 15 },
+        { wch: 35 },
+        { wch: 25 },
+        { wch: 15 },
+        { wch: 15 },
+        { wch: 15 },
+        { wch: 20 },
+        { wch: 12 },
+      ];
+      const wb = XLSX.utils.book_new();
+      // 将工作表添加到工作簿
+      XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+
+      // 导出文件
+      XLSX.writeFile(wb,`商户门店${getPathName()}.xlsx`);
     },
   },
 };

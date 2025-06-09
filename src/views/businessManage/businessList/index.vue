@@ -335,6 +335,12 @@ export default {
         this.listQueryParams.total = data.total;
         // 数据给表格
         this.tableData = data.list || [];
+        if ([4].includes(+this.type)) {
+          this.tableConfig = this.tableConfig.filter(
+            (item) => !["discountRate", 'storeCnt'].includes(item.value)
+          );
+        }
+
         this.loadingStatus = false;
       } catch (error) {
         console.log(error);
