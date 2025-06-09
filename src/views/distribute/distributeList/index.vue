@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-06 16:48:28
+ * @LastEditTime: 2025-06-09 16:06:43
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/distribute/distributeList/index.vue
 -->
@@ -43,6 +43,7 @@
           :formLabelWidth="formLabelWidth"
           :filterDataRules="filterDataRules"
           :tableFormAttrs="tableFormAttrs"
+          @selectChange="selectChange"
           @submitForm="nextSecond"
         >
         </Detail>
@@ -166,7 +167,7 @@ export default {
           title: "商户ID:",
           placeholder: "系统自动生成",
           type: "input",
-          value: "merchantIds",
+          value: "merchantId",
           disabled: true,
         },
         {
@@ -180,11 +181,17 @@ export default {
         },
         {
           title: "券码金额",
-          placeholder: "请输入券码金额",
-          type: "input",
+          placeholder: "请选择券码金额",
+          type: "select",
           inputType: "number",
           value: "couponAmount",
           required: true,
+          options: [
+            {
+              label: '自定义',
+              value: 0
+            }
+          ]
         },
         {
           title: "券码有效期",
@@ -470,6 +477,7 @@ export default {
       initRadio: "",
       isEdit: false,
       type: +Cookies.get('type'),
+      merchantList: [],
     };
   },
   computed: {
@@ -581,6 +589,7 @@ export default {
         pageNum: 0,
       };
       merchantList(params).then((res) => {
+        this.merchantList = res.data.list;
         this.filterOptions[0].options = res.data.list.map((val) => {
           return {
             value: val.merchantId,
@@ -589,7 +598,7 @@ export default {
         });
         this.tableFormAttrs.forEach((item) => {
           if (item.value === "merchantId") {
-            item.options = res.data.list.map((val) => {
+            item.options = this.merchantList.map((val) => {
               return {
                 value: val.merchantId,
                 label: val.merchantName,
@@ -763,6 +772,16 @@ export default {
       let params = val.join(",");
       this.shopForm.storeIds = params;
     },
+    selectChange(val) {
+      this.merchantList.forEach(item => {
+        if (item.merchantId === val) {
+          this.shopForm.merchantId = item.merchantId;
+          this.shopForm.discountRate = item.discountRate * 100;
+        }
+      })
+    console.log("🚀 ~ selectChange ~ val:", val)
+
+    },
     // 点击下一步（第二步）
     nextSecond() {
       this.$refs.getTable.getTableRef().validate((valid) => {
@@ -794,6 +813,7 @@ export default {
         console.log(index, row, option);
       } else if (option.label === "编辑") {
         var row = JSON.parse(JSON.stringify(row));
+        row.couponAmount = 0;
         this.createIndex = 0;
         this.dialogFormVisible = true;
         this.isEdit = true;

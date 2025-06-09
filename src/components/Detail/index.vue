@@ -75,6 +75,7 @@
               v-model="tableData[item.value]"
               :disabled="item.disabled"
               :placeholder="item.placeholder"
+              @change="selectChange"
             >
               <el-option
                 v-for="val in item.options"
@@ -318,6 +319,9 @@ export default {
     },
     enlargeImg(val) {
       this.$emit("enlargeImg", val);
+    },
+    selectChange(val) {
+      this.$emit("selectChange", val);
     },
     handleAreaChange(val) {
       this.$emit("handleAreaChange", val);
