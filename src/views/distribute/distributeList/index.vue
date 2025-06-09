@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-09 16:06:43
+ * @LastEditTime: 2025-06-09 18:04:36
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/distribute/distributeList/index.vue
 -->
@@ -596,6 +596,10 @@ export default {
             label: val.merchantName,
           };
         });
+        this.filterOptions[0].options.unshift({
+          value: '',
+          label: '所有',
+        })
         this.tableFormAttrs.forEach((item) => {
           if (item.value === "merchantId") {
             item.options = this.merchantList.map((val) => {
@@ -614,6 +618,10 @@ export default {
             label: val.channelName,
           };
         });
+        this.filterOptions[1].options.unshift({
+          value: '',
+          label: '所有',
+        })
       });
     },
     async getList() {
@@ -632,7 +640,7 @@ export default {
             item.storeNumber = item.storeIds
               ? item.storeIds.split(",").length
               : 0;
-            item.couponAmount = parseInt(item.couponAmount / 100);
+            item.couponAmount = !item.couponAmount ? '自定义' : parseInt(item.couponAmount / 100);
             item.createAmount = parseInt(item.createAmount / 100);
             item.pendingAmount = parseInt(item.pendingAmount / 100);
             item.pendedAmount = parseInt(item.pendedAmount / 100);

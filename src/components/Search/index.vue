@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-12 17:36:48
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-21 17:12:42
+ * @LastEditTime: 2025-06-09 17:36:20
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/components/Search/index.vue
 -->
@@ -66,6 +66,19 @@
               value-format="yyyy-MM-dd"
               :picker-options="pickerOptions"
               type="date"
+              @change="changeDate"
+            ></el-date-picker>
+          </template>
+
+          <template v-else-if="item.format === 'mulDate'">
+            <el-date-picker
+              v-model="dateValue"
+              value-format="yyyy-MM-dd"
+              :picker-options="pickerOptions"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              type="daterange"
               @change="changeDate"
             ></el-date-picker>
           </template>
@@ -199,6 +212,15 @@ export default {
       height: 32px;
       line-height: 32px;
     }
+  }
+  .el-date-editor--daterange {
+    width: 265px;
+  }
+  .el-range-editor.el-input__inner,.el-date-editor .el-range-separator,.el-input__icon {
+    height:32px;
+  }
+  .el-range-editor .el-range-input {
+    width: 100px;
   }
   .el-select {
     margin-right: 4px;

@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-06 16:29:55
+ * @LastEditTime: 2025-06-09 17:26:13
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/bill/billRecord/index.vue
 -->
@@ -66,7 +66,7 @@ export default {
       ],
       filterOptions: [
         {
-          format: "date",
+          format: "mulDate",
         },
         {
           type: "button",
@@ -345,7 +345,7 @@ export default {
         // 分页数据作为参数给服务端
         this.params.pageSize = this.listQueryParams.pageSize;
         this.params.pageNum = this.listQueryParams.pageNum - 1;
-        this.params.date = this.dateValue;
+        // this.params.date = this.dateValue;
         // 发送请求,请求到的数据格式见下文，
         const { data } = await billChannelList(this.params);
         if (data.list) {
@@ -435,21 +435,20 @@ export default {
       this.multipleSelection = val;
     },
     changeDate(val) {
-      this.dateValue = val;
-      console.log(
-        "🔍 ~ changeDate ~ src/views/bill/billRecord/index.vue:226 ~ val:",
-        val
-      );
+      console.log("🚀 ~ changeDate ~ val:", val)
+      this.params.startDate = val[0];
+      this.params.endDate = val[1];
+      // this.dateValue = val;
     },
     // 分页操作
     handleRefreshList() {
       this.requestInitData();
     },
     clickSearch() {
-      if (!this.dateValue) {
-        this.$message.warning(" 请选择日期");
-        return;
-      }
+      // if (!this.dateValue) {
+      //   this.$message.warning(" 请选择日期");
+      //   return;
+      // }
       this.listQueryParams.pageNum = 1; // 重置页码
       this.requestInitData();
     },

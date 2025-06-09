@@ -212,7 +212,7 @@ export default {
           { required: true, message: "请选择商户", trigger: "blur" },
         ],
         couponAmount: [
-          { required: true, message: "请输入券码金额", trigger: "blur" },
+          { required: true, message: "请选择券码金额", trigger: "blur" },
         ],
         effectiveTime: [
           { required: true, message: "请输入券码有效期", trigger: "blur" },

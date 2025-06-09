@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-26 16:36:53
+ * @LastEditTime: 2025-06-09 18:30:22
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/businessManage/shopList/index.vue
 -->
@@ -19,6 +19,7 @@
       v-if="dialogFormVisible"
       :visible.sync="dialogFormVisible"
       width="572px"
+      top="35vh"
     >
       <Detail
         ref="getTable"
@@ -265,6 +266,25 @@ export default {
         },
       ],
       filterOptions: [
+      {
+          type: "multiSelect",
+          placeholder: "商户",
+          inputValue: "",
+          isSearch: false,
+          inputWidth: "136px",
+          selectWidth: "110px",
+          noShowInput: true,
+          options: [
+            {
+              value: "选项1",
+              label: "黄金糕",
+            },
+            {
+              value: "选项2",
+              label: "双皮奶",
+            },
+          ],
+        },
         {
           type: "multiSelect",
           placeholder: "请选择",
@@ -356,6 +376,35 @@ export default {
     },
   },
   created() {
+    const params = {
+        ...this.params,
+        pageSize: 1000,
+        pageNum: 0,
+      };
+    merchantList(params).then((res) => {
+        this.merchantList = res.data.list;
+        this.filterOptions[0].options = res.data.list.map((val) => {
+          return {
+            value: val.merchantId,
+            label: val.merchantName,
+          };
+        });
+        this.filterOptions[0].options.unshift({
+          value: '',
+          label: '所有',
+        })
+        this.tableFormAttrs.forEach((item) => {
+          if (item.value === "merchantId") {
+            item.options = this.merchantList.map((val) => {
+              return {
+                value: val.merchantId,
+                label: val.merchantName,
+              };
+            });
+          }
+        });
+      });
+
     this.dialogFormAttrs.forEach((item) => {
       if (item.type === "multipleSelect") {
         item.options = this.regionData;

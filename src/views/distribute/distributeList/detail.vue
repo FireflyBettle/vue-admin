@@ -75,11 +75,17 @@ export default {
         },
         {
           title: "券码金额",
-          placeholder: "请输入券码金额",
-          type: "input",
+          placeholder: "自定义",
+          type: "select",
           inputType: "number",
           value: "couponAmount",
           disabled: true,
+          options: [
+            {
+              label: '自定义',
+              value: 0
+            }
+          ]
         },
          {
           title: "券码有效期",
@@ -176,7 +182,8 @@ export default {
       this.tableForm.status = this.tableForm.status.toString();
       this.tableForm.commissionRate = this.tableForm.commissionRate * 100;
       this.tableForm.discountRate = this.tableForm.discountRate * 100;
-      this.tableForm.couponAmount = this.tableForm.couponAmount / 100;
+      // this.tableForm.couponAmount = this.tableForm.couponAmount / 100;
+      this.tableForm.couponAmount = 0;
       this.tableForm.createAmount = this.tableForm.createAmount / 100;
       this.tableForm.pendingAmount = this.tableForm.pendingAmount / 100;
       this.tableForm.pendedAmount = this.tableForm.pendedAmount / 100;

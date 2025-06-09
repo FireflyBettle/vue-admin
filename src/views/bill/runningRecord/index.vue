@@ -216,10 +216,6 @@ export default {
     },
     changeDate(val) {
       this.dateValue = val;
-      console.log(
-        "🔍 ~ changeDate ~ src/views/bill/billRecord/index.vue:226 ~ val:",
-        val
-      );
     },
     // 分页操作
     handleRefreshList() {
