@@ -143,9 +143,9 @@ export default {
           placeholder: "商户",
           inputValue: "",
           isSearch: false,
+          noShowInput: true,
           inputWidth: "136px",
           selectWidth: "110px",
-          noShowInput: true,
           options: [],
         },
         {
@@ -177,6 +177,10 @@ export default {
           selectWidth: "110px",
           noShowInput: true,
           options: [
+            {
+              value: null,
+              label: '所有',
+            },
             {
               value: "0",
               label: "待核销",
@@ -269,6 +273,10 @@ export default {
             label: val.merchantName,
           };
         });
+        this.filterOptions[0].options.unshift({
+          value: '',
+          label: '所有',
+        });
       });
       channelList(params).then((res) => {
         this.filterOptions[1].options = res.data.list.map((val) => {
@@ -277,6 +285,10 @@ export default {
             label: val.channelName,
           };
         });
+        this.filterOptions[1].options.unshift({
+          value: '',
+          label: '所有',
+        });
       });
       storesList(params).then((res) => {
         this.filterOptions[2].options = res.data.list.map((val) => {
@@ -284,6 +296,10 @@ export default {
             value: val.storeId,
             label: val.storeName,
           };
+        });
+        this.filterOptions[2].options.unshift({
+          value: '',
+          label: '所有',
         });
       });
     },
@@ -345,6 +361,7 @@ export default {
       }
     },
     handleFilter(val) {
+    console.log("🔍 ~ handleFilter ~ src/views/order/orderList/index.vue:363 ~ val:", val)
       this.params.merchantId =
         val.placeholder === "商户" ? val.selectValue : this.params.merchantId;
       this.params.channelId =
@@ -352,7 +369,7 @@ export default {
       this.params.storeId =
         val.placeholder === "门店" ? val.selectValue : this.params.storeId;
       this.params.status =
-        val.placeholder === "状态" ? +val.selectValue : +this.params.status;
+        val.placeholder === "状态" ? (val.selectValue ? +val.selectValue : null) : +this.params.status;
     },
     // 多选框
     handleSelectionChange(val) {
@@ -402,8 +419,6 @@ export default {
       this.getList();
     },
     clickSearch(val) {
-      this.params.searchKey = val.selectValue;
-      this.params.searchVal = val.inputValue;
       this.listQueryParams.pageNum = 1; // 重置页码
       this.getList();
     },
@@ -491,11 +506,11 @@ export default {
         { wch: 21 },
         { wch: 10 },
       ];
-      if ([3,4].includes(this.type)) {
+      if ([3, 4].includes(this.type)) {
         ws["!cols"] = ws["!cols"].filter((col, index) => {
           return ![6, 7].includes(index); // 移除渠道和预付款列
         });
-        console.log("🔍 ~ exportExcordervue:490:", ws["!cols"])
+        console.log("🔍 ~ exportExcordervue:490:", ws["!cols"]);
       }
       const wb = XLSX.utils.book_new();
       // 将工作表添加到工作簿

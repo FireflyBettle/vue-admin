@@ -90,6 +90,7 @@
               filterable
               placeholder="商户名称"
               @change="handleFilter"
+              fit-input-width
             >
               <el-option
                 v-for="val in options"

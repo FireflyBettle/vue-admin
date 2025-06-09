@@ -253,7 +253,7 @@ export default {
           options: [
             {
               label: "渠道名称",
-              width: "90",
+              width: "120",
               value: "channelName",
             },
             {

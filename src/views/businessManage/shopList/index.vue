@@ -268,11 +268,11 @@ export default {
       filterOptions: [
       {
           type: "multiSelect",
-          placeholder: "商户",
+          placeholder: "所属商户",
           inputValue: "",
           isSearch: false,
           inputWidth: "136px",
-          selectWidth: "110px",
+          selectWidth: "106px",
           noShowInput: true,
           options: [
             {
@@ -549,6 +549,9 @@ export default {
         });
     },
     handleFilter(val) {
+      if (val.placeholder === '所属商户') {
+        this.params.merchantId = val.selectValue;
+      }
       this.params.searchKey = val.selectValue;
     },
     // 多选框

@@ -188,10 +188,10 @@ export default {
           required: true,
           options: [
             {
-              label: '自定义',
-              value: 0
-            }
-          ]
+              label: "自定义",
+              value: 0,
+            },
+          ],
         },
         {
           title: "券码有效期",
@@ -476,7 +476,7 @@ export default {
       checkData: [],
       initRadio: "",
       isEdit: false,
-      type: +Cookies.get('type'),
+      type: +Cookies.get("type"),
       merchantList: [],
     };
   },
@@ -597,9 +597,9 @@ export default {
           };
         });
         this.filterOptions[0].options.unshift({
-          value: '',
-          label: '所有',
-        })
+          value: "",
+          label: "所有",
+        });
         this.tableFormAttrs.forEach((item) => {
           if (item.value === "merchantId") {
             item.options = this.merchantList.map((val) => {
@@ -619,9 +619,9 @@ export default {
           };
         });
         this.filterOptions[1].options.unshift({
-          value: '',
-          label: '所有',
-        })
+          value: "",
+          label: "所有",
+        });
       });
     },
     async getList() {
@@ -640,7 +640,9 @@ export default {
             item.storeNumber = item.storeIds
               ? item.storeIds.split(",").length
               : 0;
-            item.couponAmount = !item.couponAmount ? '自定义' : parseInt(item.couponAmount / 100);
+            item.couponAmount = !item.couponAmount
+              ? "自定义"
+              : parseInt(item.couponAmount / 100);
             item.createAmount = parseInt(item.createAmount / 100);
             item.pendingAmount = parseInt(item.pendingAmount / 100);
             item.pendedAmount = parseInt(item.pendedAmount / 100);
@@ -679,6 +681,11 @@ export default {
       });
       if (params.commissionRate === "") {
         this.$message.error("请填写佣金率");
+        return;
+      }
+      if (params.commissionRate === undefined) {
+      // if (["",undefined].includes(params.commissionRate)) {
+        this.$message.error("请选择渠道");
         return;
       }
       if (this.isEdit) {
@@ -781,14 +788,13 @@ export default {
       this.shopForm.storeIds = params;
     },
     selectChange(val) {
-      this.merchantList.forEach(item => {
+      this.merchantList.forEach((item) => {
         if (item.merchantId === val) {
           this.shopForm.merchantId = item.merchantId;
           this.shopForm.discountRate = item.discountRate * 100;
         }
-      })
-    console.log("🚀 ~ selectChange ~ val:", val)
-
+      });
+      console.log("🚀 ~ selectChange ~ val:", val);
     },
     // 点击下一步（第二步）
     nextSecond() {
@@ -831,9 +837,9 @@ export default {
         console.log(index, row, option);
       } else if (option.label === "发券") {
         applyCoupon({
-          distributeId: row.distributeId
-        }).then( res => {
-          this.$message.success('发券成功');
+          distributeId: row.distributeId,
+        }).then((res) => {
+          this.$message.success("发券成功");
           this.getList();
         });
         console.log(index, row, option);
