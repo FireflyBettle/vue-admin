@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-06 16:40:32
+ * @LastEditTime: 2025-06-10 16:33:37
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/order/orderList/index.vue
 -->
@@ -144,8 +144,8 @@ export default {
           inputValue: "",
           isSearch: false,
           noShowInput: true,
-          inputWidth: "136px",
-          selectWidth: "110px",
+          // inputWidth: "150px",
+          // selectWidth: "110px",
           options: [],
         },
         {
@@ -153,8 +153,8 @@ export default {
           placeholder: "渠道",
           inputValue: "",
           isSearch: false,
-          inputWidth: "136px",
-          selectWidth: "110px",
+          // inputWidth: "150px",
+          // selectWidth: "110px",
           noShowInput: true,
           options: [],
         },
@@ -163,8 +163,8 @@ export default {
           placeholder: "门店",
           inputValue: "",
           isSearch: false,
-          inputWidth: "136px",
-          selectWidth: "110px",
+          // inputWidth: "150px",
+          // selectWidth: "110px",
           noShowInput: true,
           options: [],
         },
@@ -173,13 +173,13 @@ export default {
           placeholder: "状态",
           inputValue: "",
           isSearch: false,
-          inputWidth: "136px",
-          selectWidth: "110px",
+          // inputWidth: "150px",
+          // selectWidth: "110px",
           noShowInput: true,
           options: [
             {
               value: null,
-              label: '所有',
+              label: "所有",
             },
             {
               value: "0",
@@ -196,6 +196,10 @@ export default {
             {
               value: "3",
               label: "作废",
+            },
+            {
+              value: "4",
+              label: "过期",
             },
           ],
         },
@@ -274,8 +278,8 @@ export default {
           };
         });
         this.filterOptions[0].options.unshift({
-          value: '',
-          label: '所有',
+          value: "",
+          label: "所有",
         });
       });
       channelList(params).then((res) => {
@@ -286,8 +290,8 @@ export default {
           };
         });
         this.filterOptions[1].options.unshift({
-          value: '',
-          label: '所有',
+          value: "",
+          label: "所有",
         });
       });
       storesList(params).then((res) => {
@@ -298,10 +302,26 @@ export default {
           };
         });
         this.filterOptions[2].options.unshift({
-          value: '',
-          label: '所有',
+          value: "",
+          label: "所有",
         });
       });
+      if ([3, 4].includes(this.type)) {
+        this.filterOptions[3].options = [
+          {
+            value: null,
+            label: "所有",
+          },
+          {
+            value: "1",
+            label: "已核销",
+          },
+          {
+            value: "2",
+            label: "冲正",
+          },
+        ];
+      }
     },
     // 获取列表
     async getList() {
@@ -321,7 +341,7 @@ export default {
           4: "过期",
         };
         const operationStatusStatusType = {};
-        if ([1].includes(this.type)) {
+        if ([1,2].includes(this.type)) {
           operationStatusStatusType[0] = "作废";
           if ([1].includes(this.type)) {
             operationStatusStatusType[1] = "冲正";
@@ -361,7 +381,10 @@ export default {
       }
     },
     handleFilter(val) {
-    console.log("🔍 ~ handleFilter ~ src/views/order/orderList/index.vue:363 ~ val:", val)
+      console.log(
+        "🔍 ~ handleFilter ~ src/views/order/orderList/index.vue:363 ~ val:",
+        val
+      );
       this.params.merchantId =
         val.placeholder === "商户" ? val.selectValue : this.params.merchantId;
       this.params.channelId =
@@ -369,7 +392,13 @@ export default {
       this.params.storeId =
         val.placeholder === "门店" ? val.selectValue : this.params.storeId;
       this.params.status =
-        val.placeholder === "状态" ? (val.selectValue ? +val.selectValue : null) : +this.params.status;
+        val.placeholder === "状态"
+          ? val.selectValue
+            ? +val.selectValue
+            : null
+          : this.params.status
+          ? +this.params.status
+          : null;
     },
     // 多选框
     handleSelectionChange(val) {
@@ -544,7 +573,7 @@ export default {
     .el-select {
       margin-right: 0px;
       .el-input {
-        width: 106px;
+        width: 150px;
       }
     }
     .el-input-group__append {

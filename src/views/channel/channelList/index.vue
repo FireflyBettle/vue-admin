@@ -2,12 +2,12 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-26 16:27:46
+ * @LastEditTime: 2025-06-10 16:50:52
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/channel/channelList/index.vue
 -->
 <template>
-  <div class="shop-list">
+  <div class="channel-list">
     <Search v-bind="filterAttrs" v-on="filterEvent"></Search>
     <Table
       :list-query-params.sync="listQueryParams"
@@ -54,6 +54,7 @@ import {
   updateChannel,
   channelSecretReset,
 } from "@/api/channel.js";
+import Cookie from 'js-cookie';
 
 const DefaultTableQuery = {
   pageNum: 1,
@@ -93,17 +94,17 @@ export default {
         },
         {
           label: "预存款金额",
-          width: "90",
+          width: "95",
           value: "predepositAmount",
         },
         {
           label: "可用预存款",
-          width: "90",
+          width: "95",
           value: "availablePredeposit",
         },
         {
           label: "锁定预存款",
-          width: "90",
+          width: "95",
           value: "lockedPredeposit",
         },
         {
@@ -151,6 +152,13 @@ export default {
           disabled: true,
         },
         {
+          title: "App ID:",
+          placeholder: "系统自动生成",
+          type: "input",
+          value: "appId",
+          disabled: true,
+        },
+        {
           title: "App Secret:",
           placeholder: "系统自动生成",
           type: "input",
@@ -160,7 +168,7 @@ export default {
         },
         {
           title: "IP白名单:",
-          placeholder: "请输入IP白名单",
+          placeholder: "请输入IP白名单,多个ip用英文逗号分隔",
           type: "textarea",
           value: "ipWhiteList",
           required: true,
@@ -269,6 +277,7 @@ export default {
           ],
         },
       ],
+      type: +Cookie.get('type')
     };
   },
   computed: {
@@ -318,9 +327,21 @@ export default {
     },
   },
   created() {
+    this.init();
     this.getList();
   },
   methods: {
+    init() {
+      if (this.type === 2) {
+        this.filterButtonText = [];
+        this.buttonsName = [
+          {
+            label: "查看",
+            route: "channelId",
+          },
+        ];
+      }
+    },
     // 获取列表
     async getList(channelId) {
       try {
@@ -511,7 +532,7 @@ export default {
 };
 </script>
 <style lang="scss">
-.shop-list {
+.channel-list {
   .filter-container {
     .el-input {
       width: 265px;

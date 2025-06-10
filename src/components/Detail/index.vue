@@ -240,7 +240,7 @@ export default {
           { required: true, message: "请选择所属商户", trigger: "blur" },
         ],
         // ipWhiteList: [
-        //   { required: true, message: "请输入IP白名单", trigger: "blur" },
+        //   { required: true, message: "请输入IP白名单,多个ip用英文逗号分隔", trigger: "blur" },
         // ],
         discountRate: [
           { required: true, message: "请输入折扣率", trigger: "blur" },

@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-09 18:04:36
+ * @LastEditTime: 2025-06-10 15:56:20
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/distribute/distributeList/index.vue
 -->
@@ -210,6 +210,11 @@ export default {
       ],
       tableConfig: [
         {
+          label: "分发ID",
+          width: "90",
+          value: "distributeId",
+        },
+        {
           label: "商户名称",
           width: "90",
           value: "merchantName",
@@ -258,7 +263,7 @@ export default {
         },
         {
           label: "待核销金额",
-          width: "80",
+          width: "95",
           value: "pendingAmount",
         },
         {
@@ -433,38 +438,20 @@ export default {
           placeholder: "商户",
           inputValue: "",
           isSearch: false,
-          inputWidth: "136px",
-          selectWidth: "110px",
+          // inputWidth: "150px",
+          // selectWidth: "110px",
           noShowInput: true,
-          options: [
-            {
-              value: "选项1",
-              label: "黄金糕",
-            },
-            {
-              value: "选项2",
-              label: "双皮奶",
-            },
-          ],
+          options: [],
         },
         {
           type: "multiSelect",
           placeholder: "渠道",
           inputValue: "",
           isSearch: false,
-          inputWidth: "136px",
-          selectWidth: "110px",
+          // inputWidth: "150px",
+          // selectWidth: "110px",
           noShowInput: true,
-          options: [
-            {
-              value: "选项1",
-              label: "黄金糕",
-            },
-            {
-              value: "选项2",
-              label: "双皮奶",
-            },
-          ],
+          options: [],
         },
         {
           type: "button",
@@ -551,6 +538,12 @@ export default {
       },
       immediate: true,
     },
+    dialogFormVisible: {
+      handler: function (val) {
+        if (!val) return this.currentCannelId = '';
+      },
+      immediate: true,
+    }
   },
   created() {
     this.init();
@@ -582,6 +575,15 @@ export default {
     init() {
       if (this.type === 2) {
         this.filterButtonText = [];
+        this.buttonsName = [
+          {
+            label: "查看",
+            route: "distributeId",
+          },
+          {
+            label: process.env.NODE_ENV === "production" ? "" : "发券",
+          },
+        ];
       }
       const params = {
         ...this.params,
@@ -673,7 +675,7 @@ export default {
       };
       this.dialogTableDataThird.forEach((item) => {
         if (this.currentCannelId === item.channelId) {
-          params.commissionRate = item.commissionRate
+          params.commissionRate = item.commissionRate !== undefined
             ? item.commissionRate / 100
             : "";
           params.channelId = item.channelId;
@@ -683,8 +685,8 @@ export default {
         this.$message.error("请填写佣金率");
         return;
       }
-      if (params.commissionRate === undefined) {
-      // if (["",undefined].includes(params.commissionRate)) {
+      if (params.commissionRate === undefined && !this.isEdit) {
+        // if (["",undefined].includes(params.commissionRate)) {
         this.$message.error("请选择渠道");
         return;
       }
@@ -762,28 +764,16 @@ export default {
       }
     },
     subCheckAll(val) {
-      console.log(
-        "🔍 ~ subCheckAll ~ src/views/distribute/distributeList/index.vue:721 ~ val:",
-        val
-      );
       let params = val.join(",");
       this.shopForm.storeIds = params;
     },
     handleCurrentChange(val) {
-      console.log(
-        "🔍 ~ handleCurrentChange ~ src/views/distribute/distributeList/index.vue:719 ~ val:",
-        val
-      );
       let params = val.join(",");
       this.shopForm.storeIds = params;
       // this.secondListQueryParams.pageNum = val;
       // this.getStoreList();
     },
     subCheckedData(val) {
-      console.log(
-        "🔍 ~ subCheckedData ~ src/views/distribute/distributeList/index.vue:726 ~ val:",
-        val
-      );
       let params = val.join(",");
       this.shopForm.storeIds = params;
     },

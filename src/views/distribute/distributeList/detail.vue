@@ -16,7 +16,7 @@
           <el-button type="primary" @click="submitForm()">保存</el-button>
         </template>
         <template v-else>
-          <el-button type="primary" @click="edit()">编辑</el-button>
+          <el-button v-if="type !== 2" type="primary" @click="edit()">编辑</el-button>
         </template>
       </template>
     </Detail>
@@ -27,6 +27,7 @@
 import Detail from "@/components/Detail/index.vue";
 
 import { distributionDetail, updateDistribution } from "@/api/distribute";
+import Cookies from 'js-cookie'
 export default {
   name: "distributeDetail",
   components: {
@@ -62,6 +63,13 @@ export default {
           placeholder: "请输入商户ID",
           type: "input",
           value: "merchantId",
+          disabled: true,
+        },
+        {
+          title: "分发ID:",
+          placeholder: "请输入分发ID",
+          type: "input",
+          value: "distributeId",
           disabled: true,
         },
          {
@@ -158,6 +166,7 @@ export default {
           disabled: true,
         },
       ],
+      type: +Cookies.get('type'),
     };
   },
   watch: {

@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-29 17:03:46
+ * @LastEditTime: 2025-06-10 16:07:52
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/businessManage/businessList/detail.vue
 -->
@@ -201,7 +201,7 @@ export default {
         {
           label: "门店ID",
           width: "110",
-          value: "merchantId",
+          value: "storeId",
         },
         {
           label: "App ID",
@@ -454,10 +454,6 @@ export default {
           item.disabled = true;
         }
         if (item.value === "passwd") {
-          console.log(
-            "🚀 ~ this.tableFormAttrs.forEach ~ item.value:",
-            item.value
-          );
           item.placeholder = "••••••••";
           item.title = "密码";
           item.isClosePwd = false;
@@ -497,6 +493,12 @@ export default {
       const { data } = await merchantDetail({
         merchantId: this.$route.params.id,
       });
+      if ([4].includes(this.type)) {
+        this.tableFormAttrs = this.tableFormAttrs.filter(
+          (item) => !["discountRate"].includes(item.value)
+        );
+      }
+
       this.tableForm = data;
       this.tableForm.merchantLogo = this.tableForm.merchantLogo;
       this.tableForm.status = this.tableForm.status.toString();
@@ -565,7 +567,7 @@ export default {
               this.dialogForm.AppSecret = item.AppSecret;
             }
             item.status = item.status.toString();
-            item.statusDes = +item.status === 0 ? '启用' : '暂停';
+            item.statusDes = +item.status === 0 ? "启用" : "暂停";
           });
         }
         this.listQueryParams.total = data.total;
@@ -785,8 +787,8 @@ export default {
           });
       }
 
-      if (val === '导出Excel') {
-        this.exportExcel()
+      if (val === "导出Excel") {
+        this.exportExcel();
       }
     },
     async exportExcel() {
@@ -826,7 +828,7 @@ export default {
         const { data } = await storesList(this.params);
         data.list.forEach((item) => {
           item.amount = item.amount / 100;
-          item.statusDes = +item.status === 0 ? '启用' : '暂停';
+          item.statusDes = +item.status === 0 ? "启用" : "暂停";
         });
         arr = data.list;
       }
@@ -856,7 +858,7 @@ export default {
       XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
 
       // 导出文件
-      XLSX.writeFile(wb,`商户门店${getPathName()}.xlsx`);
+      XLSX.writeFile(wb, `商户门店${getPathName()}.xlsx`);
     },
   },
 };

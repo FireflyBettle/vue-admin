@@ -2,12 +2,12 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-05 15:18:54
+ * @LastEditTime: 2025-06-10 16:19:37
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/businessManage/businessList/index.vue
 -->
 <template>
-  <div class="shop-list">
+  <div class="business-list">
     <Search v-bind="filterAttrs" v-on="filterEvent"></Search>
     <Table
       :list-query-params.sync="listQueryParams"
@@ -483,7 +483,7 @@ export default {
 };
 </script>
 <style lang="scss">
-.shop-list {
+.business-list {
   .filter-container {
     .el-input {
       width: 265px;

@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-09 17:26:13
+ * @LastEditTime: 2025-06-10 18:04:53
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/bill/billRecord/index.vue
 -->
@@ -162,8 +162,6 @@ export default {
         }
         this.listQueryParams.total = data.total;
         // 数据给表格
-        this.tableData = data.list || [];
-        this.loadingStatus = false;
         this.tableConfig = [
           {
             label: "创建金额",
@@ -217,12 +215,12 @@ export default {
           },
           {
             label: "锁定预付款",
-            width: "80",
+            width: "95",
             value: "lockAdvancePayment",
           },
           {
             label: "扣除预付款",
-            width: "80",
+            width: "95",
             value: "deductAdvancePayment",
           },
           {
@@ -248,6 +246,8 @@ export default {
             value: "endTime",
           },
         ];
+        this.tableData = data.list || [];
+        this.loadingStatus = false;
       } catch (error) {
         console.log(error);
       }

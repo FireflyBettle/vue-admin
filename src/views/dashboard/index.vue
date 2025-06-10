@@ -109,7 +109,7 @@ export default {
         },
         {
           title: "IP白名单:",
-          placeholder: "请输入IP白名单",
+          placeholder: "请输入IP白名单,多个ip用英文逗号分隔",
           type: "input",
           value: "ipWhiteList",
           disabled: true,
@@ -278,7 +278,7 @@ export default {
           title: "App ID:",
           placeholder: "系统自动生成",
           type: "input",
-          value: "AppId",
+          value: "appId",
           disabled: true,
         },
         {
@@ -287,6 +287,13 @@ export default {
           type: "input",
           value: "appSecret",
           icon: "el-icon-refresh-right",
+          disabled: true,
+        },
+        {
+          title: "IP白名单:",
+          placeholder: "",
+          type: "textarea",
+          value: "ipWhiteList",
           disabled: true,
         },
         {

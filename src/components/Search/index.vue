@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-12 17:36:48
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-09 17:36:20
+ * @LastEditTime: 2025-06-10 16:12:08
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/components/Search/index.vue
 -->
@@ -19,10 +19,10 @@
             <el-select
               v-model="item.selectValue"
               size="medium"
-              filterable
               :placeholder="item.placeholder"
               @change="handleFilter(item)"
               :style="{ width: item.selectWidth }"
+              fit-input-width
             >
               <el-option
                 v-for="val in item.options"
@@ -87,8 +87,7 @@
             <el-select
               v-model="value"
               size="medium"
-              filterable
-              placeholder="商户名称"
+              placeholder="请选择"
               @change="handleFilter"
               fit-input-width
             >
@@ -199,6 +198,12 @@ export default {
     .select-item {
       margin-right: 4px;
     }
+    .el-select {
+      margin-right: 0px;
+      .el-input {
+        width: 150px;
+      }
+    }
     .el-button {
       height: 32px;
       padding: 0px !important;
@@ -224,7 +229,7 @@ export default {
     width: 100px;
   }
   .el-select {
-    margin-right: 4px;
+    // margin-right: 4px;
     .el-input {
       // width: 77px;
       .el-select__caret {

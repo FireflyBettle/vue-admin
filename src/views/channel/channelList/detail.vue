@@ -19,7 +19,7 @@
           <el-button type="primary" @click="submitForm()">保存</el-button>
         </template>
         <template v-else>
-          <el-button type="primary" @click="edit()">编辑</el-button>
+          <el-button v-if="type !== 2" type="primary" @click="edit()">编辑</el-button>
         </template>
       </template>
     </Detail>
@@ -54,6 +54,7 @@
 <script>
 import Detail from "@/components/Detail/index.vue";
 import md5 from "js-md5";
+import Cookie from 'js-cookie';
 
 import {
   channelDetail,
@@ -93,7 +94,7 @@ export default {
           title: "App ID:",
           placeholder: "系统自动生成",
           type: "input",
-          value: "AppId",
+          value: "appId",
           disabled: true,
         },
         {
@@ -102,6 +103,13 @@ export default {
           type: "input",
           value: "appSecret",
           icon: "el-icon-refresh-right",
+          disabled: true,
+        },
+        {
+          title: "IP白名单:",
+          placeholder: "请输入IP白名单,多个ip用英文逗号分隔",
+          type: "textarea",
+          value: "ipWhiteList",
           disabled: true,
         },
         {
@@ -208,6 +216,7 @@ export default {
           value: "remark",
         },
       ],
+      type: +Cookie.get('type')
     };
   },
   watch: {

@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-09 18:30:22
+ * @LastEditTime: 2025-06-10 16:17:56
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/businessManage/shopList/index.vue
 -->
@@ -94,7 +94,7 @@ export default {
         {
           label: "门店ID",
           width: "110",
-          value: "merchantId",
+          value: "storeId",
         },
         {
           label: "App ID",
@@ -186,7 +186,7 @@ export default {
         },
         {
           title: "IP白名单:",
-          placeholder: "请输入IP白名单",
+          placeholder: "请输入IP白名单,多个ip用英文逗号分隔",
           type: "textarea",
           value: "ipWhiteList",
         },
@@ -274,16 +274,7 @@ export default {
           inputWidth: "136px",
           selectWidth: "106px",
           noShowInput: true,
-          options: [
-            {
-              value: "选项1",
-              label: "黄金糕",
-            },
-            {
-              value: "选项2",
-              label: "双皮奶",
-            },
-          ],
+          options: [],
         },
         {
           type: "multiSelect",
@@ -695,6 +686,13 @@ export default {
     }
     .el-button {
       padding: 12px;
+    }
+    .filter-container__left {
+      .select-item:nth-child(1) {
+        .el-select {
+          margin-right: 0;
+        }
+      }
     }
     .filter-container__right {
       .el-button {
