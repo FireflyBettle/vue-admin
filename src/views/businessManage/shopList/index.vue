@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-10 16:17:56
+ * @LastEditTime: 2025-06-11 17:50:09
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/businessManage/shopList/index.vue
 -->
@@ -19,7 +19,7 @@
       v-if="dialogFormVisible"
       :visible.sync="dialogFormVisible"
       width="572px"
-      top="35vh"
+      top="3vh"
     >
       <Detail
         ref="getTable"
@@ -93,7 +93,7 @@ export default {
         },
         {
           label: "门店ID",
-          width: "110",
+          width: "80",
           value: "storeId",
         },
         {
@@ -266,7 +266,7 @@ export default {
         },
       ],
       filterOptions: [
-      {
+        {
           type: "multiSelect",
           placeholder: "所属商户",
           inputValue: "",
@@ -368,33 +368,33 @@ export default {
   },
   created() {
     const params = {
-        ...this.params,
-        pageSize: 1000,
-        pageNum: 0,
-      };
+      ...this.params,
+      pageSize: 1000,
+      pageNum: 0,
+    };
     merchantList(params).then((res) => {
-        this.merchantList = res.data.list;
-        this.filterOptions[0].options = res.data.list.map((val) => {
-          return {
-            value: val.merchantId,
-            label: val.merchantName,
-          };
-        });
-        this.filterOptions[0].options.unshift({
-          value: '',
-          label: '所有',
-        })
-        this.tableFormAttrs.forEach((item) => {
-          if (item.value === "merchantId") {
-            item.options = this.merchantList.map((val) => {
-              return {
-                value: val.merchantId,
-                label: val.merchantName,
-              };
-            });
-          }
-        });
+      this.merchantList = res.data.list;
+      this.filterOptions[0].options = res.data.list.map((val) => {
+        return {
+          value: val.merchantId,
+          label: val.merchantName,
+        };
       });
+      this.filterOptions[0].options.unshift({
+        value: "",
+        label: "所有",
+      });
+      this.tableFormAttrs.forEach((item) => {
+        if (item.value === "merchantId") {
+          item.options = this.merchantList.map((val) => {
+            return {
+              value: val.merchantId,
+              label: val.merchantName,
+            };
+          });
+        }
+      });
+    });
 
     this.dialogFormAttrs.forEach((item) => {
       if (item.type === "multipleSelect") {
@@ -540,7 +540,7 @@ export default {
         });
     },
     handleFilter(val) {
-      if (val.placeholder === '所属商户') {
+      if (val.placeholder === "所属商户") {
         this.params.merchantId = val.selectValue;
       }
       this.params.searchKey = val.selectValue;
@@ -664,6 +664,9 @@ export default {
 </script>
 <style lang="scss">
 .shop-list {
+  .el-dialog__wrapper {
+    display:inherit;
+  }
   .filter-container {
     .el-input {
       width: 265px;

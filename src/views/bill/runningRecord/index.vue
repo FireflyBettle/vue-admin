@@ -2,9 +2,9 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-05-23 18:26:50
+ * @LastEditTime: 2025-06-11 10:48:52
  * @Description: 
- * @FilePath: /vue-admin-template-master/src/views/order/orderList/index.vue
+ * @FilePath: /vue-admin-template-master/src/views/bill/runningRecord/index.vue
 -->
 <template>
   <div class="bill-list">
@@ -51,7 +51,7 @@ export default {
         },
         {
           label: "资金操作",
-          width: "80",
+          width: "95",
           value: "financialOperations",
         },
         {
@@ -61,7 +61,7 @@ export default {
         },
         {
           label: "券码ID",
-          width: "180",
+          width: "120",
           value: "voucherId",
         },
         {
@@ -71,12 +71,12 @@ export default {
         },
         {
           label: "渠道",
-          width: "80",
+          width: "135",
           value: "channelName",
         },
         {
           label: "流水号",
-          width: "130",
+          width: "135",
           value: "tx_no",
         },
         {
@@ -101,7 +101,7 @@ export default {
         },
         {
           label: "操作时间",
-          width: "180",
+          width: "160",
           value: "operatorTime",
         },
       ],

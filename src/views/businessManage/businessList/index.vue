@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-10 16:19:37
+ * @LastEditTime: 2025-06-11 18:05:51
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/businessManage/businessList/index.vue
 -->
@@ -19,6 +19,7 @@
       v-if="dialogFormVisible"
       :visible.sync="dialogFormVisible"
       width="572px"
+      top="8vh"
     >
       <Detail
         ref="getTable"
@@ -84,12 +85,12 @@ export default {
         },
         {
           label: "商户描述",
-          width: "260",
+          width: "170",
           value: "merchantDesc",
         },
         {
           label: "商户ID",
-          width: "120",
+          width: "80",
           value: "merchantId",
         },
         {
@@ -100,22 +101,22 @@ export default {
         },
         {
           label: "门店数",
-          width: "70",
+          width: "60",
           value: "storeCnt",
         },
         {
           label: "联系人",
-          width: "80",
+          width: "70",
           value: "contact",
         },
         {
           label: "手机号",
-          width: "70",
+          width: "110",
           value: "phone",
         },
         {
           label: "邮箱",
-          width: "90",
+          width: "120",
           value: "email",
         },
         {
@@ -198,7 +199,7 @@ export default {
           route: "merchantId",
         },
         {
-          label: +Cookies.get('type') === 4 ? '' : "编辑",
+          label: +Cookies.get("type") === 4 ? "" : "编辑",
         },
       ],
       optionWidth: 148,
@@ -337,7 +338,7 @@ export default {
         this.tableData = data.list || [];
         if ([4].includes(+this.type)) {
           this.tableConfig = this.tableConfig.filter(
-            (item) => !["discountRate", 'storeCnt'].includes(item.value)
+            (item) => !["discountRate", "storeCnt"].includes(item.value)
           );
         }
 

@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-10 16:33:37
+ * @LastEditTime: 2025-06-11 11:13:34
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/order/orderList/index.vue
 -->
@@ -80,7 +80,7 @@ export default {
         },
         {
           label: "渠道",
-          width: "90",
+          width: "135",
           value: "channelName",
         },
         {

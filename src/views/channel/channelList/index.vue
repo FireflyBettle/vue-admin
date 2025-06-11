@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-10 16:50:52
+ * @LastEditTime: 2025-06-11 17:56:25
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/channel/channelList/index.vue
 -->
@@ -19,6 +19,7 @@
       v-if="dialogFormVisible"
       :visible.sync="dialogFormVisible"
       width="572px"
+      top="3vh"
     >
       <Detail
         ref="getTable"
@@ -533,6 +534,9 @@ export default {
 </script>
 <style lang="scss">
 .channel-list {
+  .el-dialog__wrapper {
+    display:inherit;
+  }
   .filter-container {
     .el-input {
       width: 265px;
