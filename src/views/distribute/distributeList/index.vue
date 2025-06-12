@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-10 15:56:20
+ * @LastEditTime: 2025-06-12 14:50:38
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/distribute/distributeList/index.vue
 -->
@@ -14,7 +14,7 @@
       v-bind="tableAttrs"
       v-on="tableEvent"
     />
-    <el-dialog :title="title" :visible.sync="dialogFormVisible" width="800px">
+    <el-dialog :title="title" :visible.sync="dialogFormVisible" v-if="dialogFormVisible" width="800px">
       <div
         :class="[
           'dialog-header',
