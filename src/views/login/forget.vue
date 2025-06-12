@@ -54,7 +54,6 @@
           >取消找回</el-button
         >
         <el-button
-          :loading="nextLoading"
           type="primary"
           class="login"
           style="width: 100%"
@@ -144,6 +143,20 @@ export default {
       default: false,
     },
   },
+  watch: {
+    isForget(val) {
+      if (val) {
+        this.forgetForm.phone = '';
+        this.forgetForm.code = '';
+      }
+    },
+    isReset(val) {
+      if (val) {
+        this.resetForm.password = '';
+        this.resetForm.resetPassword = '';
+      }
+    }
+  },
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!value.length) {
@@ -207,7 +220,6 @@ export default {
       },
       // isForget: false,
       isSendingCode: false,
-      nextLoading: false,
       buttonText: "发送验证码",
       countdown: 0,
     };
@@ -237,7 +249,7 @@ export default {
             this.$emit("sureSubmit");
             this.isSendingCode = false;
             this.countdown = 0;
-            this.$router.push({ path: this.redirect || "/" });
+            // this.$router.push({ path: this.redirect || "/" });
             this.loading = false;
           });
 
@@ -263,7 +275,6 @@ export default {
       this.$refs.forgetForm.validateField("phone", (valid) => {
         if (!valid) {
           this.isSendingCode = true;
-          this.nextLoading = false;
           this.buttonText = "60s后重试";
           this.countdown = 60;
           let timer = setInterval(() => {
@@ -293,26 +304,23 @@ export default {
     submitPrevious() {
       this.isSendingCode = false;
       this.countdown = 0;
-      this.nextLoading = false;
       this.$emit("submitPrevious");
     },
     // 下一步
     submitNext() {
       this.$refs.forgetForm.validate((valid) => {
         if (valid) {
-          this.nextLoading = true;
           verifySms({
             phone: this.forgetForm.phone.toString(),
-            code: "666666",
+            code: this.forgetForm.code,
           })
             .then((res) => {
+              console.log("🚀 ~ .then ~ res:", res)
               this.sms_token = res.data.sms_token;
               if (res.data) {
                 this.$emit("submitNext");
-                this.nextLoading = false;
               } else {
                 this.$message.error("验证码错误");
-                this.nextLoading = false;
               }
             })
             .catch((err) => {

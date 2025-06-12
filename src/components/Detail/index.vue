@@ -57,7 +57,7 @@
           <template v-if="item.type === 'upload'">
             <el-upload
               class="avatar-uploader"
-              action="http://www.jifeng.online:8871/web/fs/upload"
+              :action="action"
               :show-file-list="false"
               :disabled="item.disabled"
               :on-success="handleAvatarSuccess"
@@ -273,6 +273,19 @@ export default {
       urlImg: "",
     };
   },
+  computed: {
+    action() {
+      if (process.env.NODE_ENV === 'development') {
+        return 'http://www.jifeng.online:8871/web/fs/upload';
+      }
+      if (process.env.NODE_ENV === 'staging') {
+        return 'https://test.qflmqft.com:8080/web/fs/upload';
+      }
+      if (process.env.NODE_ENV === 'production') {
+        return 'https://www.qflmqft.com:8080/web/fs/upload';
+      }
+    }
+  },
   created() {
     this.urlImg = this.merchantLogo;
     console.log("🚀 ~ created ~ this.merchantLogo:", this.merchantLogo);
@@ -295,6 +308,7 @@ export default {
   },
   methods: {
     handleAvatarSuccess(res, file) {
+      console.log("🚀 ~ handleAvatarSuccess ~ res:", res)
       // 1. 获取文件类型
       const fileType = file.raw.type;
 

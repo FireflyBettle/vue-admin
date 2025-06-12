@@ -119,7 +119,6 @@ export default {
           inputType: "number",
           value: "channelId",
           disabled: true,
-          disabled: true,
         },
         {
           title: "联系人:",
@@ -223,7 +222,7 @@ export default {
     isEdit(val) {
       this.tableFormAttrs.forEach((item) => {
         item.disabled = !val;
-        if (["appSecret", "channelId", 'predepositAmount', 'lockedPredeposit', 'availablePredeposit'].includes(item.value)) {
+        if (["appId", "appSecret", "channelId", 'predepositAmount', 'lockedPredeposit', 'availablePredeposit'].includes(item.value)) {
           item.disabled = true;
         }
         if (item.value === 'passwd') {
@@ -248,11 +247,21 @@ export default {
       this.dialogFormVisible = true;
       this.title = "预付款充值";
       this.buttonName = "充值";
+      this.dialogFormAttrs.forEach(item => {
+        if (item.value === 'amount') {
+          item.title = '充值金额';
+        }
+      })
     },
     consume() {
       this.dialogFormVisible = true;
       this.title = "预付款冲正";
       this.buttonName = "冲正";
+      this.dialogFormAttrs.forEach(item => {
+        if (item.value === 'amount') {
+          item.title = '冲正金额';
+        }
+      })
     },
     rechargeOrConsume() {
       this.$refs.getDialogTable.getTableRef().validate((valid) => {
@@ -271,7 +280,7 @@ export default {
           }
           if (this.buttonName === "冲正") {
             params.type = "consume";
-            des = `确认向渠道名称冲正¥${this.dialogForm.amount}吗?`;
+            des = `确认向${this.dialogForm.channelName}冲正¥${this.dialogForm.amount}吗?`;
             message = "冲正成功";
           }
           this.$confirm(des, "", {
