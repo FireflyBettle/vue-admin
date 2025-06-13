@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-04-25 17:19:39
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-05 18:26:16
+ * @LastEditTime: 2025-06-13 16:25:51
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/store/modules/permission.js
  */
@@ -53,7 +53,6 @@ const mutations = {
   SET_ROUTES: (state, routes) => {
       state.addRoutes = routes
       state.routes = constantRoutes.concat(routes)
-      console.log("🚀 ~ state.routes:", state.routes)
   }
 }
 
@@ -76,7 +75,6 @@ const actions = {
               accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
             }
             
-            console.log("🔍 ~ generateRoutes ~ src/store/modules/permission.js:76 ~ accessedRoutes:", accessedRoutes)
           // 把当前用户可访问的路由规则放在vuex中
           commit('SET_ROUTES', accessedRoutes)
           // 把当前用户可访问的路由规则给到.then()

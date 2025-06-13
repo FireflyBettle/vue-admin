@@ -27,7 +27,7 @@ module.exports = {
   outputDir: 'dist',
   assetsDir: 'static',
   lintOnSave: false,
-  productionSourceMap: false,
+  productionSourceMap: process.env.NODE_ENV === 'staging',
   filenameHashing: true,
   devServer: {
     port: port,
@@ -39,6 +39,7 @@ module.exports = {
     before: require('./mock/mock-server.js')
   },
   configureWebpack: {
+    devtool: process.env.NODE_ENV === 'staging' ? 'source-map' : undefined, // 确保使用完整的source map 
     // provide the app's title in webpack's name field, so that
     // it can be accessed in index.html to inject the correct title.
     name: name,
@@ -82,7 +83,7 @@ module.exports = {
       .end()
 
     config
-      .when(process.env.NODE_ENV !== 'development',
+      .when(process.env.NODE_ENV === 'production',
         config => {
           config
             .plugin('ScriptExtHtmlWebpackPlugin')
