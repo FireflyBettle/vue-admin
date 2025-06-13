@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-11 17:50:09
+ * @LastEditTime: 2025-06-13 16:29:30
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/businessManage/shopList/index.vue
 -->
@@ -373,8 +373,9 @@ export default {
       pageNum: 0,
     };
     merchantList(params).then((res) => {
-      this.merchantList = res.data.list;
-      this.filterOptions[0].options = res.data.list.map((val) => {
+      // this.merchantList = res.data.list;
+      const data = res.data.list;
+      this.filterOptions[0].options = data.map((val) => {
         return {
           value: val.merchantId,
           label: val.merchantName,
@@ -384,37 +385,33 @@ export default {
         value: "",
         label: "所有",
       });
-      this.tableFormAttrs.forEach((item) => {
-        if (item.value === "merchantId") {
-          item.options = this.merchantList.map((val) => {
-            return {
-              value: val.merchantId,
-              label: val.merchantName,
-            };
-          });
-        }
-      });
-    });
+      // console.log("🚀 ~ this.tableFormAttrs.forEach ~ this.tableFormAttrs:", this.tableFormAttrs)
+      // this.tableFormAttrs.forEach((item) => {
+      //   if (item.value === "merchantId") {
+      //     item.options = this.merchantList.map((val) => {
+      //       return {
+      //         value: val.merchantId,
+      //         label: val.merchantName,
+      //       };
+      //     });
+      //   }
+      // });
 
-    this.dialogFormAttrs.forEach((item) => {
-      if (item.type === "multipleSelect") {
-        item.options = this.regionData;
-      }
-      if (item.value === "merchantId") {
-        // val.options
-        merchantList({
-          pageNum: 0,
-          pageSize: 1000,
-        }).then((res) => {
-          res.data.list.forEach((val) => {
+      this.dialogFormAttrs.forEach((item) => {
+        if (item.type === "multipleSelect") {
+          item.options = this.regionData;
+        }
+        if (item.value === "merchantId") {
+          data.forEach((val) => {
             item.options.push({
               label: val.merchantName,
               value: val.merchantId,
             });
           });
-        });
-      }
+        }
+      });
     });
+
     this.getList();
   },
   methods: {
@@ -665,7 +662,7 @@ export default {
 <style lang="scss">
 .shop-list {
   .el-dialog__wrapper {
-    display:inherit;
+    display: inherit;
   }
   .filter-container {
     .el-input {

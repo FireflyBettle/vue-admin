@@ -84,7 +84,7 @@ const validateUsername = (rule, value, callback) => {
   console.log("🚀 ~ validateUsername ~ value:", value);
   if (!value) {
     callback(new Error("请输入手机号"));
-  } else if (!/^(1[3-9]\d{9})$/.test(value)) {
+  } else if (!/^(1[3-9]\d{9})$/.test(value) && process.env.NODE_ENV !== 'development') {
     callback(new Error("请输入正确的手机号格式"));
   } else {
     callback();
@@ -113,9 +113,9 @@ export default {
         type: "",
       },
       loginRules: {
-        // username: [
-        //   { required: true, trigger: "blur", validator: validateUsername },
-        // ],
+        username: [
+          { required: true, trigger: "blur", validator: validateUsername },
+        ],
         password: [
           { required: true, trigger: "blur", validator: validatePassword },
         ],
@@ -256,11 +256,13 @@ $cursor: #fff;
     display: inline-block;
     height: 40px;
     background: #fff;
-    border: 1px solid #d9d9d9;
+    // border: 1px solid #d9d9d9;
     // height: inherit;
     .el-input__inner {
       height: 40px;
       line-height: 40px;
+      border: 1px solid #d9d9d9;
+      border-radius: 2px;
     }
 
     /* 同时调整图标垂直居中 */
@@ -268,21 +270,30 @@ $cursor: #fff;
     .el-input__suffix {
       line-height: 40px;
     }
-
     input {
-      background: transparent;
-      border: 0px;
-      -webkit-appearance: none;
-      border-radius: 0px;
-      padding: 12px 5px 12px 33px;
+      // font-size: 16px;
+      background-color: #fff;
       color: #333;
-      height: 47px;
-
-      &:-webkit-autofill {
-        box-shadow: 0 0 0px 1000px $bg inset !important;
-        -webkit-text-fill-color: $cursor !important;
+        &:-webkit-autofill {
+        box-shadow: 0 0 0px 1000px #fff inset !important;
+        -webkit-text-fill-color: #333 !important;
       }
     }
+
+    // input {
+    //   background: transparent;
+    //   border: 0px;
+    //   -webkit-appearance: none;
+    //   border-radius: 0px;
+    //   padding: 12px 5px 12px 33px;
+    //   color: #333;
+    //   height: 47px;
+
+    //   &:-webkit-autofill {
+    //     box-shadow: 0 0 0px 1000px $bg inset !important;
+    //     -webkit-text-fill-color: $cursor !important;
+    //   }
+    // }
   }
   .getCode {
     input {
@@ -313,10 +324,10 @@ $cursor: #fff;
   }
   .el-button {
     border: 1px solid #d9d9d9;
-    border-radius: 0px;
+    border-radius: 2px;
   }
   .el-form-item__error {
-    padding-top: 11px;
+    // padding-top: 11px;
   }
 }
 </style>

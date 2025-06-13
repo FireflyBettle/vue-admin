@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2021-11-18 23:21:54
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-06 12:28:46
+ * @LastEditTime: 2025-06-13 14:40:28
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/permission.js
  */
@@ -75,7 +75,8 @@ router.beforeEach(async(to, from, next) => {
     } else {
       // other pages that do not have permission to access are redirected to the login page.
       // next(`/login/platform?redirect=${to.path}`)
-      next(`/login/platform`)
+      // next(`/login/platform`)
+      next(`${whiteList[+Cookies.get('type') - 1]}`)
       NProgress.done()
     }
   }
