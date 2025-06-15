@@ -49,6 +49,7 @@ import Detail from "@/components/Detail/index.vue";
 import Search from "@/components/Search/index.vue";
 import md5 from "js-md5";
 import { regionData } from "element-china-area-data";
+import { extractProvinceCityDistrict } from "@/utils/index.js";
 
 import {
   createStores,
@@ -89,7 +90,7 @@ export default {
         {
           label: "门店地址",
           width: "110",
-          value: "storeAddr",
+          value: "trimStoreAddr",
         },
         {
           label: "门店ID",
@@ -431,6 +432,7 @@ export default {
               this.dialogForm.AppSecret = item.AppSecret;
             }
             item.status = item.status.toString();
+            item.trimStoreAddr = item.storeAddr.split(' ').join('');
           });
         }
         this.listQueryParams.total = data.total;
@@ -476,7 +478,7 @@ export default {
             //   : md5(md5("")),
             status: Number(this.dialogForm.status),
           };
-          params.storeAddr = this.selectedAreaText + this.dialogForm.storeAddr;
+          params.storeAddr = `${this.selectedAreaText} ${this.dialogForm.storeAddr}`;
           if (this.title === "添加门店") {
             params.passwd = md5(md5(this.dialogForm.passwd));
             createStores(params).then((res) => {
@@ -573,7 +575,8 @@ export default {
           }
         });
         this.dialogForm.area = arr;
-        this.selectedAreaText = this.dialogForm.storeAddr;
+
+        this.selectedAreaText = extractProvinceCityDistrict(this.dialogForm.storeAddr);
         this.dialogForm.storeAddr = this.dialogForm.storeAddr
           .split(" ")
           .slice(-1)[0];

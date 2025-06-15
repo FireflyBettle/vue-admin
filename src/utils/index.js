@@ -181,3 +181,17 @@ export function getPathName() {
   })
   return formattedTime;
 }
+
+export function extractProvinceCityDistrict(address) {
+  // 匹配省、市、区/县 
+  const regex = /^([\u4e00-\u9fa5]+省|自治区|直辖市)?\s*([\u4e00-\u9fa5]+市)?\s*([\u4e00-\u9fa5]+(?:区|县|旗))/;
+  const match = address.match(regex); 
+  
+  if (!match) return null;
+  
+  const [, province, city, district] = match;
+  return [province, city, district].filter(Boolean).join(' ');
+}
+ 
+// const result = extractProvinceCityDistrict("广东省 深圳市 南山区前海大道2");
+// console.log(result);  // 输出: 广东省 深圳市 南山区 

@@ -126,7 +126,7 @@ export default {
           disabled: true,
         },
         {
-          title: "佣金率",
+          title: "渠道折扣率",
           inputType: "number",
           placeholder: "请输入佣金率",
           type: "input",
@@ -196,6 +196,11 @@ export default {
       this.tableForm.createAmount = this.tableForm.createAmount / 100;
       this.tableForm.pendingAmount = this.tableForm.pendingAmount / 100;
       this.tableForm.pendedAmount = this.tableForm.pendedAmount / 100;
+      if ([2].includes(this.type)) {
+        this.tableFormAttrs = this.tableFormAttrs.filter(
+          (item) => !["distributeId",'discountRate','couponAmount','couponDesc'].includes(item.value)
+        );
+      }
     },
     async submitForm() {
       this.$refs.getTable.getTableRef().validate((valid) => {

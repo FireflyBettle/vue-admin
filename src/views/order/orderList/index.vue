@@ -367,7 +367,7 @@ export default {
         this.tableData = data.list || [];
         if ([3, 4].includes(this.type)) {
           this.tableConfig = this.tableConfig.filter(
-            (item) => !["channelName", "advancePayment"].includes(item.value)
+            (item) => !["channelName",'advancePayment'].includes(item.value)
           );
         }
         if ([2].includes(this.type)) {
@@ -528,7 +528,7 @@ export default {
         { wch: 15 },
         { wch: 15 },
         { wch: 15 },
-        { wch: 10 },
+        { wch: 15 },
         { wch: 10 },
         { wch: 21 },
         { wch: 21 },
@@ -539,7 +539,6 @@ export default {
         ws["!cols"] = ws["!cols"].filter((col, index) => {
           return ![6, 7].includes(index); // 移除渠道和预付款列
         });
-        console.log("🔍 ~ exportExcordervue:490:", ws["!cols"]);
       }
       const wb = XLSX.utils.book_new();
       // 将工作表添加到工作簿

@@ -336,6 +336,7 @@ export default {
         item.reverseAmount = item.reverseAmount / 100;
         item.lockAdvancePayment = item.lockAdvancePayment / 100;
         item.deductAdvancePayment = item.deductAdvancePayment / 100;
+        item.backAmount = item.invalidAmount / 100 + item.reverseAmount / 100;
       });
     },
     async getChannelList() {
@@ -396,15 +397,20 @@ export default {
             width: "96",
             value: "reverseQuantity",
           },
-          {
-            label: "锁定预付款",
-            width: "96",
-            value: "lockAdvancePayment",
-          },
+          // {
+          //   label: "锁定预付款",
+          //   width: "96",
+          //   value: "lockAdvancePayment",
+          // },
           {
             label: "扣除预付款",
             width: "96",
-            value: "deductAdvancePayment",
+            value: "createAmount",
+          },
+          {
+            label: "返还预付款",
+            width: "96",
+            value: "backAmount",
           },
           {
             label: "开始时间",

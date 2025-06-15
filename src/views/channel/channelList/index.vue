@@ -90,7 +90,7 @@ export default {
         },
         {
           label: "渠道ID",
-          width: "167",
+          width: "80",
           value: "channelId",
         },
         {

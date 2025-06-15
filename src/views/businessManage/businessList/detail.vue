@@ -50,6 +50,7 @@
           :tableFormAttrs="dialogFormAttrs"
           formLabelWidth="91px"
           @resetSecret="resetSecret"
+          :isEdit="title === '编辑门店'"
           @handleAreaChange="handleAreaChange"
         >
         </Detail>
@@ -73,6 +74,7 @@ import Cookies from "js-cookie";
 import { regionData } from "element-china-area-data";
 import XLSX from "xlsx";
 import { getPathName } from "@/utils/index.js";
+import { extractProvinceCityDistrict } from "@/utils/index.js";
 
 import {
   createStores,
@@ -196,7 +198,7 @@ export default {
         {
           label: "门店地址",
           width: "110",
-          value: "storeAddr",
+          value: "trimStoreAddr",
         },
         {
           label: "门店ID",
@@ -567,7 +569,7 @@ export default {
               this.dialogForm.AppSecret = item.AppSecret;
             }
             item.status = item.status.toString();
-            item.statusDes = +item.status === 0 ? "启用" : "暂停";
+            item.trimStoreAddr = item.storeAddr.split(' ').join('');
           });
         }
         this.listQueryParams.total = data.total;
@@ -617,7 +619,7 @@ export default {
               : md5(md5("")),
             status: Number(this.dialogForm.status),
           };
-          params.storeAddr = this.selectedAreaText + this.dialogForm.storeAddr;
+          params.storeAddr = `${this.selectedAreaText} ${this.dialogForm.storeAddr}`;
           if (this.title === "添加门店") {
             createStores(params).then((res) => {
               this.getList();
@@ -688,6 +690,7 @@ export default {
       if (option.label === "查看") {
         console.log(index, row, option);
       } else if (option.label === "编辑") {
+        var row = JSON.parse(JSON.stringify(row));
         this.dialogFormVisible = true;
         this.title = "编辑门店";
         this.sureButtonsName = "确定";
@@ -704,7 +707,8 @@ export default {
           }
         });
         this.dialogForm.area = arr;
-        this.selectedAreaText = this.dialogForm.storeAddr;
+
+        this.selectedAreaText = extractProvinceCityDistrict(this.dialogForm.storeAddr);
         this.dialogForm.storeAddr = this.dialogForm.storeAddr
           .split(" ")
           .slice(-1)[0];
@@ -807,7 +811,7 @@ export default {
       ];
       const keys = [
         "storeName",
-        "storeAddr",
+        "trimStoreAddr",
         "merchantId",
         "AppId",
         "AppSecret",
@@ -829,6 +833,7 @@ export default {
         data.list.forEach((item) => {
           item.amount = item.amount / 100;
           item.statusDes = +item.status === 0 ? "启用" : "暂停";
+          item.trimStoreAddr = item.storeAddr.split(' ').join('');
         });
         arr = data.list;
       }

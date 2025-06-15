@@ -34,7 +34,7 @@
         ref="getDialogTable"
         :title="title"
         styleType="572px"
-        formLabelWidth="98px"
+        formLabelWidth="110px"
         :tableData="dialogForm"
         :tableFormAttrs="dialogFormAttrs"
         :filterDataRules="filterDataRules"
@@ -193,7 +193,7 @@ export default {
           disabled: true,
         },
         {
-          title: "预存款余额:",
+          title: "预存款余额(元):",
           placeholder: "0",
           type: "input",
           value: "predepositAmount",
@@ -201,7 +201,7 @@ export default {
           disabled: true,
         },
         {
-          title: "冲正金额:",
+          title: "冲正金额(元):",
           placeholder: "请输入充值金额",
           type: "input",
           value: "amount",
@@ -249,7 +249,7 @@ export default {
       this.buttonName = "充值";
       this.dialogFormAttrs.forEach(item => {
         if (item.value === 'amount') {
-          item.title = '充值金额';
+          item.title = '充值金额(元):';
         }
       })
     },
@@ -259,7 +259,7 @@ export default {
       this.buttonName = "冲正";
       this.dialogFormAttrs.forEach(item => {
         if (item.value === 'amount') {
-          item.title = '冲正金额';
+          item.title = '冲正金额(元):';
         }
       })
     },

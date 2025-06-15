@@ -236,13 +236,13 @@ export default {
           value: "channelName",
         },
         {
-          label: "佣金率",
-          width: "70",
+          label: "渠道折扣率",
+          width: "95",
           value: "commissionRate",
           format: "rate",
         },
         {
-          label: "券码金额",
+          label: "券码金额", 
           width: "90",
           value: "couponAmount",
         },

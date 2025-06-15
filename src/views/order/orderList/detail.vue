@@ -113,6 +113,7 @@ export default {
           disabled: true,
         },
       ],
+      type: +Cookies.get('type')
     };
   },
   watch: {
@@ -146,9 +147,14 @@ export default {
         this.tableForm.amount = this.tableForm.amount / 100;
         this.tableForm.advancePayment = this.tableForm.advancePayment / 100;
         this.tableForm.merchantSettlement = this.tableForm.merchantSettlement / 100;
-        if ([3,4].includes(+Cookies.get("type"))) {
+        if ([3,4].includes(this.type)) {
           this.tableFormAttrs = this.tableFormAttrs.filter(item => !['channelName','advancePayment'].includes(item.value));
         }
+        if ([2].includes(this.type)) {
+        this.tableFormAttrs = this.tableFormAttrs.filter(
+          (item) => !['merchantSettlement'].includes(item.value)
+        );
+      }
       },
     async expireOrder() {
       this.$confirm("确认作废吗?", "", {
