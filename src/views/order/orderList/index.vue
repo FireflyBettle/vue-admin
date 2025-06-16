@@ -59,7 +59,7 @@ export default {
           value: "amount",
         },
         {
-          label: "券码描述",
+          label: "券码名称",
           width: "130",
           value: "voucherDesc",
         },
@@ -455,7 +455,7 @@ export default {
       let headers = [
         "券码ID",
         "金额",
-        "券码描述",
+        "券码名称",
         "商户",
         "核销门店",
         "商户结款",

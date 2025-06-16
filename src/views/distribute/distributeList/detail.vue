@@ -73,8 +73,8 @@ export default {
           disabled: true,
         },
          {
-          title: "折扣率:",
-          placeholder: "请输入折扣率",
+          title: "商户折扣率:",
+          placeholder: "请输入商户折扣率",
           type: "input",
           inputType: "number",
           slot: "%",
@@ -82,7 +82,7 @@ export default {
           disabled: true,
         },
         {
-          title: "券码金额",
+          title: "券码类型",
           placeholder: "自定义",
           type: "select",
           inputType: "number",
@@ -105,8 +105,8 @@ export default {
           required: true,
         },
         {
-          title: "券码描述",
-          placeholder: "请输入券码描述",
+          title: "券码名称",
+          placeholder: "请输入券码名称",
           type: "input",
           value: "couponDesc",
           disabled: true,
@@ -128,7 +128,7 @@ export default {
         {
           title: "渠道折扣率",
           inputType: "number",
-          placeholder: "请输入佣金率",
+          placeholder: "渠道折扣率",
           type: "input",
           slot: "%",
           value: "commissionRate",
@@ -198,7 +198,7 @@ export default {
       this.tableForm.pendedAmount = this.tableForm.pendedAmount / 100;
       if ([2].includes(this.type)) {
         this.tableFormAttrs = this.tableFormAttrs.filter(
-          (item) => !["distributeId",'discountRate','couponAmount','couponDesc'].includes(item.value)
+          (item) => !["distributeId",'discountRate'].includes(item.value)
         );
       }
     },

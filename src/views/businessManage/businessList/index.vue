@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-11 18:05:51
+ * @LastEditTime: 2025-06-16 10:00:59
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/businessManage/businessList/index.vue
 -->
@@ -26,7 +26,9 @@
         :title="title"
         :styleType="styleType"
         :tableData="dialogForm"
+        formLabelWidth="100px"
         :tableFormAttrs="dialogFormAttrs"
+        :filterDataRules="filterDataRules"
         :merchantLogo="dialogForm.merchantLogo"
         :isEdit="title === '编辑商户'"
         @handleAvatarSuccess="handleAvatarSuccess"
@@ -94,14 +96,14 @@ export default {
           value: "merchantId",
         },
         {
-          label: "折扣率",
-          width: "70",
+          label: "商户折扣率",
+          width: "90",
           value: "discountRate",
           format: "rate",
         },
         {
           label: "门店数",
-          width: "60",
+          width: "70",
           value: "storeCnt",
         },
         {
@@ -126,6 +128,7 @@ export default {
           value: "status",
         },
       ],
+      filterDataRules: ['merchantName', 'discountRate', 'contact', 'phone', 'email', 'passwd'],
       dialogFormAttrs: [
         {
           title: "商户名称:",
@@ -146,8 +149,15 @@ export default {
           value: "merchantDesc",
         },
         {
-          title: "折扣率:",
-          placeholder: "请输入折扣率",
+          title: "商户ID:",
+          placeholder: "系统自生成",
+          type: "input",
+          value: "merchantId",
+          disabled: 'disabled'
+        },
+        {
+          title: "商户折扣率:",
+          placeholder: "请输入商户折扣率",
           type: "input",
           inputType: "number",
           slot: "%",
@@ -183,7 +193,7 @@ export default {
           value: "status",
         },
         {
-          title: "密码:",
+          title: "初始密码:",
           placeholder: "请输入密码",
           type: "input",
           inputType: "text",
@@ -462,7 +472,7 @@ export default {
         this.dialogForm = {};
         this.dialogFormAttrs.forEach((val) => {
           if (val.isClosePwd) {
-            val.title = "密码:";
+            val.title = "初始密码:";
           }
         });
       }

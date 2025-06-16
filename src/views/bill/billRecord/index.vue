@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-10 18:04:53
+ * @LastEditTime: 2025-06-16 15:12:38
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/bill/billRecord/index.vue
 -->
@@ -288,38 +288,38 @@ export default {
         this.tableConfig = [
           {
             label: "核销金额",
-            width: "167",
+            width: "80",
             value: "verifyAmount",
           },
           {
             label: "核销数量",
-            width: "167",
+            width: "80",
             value: "verifyQuantity",
           },
           {
             label: "冲正金额",
-            width: "167",
+            width: "80",
             value: "reverseAmount",
           },
           {
             label: "冲正数量",
-            width: "167",
+            width: "80",
             value: "reverseQuantity",
           },
           {
             label: this.type === 3? "商户结款" : '门店结款',
-            width: "167",
+            width: "80",
             value: this.type === 3 ? "merchantSettlement" : 'StoreSettlement',
           },
           {
             label: "开始时间",
-            width: "167",
+            width: "96",
             format: "wrap",
             value: "startTime",
           },
           {
             label: "结束时间",
-            width: "167",
+            width: "96",
             format: "wrap",
             value: "endTime",
           },
@@ -332,11 +332,12 @@ export default {
       data.forEach((item) => {
         item.createAmount = item.createAmount / 100;
         item.invalidAmount = item.invalidAmount / 100;
+        item.expireAmount = item.expireAmount / 100;
         item.verifyAmount = item.verifyAmount / 100;
         item.reverseAmount = item.reverseAmount / 100;
         item.lockAdvancePayment = item.lockAdvancePayment / 100;
         item.deductAdvancePayment = item.deductAdvancePayment / 100;
-        item.backAmount = item.invalidAmount / 100 + item.reverseAmount / 100;
+        item.returnAdvancePayment = item.returnAdvancePayment / 100;
       });
     },
     async getChannelList() {
@@ -368,14 +369,24 @@ export default {
             value: "createQuantity",
           },
           {
-            label: "取消/过期金额",
-            width: "96",
+            label: "取消金额",
+            width: "83",
             value: "invalidAmount",
           },
           {
-            label: "取消/过期数量",
-            width: "96",
+            label: "取消数量",
+            width: "83",
             value: "invalidQuantity",
+          },
+          {
+            label: "过期金额",
+            width: "83",
+            value: "expireAmount",
+          },
+           {
+            label: "过期数量",
+            width: "83",
+            value: "expireQuantity",
           },
           {
             label: "核销金额",
@@ -405,12 +416,12 @@ export default {
           {
             label: "扣除预付款",
             width: "96",
-            value: "createAmount",
+            value: "deductAdvancePayment",
           },
           {
             label: "返还预付款",
             width: "96",
-            value: "backAmount",
+            value: "returnAdvancePayment",
           },
           {
             label: "开始时间",
@@ -545,14 +556,16 @@ export default {
       const headers = [
         "创建金额",
         "创建数量",
-        "取消/过期金额",
-        "取消/过期数量",
+        "取消金额",
+        "取消数量",
+        "过期金额",
+        "过期数量",
         "核销金额",
         "核销数量",
         "冲正金额",
         "冲正数量",
-        "锁定预付款",
         "扣除预付款",
+        "返还预付款",
         "开始时间",
         "结束时间",
       ];
@@ -561,12 +574,14 @@ export default {
         "createQuantity",
         "invalidAmount",
         "invalidQuantity",
+        "expireAmount",
+        "expireQuantity",
         "verifyAmount",
         "verifyQuantity",
         "reverseAmount",
         "reverseQuantity",
-        "lockAdvancePayment",
         "deductAdvancePayment",
+        "returnAdvancePayment",
         "startTime",
         "endTime",
       ];
@@ -594,8 +609,10 @@ export default {
       ws["!cols"] = [
         { wch: 10 },
         { wch: 10 },
-        { wch: 12 },
-        { wch: 12 },
+        { wch: 10 },
+        { wch: 10 },
+        { wch: 10 },
+        { wch: 10 },
         { wch: 10 },
         { wch: 10 },
         { wch: 10 },
@@ -627,7 +644,7 @@ export default {
         "verifyQuantity",
         "reverseAmount",
         "reverseQuantity",
-        "merchantSettlement",
+        `${this.type === 3 ? "merchantSettlement" : "StoreSettlement"}`,
         "startTime",
         "endTime",
       ];

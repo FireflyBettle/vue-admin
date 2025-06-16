@@ -80,7 +80,7 @@ export default {
         {
           title: "详细地址:",
           placeholder: "请输入详细地址",
-          type: "input",
+          type: "textarea",
           value: "storeAddr",
           disabled: true,
         },

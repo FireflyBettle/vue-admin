@@ -91,6 +91,14 @@ export default {
           disabled: true,
         },
         {
+          title: "渠道ID:",
+          placeholder: "请输入预存款金额",
+          type: "input",
+          inputType: "number",
+          value: "channelId",
+          disabled: true,
+        },
+        {
           title: "App ID:",
           placeholder: "系统自动生成",
           type: "input",
@@ -110,14 +118,6 @@ export default {
           placeholder: "请输入IP白名单,多个ip用英文逗号分隔",
           type: "textarea",
           value: "ipWhiteList",
-          disabled: true,
-        },
-        {
-          title: "渠道ID:",
-          placeholder: "请输入预存款金额",
-          type: "input",
-          inputType: "number",
-          value: "channelId",
           disabled: true,
         },
         {

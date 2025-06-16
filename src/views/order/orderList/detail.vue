@@ -42,7 +42,7 @@ export default {
           disabled: true,
         },
         {
-          title: "券码描述:",
+          title: "券码名称:",
           placeholder: "-",
           type: "textarea",
           value: "voucherDesc",

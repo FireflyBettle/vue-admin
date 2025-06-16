@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-11 10:48:52
+ * @LastEditTime: 2025-06-16 16:07:31
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/bill/runningRecord/index.vue
 -->
@@ -23,6 +23,7 @@ import Detail from "@/components/Detail/index.vue";
 import Search from "@/components/Search/index.vue";
 import XLSX from "xlsx";
 import { getPathName } from "@/utils/index.js";
+import Cookies from 'js-cookie'
 
 import { billSerialList } from "@/api/bill";
 
@@ -46,8 +47,18 @@ export default {
       tableConfig: [
         {
           label: "操作类型",
-          width: "80",
+          width: "95",
           value: "operationType",
+        },
+        {
+          label: "券码金额",
+          width: "80",
+          value: "couponAmount",
+        },
+        {
+          label: "券码ID",
+          width: "120",
+          value: "voucherId",
         },
         {
           label: "资金操作",
@@ -55,14 +66,9 @@ export default {
           value: "financialOperations",
         },
         {
-          label: "金额",
-          width: "80",
+          label: [3, 4].includes(+Cookies.get('type')) ? '金额' : "预付款",
+          width: "95",
           value: "amount",
-        },
-        {
-          label: "券码ID",
-          width: "120",
-          value: "voucherId",
         },
         {
           label: "商户",
@@ -132,6 +138,7 @@ export default {
       ],
       multipleSelection: [],
       dateValue: '',
+      type: +Cookies.get('type')
     };
   },
   computed: {
@@ -193,6 +200,7 @@ export default {
         const { data } = await billSerialList(this.params);
         if (data.list) {
           data.list.forEach((item) => {
+            item.couponAmount = item.couponAmount / 100;
             item.amount = item.amount / 100;
           });
         }
@@ -232,9 +240,10 @@ export default {
     async exportExcel() {
       const headers = [
         "操作类型",
-        "资金操作",
-        "金额",
+        "券码金额",
         "券码ID",
+        "资金操作",
+        [3, 4].includes(this.type) ? '金额' : "预付款",
         "商户",
         "渠道",
         "流水号",
@@ -246,9 +255,10 @@ export default {
       ];
       const keys = [
         "operationType",
+        "couponAmount",
+        "voucherId",
         "financialOperations",
         "amount",
-        "voucherId",
         "merchantName",
         "channelName",
         "tx_no",
@@ -269,6 +279,7 @@ export default {
           date: this.dateValue,
         });
         data.list.forEach((item) => {
+          item.couponAmount = item.couponAmount / 100;
           item.amount = item.amount / 100;
         });
         arr = data.list;
@@ -288,10 +299,10 @@ export default {
         { wch: 15 },
         { wch: 12 },
         { wch: 12 },
+        { wch: 20 },
         { wch: 15 },
         { wch: 10 },
-        { wch: 10 },
-        { wch: 12 },
+        { wch: 15 },
         { wch: 12 },
         { wch: 21 },
       ];

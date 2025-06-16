@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-10 16:07:52
+ * @LastEditTime: 2025-06-16 16:05:38
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/businessManage/businessList/detail.vue
 -->
@@ -14,6 +14,7 @@
       ref="getDetail"
       :tableData="tableForm"
       :tableFormAttrs="tableFormAttrs"
+      formLabelWidth="100px"
       :filterDataRules="filterDataRules"
       :merchantLogo="tableForm.merchantLogo"
       @submitForm="submitForm"
@@ -41,6 +42,7 @@
         v-if="dialogFormVisible"
         :visible.sync="dialogFormVisible"
         width="572px"
+        top="3vh"
       >
         <Detail
           ref="getTable"
@@ -134,7 +136,7 @@ export default {
           disabled: true,
         },
         {
-          title: "折扣率:",
+          title: "商户折扣率:",
           placeholder: "请输入折扣率",
           type: "input",
           inputType: "number",
@@ -873,6 +875,9 @@ export default {
   position: relative;
   .content {
     padding-bottom: 26px;
+  }
+  .el-dialog__wrapper {
+    display: inherit;
   }
   .header {
     color: rgba(0, 0, 0, 0.85);

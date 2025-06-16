@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-13 16:29:30
+ * @LastEditTime: 2025-06-16 10:04:07
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/businessManage/shopList/index.vue
 -->
@@ -632,7 +632,7 @@ export default {
         this.dialogForm = {};
         this.dialogFormAttrs.forEach((val) => {
           if (val.isClosePwd) {
-            val.title = "密码:";
+            val.title = "初始密码:";
           }
           if (val.value === "AppSecret") {
             val.icon = "";

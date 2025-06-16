@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-12 14:50:38
+ * @LastEditTime: 2025-06-16 14:45:03
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/distribute/distributeList/index.vue
 -->
@@ -171,8 +171,8 @@ export default {
           disabled: true,
         },
         {
-          title: "折扣率:",
-          placeholder: "请输入折扣率",
+          title: "商户折扣率:",
+          placeholder: "请输入商户折扣率",
           type: "input",
           inputType: "number",
           slot: "%",
@@ -180,8 +180,8 @@ export default {
           disabled: true,
         },
         {
-          title: "券码金额",
-          placeholder: "请选择券码金额",
+          title: "券码类型",
+          placeholder: "请选择券码类型",
           type: "select",
           inputType: "number",
           value: "couponAmount",
@@ -202,8 +202,8 @@ export default {
           required: true,
         },
         {
-          title: "券码描述",
-          placeholder: "请输入券码描述",
+          title: "券码名称",
+          placeholder: "请输入券码名称",
           type: "input",
           value: "couponDesc",
         },
@@ -225,8 +225,8 @@ export default {
           value: "storeNumber",
         },
         {
-          label: "折扣率",
-          width: "70",
+          label: "商户折扣率",
+          width: "95",
           value: "discountRate",
           format: "rate",
         },
@@ -242,12 +242,12 @@ export default {
           format: "rate",
         },
         {
-          label: "券码金额", 
+          label: "券码类型", 
           width: "90",
           value: "couponAmount",
         },
         {
-          label: "券码描述",
+          label: "券码名称",
           width: "105",
           value: "couponDesc",
         },
@@ -377,7 +377,7 @@ export default {
           value: "channelId",
         },
         {
-          label: "佣金率",
+          label: "渠道折扣率",
           width: "150",
           value: "commissionRate",
           format: "input",
@@ -682,7 +682,7 @@ export default {
         }
       });
       if (params.commissionRate === "") {
-        this.$message.error("请填写佣金率");
+        this.$message.error("请填写渠道折扣率");
         return;
       }
       if (params.commissionRate === undefined && !this.isEdit) {
