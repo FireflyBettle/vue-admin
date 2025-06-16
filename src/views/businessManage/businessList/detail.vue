@@ -814,7 +814,7 @@ export default {
       const keys = [
         "storeName",
         "trimStoreAddr",
-        "merchantId",
+        "storeId",
         "AppId",
         "AppSecret",
         "ipWhiteList",
