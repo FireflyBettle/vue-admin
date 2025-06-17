@@ -141,6 +141,7 @@ export default {
         item.invalidAmount = item.invalidAmount / 100;
         item.verifyAmount = item.verifyAmount / 100;
         item.reverseAmount = item.reverseAmount / 100;
+        item.expireAmount = item.expireAmount / 100;
         item.lockAdvancePayment = item.lockAdvancePayment / 100;
         item.deductAdvancePayment = item.deductAdvancePayment / 100;
         item.merchantSettlement = item.merchantSettlement / 100;
