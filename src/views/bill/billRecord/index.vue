@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-16 15:12:38
+ * @LastEditTime: 2025-06-18 10:59:00
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/bill/billRecord/index.vue
 -->
@@ -73,7 +73,7 @@ export default {
         },
       ],
       multipleSelection: [],
-      dateValue: '',
+      dateValue: "",
       type: +Cookies.get("type"), //// 1-平台，2-渠道，3-商户，4-门店，5-门店店员
     };
   },
@@ -188,7 +188,7 @@ export default {
             width: "83",
             value: "expireAmount",
           },
-           {
+          {
             label: "过期数量",
             width: "83",
             value: "expireQuantity",
@@ -307,9 +307,9 @@ export default {
             value: "reverseQuantity",
           },
           {
-            label: this.type === 3? "商户结款" : '门店结款',
+            label: this.type === 3 ? "商户结款" : "门店结款",
             width: "80",
-            value: this.type === 3 ? "merchantSettlement" : 'StoreSettlement',
+            value: this.type === 3 ? "merchantSettlement" : "StoreSettlement",
           },
           {
             label: "开始时间",
@@ -383,7 +383,7 @@ export default {
             width: "83",
             value: "expireAmount",
           },
-           {
+          {
             label: "过期数量",
             width: "83",
             value: "expireQuantity",
@@ -452,7 +452,7 @@ export default {
       this.multipleSelection = val;
     },
     changeDate(val) {
-      console.log("🚀 ~ changeDate ~ val:", val)
+      console.log("🚀 ~ changeDate ~ val:", val);
       this.params.startDate = val[0];
       this.params.endDate = val[1];
       // this.dateValue = val;
@@ -470,54 +470,106 @@ export default {
       this.requestInitData();
     },
     async exportExcel() {
-      const headers = [
-        "创建金额",
-        "创建数量",
-        "取消金额",
-        "取消数量",
-        "过期金额",
-        "过期数量",
-        "核销金额",
-        "核销数量",
-        "冲正金额",
-        "冲正数量",
-        "锁定预付款",
-        "扣除预付款",
-        "商户结款",
-        "平台盈利",
-        "开始时间",
-        "结束时间",
-      ];
-      const keys = [
-        "createAmount",
-        "createQuantity",
-        "invalidAmount",
-        "invalidQuantity",
-        "expireAmount",
-        "expireQuantity",
-        "verifyAmount",
-        "verifyQuantity",
-        "reverseAmount",
-        "reverseQuantity",
-        "lockAdvancePayment",
-        "deductAdvancePayment",
-        "merchantSettlement",
-        "platformProfitability",
-        "startTime",
-        "endTime",
-      ];
+      let headers = [];
+      let keys = [];
+      if ([1].includes(this.type)) {
+        headers = [
+          "创建金额",
+          "创建数量",
+          "取消金额",
+          "取消数量",
+          "过期金额",
+          "过期数量",
+          "核销金额",
+          "核销数量",
+          "冲正金额",
+          "冲正数量",
+          "锁定预付款",
+          "扣除预付款",
+          "商户结款",
+          "平台盈利",
+          "开始时间",
+          "结束时间",
+        ];
+        keys = [
+          "createAmount",
+          "createQuantity",
+          "invalidAmount",
+          "invalidQuantity",
+          "expireAmount",
+          "expireQuantity",
+          "verifyAmount",
+          "verifyQuantity",
+          "reverseAmount",
+          "reverseQuantity",
+          "lockAdvancePayment",
+          "deductAdvancePayment",
+          "merchantSettlement",
+          "platformProfitability",
+          "startTime",
+          "endTime",
+        ];
+      }
+      if ([2].includes(this.type)) {
+        headers = [
+          "创建金额",
+          "创建数量",
+          "取消金额",
+          "取消数量",
+          "过期金额",
+          "过期数量",
+          "核销金额",
+          "核销数量",
+          "冲正金额",
+          "冲正数量",
+          "扣除预付款",
+          "返还预付款",
+          "开始时间",
+          "结束时间",
+        ];
+        keys = [
+          "createAmount",
+          "createQuantity",
+          "invalidAmount",
+          "invalidQuantity",
+          "expireAmount",
+          "expireQuantity",
+          "verifyAmount",
+          "verifyQuantity",
+          "reverseAmount",
+          "reverseQuantity",
+          "deductAdvancePayment",
+          "returnAdvancePayment",
+          "startTime",
+          "endTime",
+        ];
+      }
+      if ([3, 4].includes(this.type)) {
+        headers = [
+          "核销金额",
+          "核销数量",
+          "冲正金额",
+          "冲正数量",
+          `${this.type === 3 ? "商户结款" : "门店结款"}`,
+          "开始时间",
+          "结束时间",
+        ];
+        keys = [
+          "verifyAmount",
+          "verifyQuantity",
+          "reverseAmount",
+          "reverseQuantity",
+          `${this.type === 3 ? "merchantSettlement" : "StoreSettlement"}`,
+          "startTime",
+          "endTime",
+        ];
+      }
       let exportData = [];
       let arr = [];
       if (this.multipleSelection.length) {
         arr = this.multipleSelection;
       } else {
-        const { data } = await billRecordList({
-          pageSize: 1000,
-          pageNum: 0,
-          date: this.dateValue,
-        });
-        this.getListFilter(data.list);
-        arr = data.list;
+        arr = this.tableData;
       }
       exportData = arr.map((item) => {
         return keys.map((key) => item[key]);
@@ -526,31 +578,80 @@ export default {
       exportData.unshift(headers);
       // 创建工作簿
       const ws = XLSX.utils.aoa_to_sheet(exportData);
+      if ([1].includes(this.type)) {
+        ws["!cols"] = [
+          { wch: 10 },
+          { wch: 10 },
+          { wch: 10 },
+          { wch: 10 },
+          { wch: 10 },
+          { wch: 10 },
+          { wch: 10 },
+          { wch: 10 },
+          { wch: 10 },
+          { wch: 10 },
+          { wch: 10 },
+          { wch: 10 },
+          { wch: 10 },
+          { wch: 10 },
+          { wch: 21 },
+          { wch: 21 },
+        ];
+      }
+      if ([2].includes(this.type)) {
+        ws["!cols"] = [
+          { wch: 10 },
+          { wch: 10 },
+          { wch: 10 },
+          { wch: 10 },
+          { wch: 10 },
+          { wch: 10 },
+          { wch: 10 },
+          { wch: 10 },
+          { wch: 10 },
+          { wch: 10 },
+          { wch: 10 },
+          { wch: 10 },
+          { wch: 21 },
+          { wch: 21 },
+        ];
+      }
+      if ([3, 4].includes(this.type)) {
+        ws["!cols"] = [
+          { wch: 15 },
+          { wch: 15 },
+          { wch: 15 },
+          { wch: 15 },
+          { wch: 15 },
+          { wch: 21 },
+          { wch: 21 },
+        ];
+      }
       // 设置列宽度
-      ws["!cols"] = [
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 10 },
-        { wch: 21 },
-        { wch: 21 },
-      ];
+      // ws["!cols"] = [
+      //   { wch: 10 },
+      //   { wch: 10 },
+      //   { wch: 10 },
+      //   { wch: 10 },
+      //   { wch: 10 },
+      //   { wch: 10 },
+      //   { wch: 10 },
+      //   { wch: 10 },
+      //   { wch: 10 },
+      //   { wch: 10 },
+      //   { wch: 10 },
+      //   { wch: 10 },
+      //   { wch: 10 },
+      //   { wch: 10 },
+      //   { wch: 21 },
+      //   { wch: 21 },
+      // ];
       const wb = XLSX.utils.book_new();
       // 将工作表添加到工作簿
       XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
 
       // 导出文件
-      XLSX.writeFile(wb,`账单记录${getPathName()}.xlsx`);
+      XLSX.writeFile(wb, `账单记录${getPathName()}.xlsx`);
     },
     async exportChannelList() {
       const headers = [
@@ -590,13 +691,14 @@ export default {
       if (this.multipleSelection.length) {
         arr = this.multipleSelection;
       } else {
-        const { data } = await billChannelList({
-          pageSize: 1000,
-          pageNum: 0,
-          date: this.dateValue,
-        });
-        this.getChannelListFilter(data.list);
-        arr = data.list;
+        // const { data } = await billChannelList({
+        //   pageSize: 1000,
+        //   pageNum: 0,
+        //   date: this.dateValue,
+        // });
+        // this.getChannelListFilter(data.list);
+        // arr = data.list;
+        arr = this.tableData;
       }
       exportData = arr.map((item) => {
         return keys.map((key) => item[key]);
@@ -627,7 +729,7 @@ export default {
       XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
 
       // 导出文件
-      XLSX.writeFile(wb,`账单记录${getPathName()}.xlsx`);
+      XLSX.writeFile(wb, `账单记录${getPathName()}.xlsx`);
     },
     async exportMerchantOrStoreList() {
       const headers = [
@@ -653,24 +755,25 @@ export default {
       if (this.multipleSelection.length) {
         arr = this.multipleSelection;
       } else {
-        if (this.type === 3) {
-          const { data } = await billMerchantList({
-            pageSize: 1000,
-            pageNum: 0,
-            date: this.dateValue,
-          });
-          this.getMerchantOrStoreListFilter(data.list);
-          arr = data.list;
-        }
-        if (this.type === 4) {
-          const { data } = await billStoreList({
-            pageSize: 1000,
-            pageNum: 0,
-            date: this.dateValue,
-          });
-          this.getMerchantOrStoreListFilter(data.list);
-          arr = data.list;
-        }
+        // if (this.type === 3) {
+        //   const { data } = await billMerchantList({
+        //     pageSize: 1000,
+        //     pageNum: 0,
+        //     date: this.dateValue,
+        //   });
+        //   this.getMerchantOrStoreListFilter(data.list);
+        //   arr = data.list;
+        // }
+        // if (this.type === 4) {
+        //   const { data } = await billStoreList({
+        //     pageSize: 1000,
+        //     pageNum: 0,
+        //     date: this.dateValue,
+        //   });
+        //   this.getMerchantOrStoreListFilter(data.list);
+        //   arr = data.list;
+        // }
+        arr = this.tableData;
         // console.log("🔍 ~ exportMerchantOrStoreList ~ src/views/bill/billRecord/index.vue:650 ~ data:", data)
         // arr = data.list;
       }
@@ -696,20 +799,21 @@ export default {
       XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
 
       // 导出文件
-      XLSX.writeFile(wb,`账单记录${getPathName()}.xlsx`);
+      XLSX.writeFile(wb, `账单记录${getPathName()}.xlsx`);
     },
     // 点击右上角导出excel按钮
     async handleFilterButton(val) {
       if (val === "导出Excel") {
-        if (this.type === 1) {
-          this.exportExcel();
-        }
-        if (this.type === 2) {
-          this.exportChannelList();
-        }
-        if ([3, 4].includes(this.type)) {
-          this.exportMerchantOrStoreList();
-        }
+        this.exportExcel();
+        // if (this.type === 1) {
+        //   this.exportExcel();
+        // }
+        // if (this.type === 2) {
+        //   this.exportChannelList();
+        // }
+        // if ([3, 4].includes(this.type)) {
+        //   this.exportMerchantOrStoreList();
+        // }
       }
     },
   },

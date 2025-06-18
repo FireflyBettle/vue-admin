@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-11 11:13:34
+ * @LastEditTime: 2025-06-18 10:36:01
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/order/orderList/index.vue
 -->
@@ -23,11 +23,11 @@ import Detail from "@/components/Detail/index.vue";
 import Search from "@/components/Search/index.vue";
 import XLSX from "xlsx";
 import Cookies from "js-cookie";
+import { getPathName } from "@/utils/index.js";
 
 import { orderList, reverseOrder, expireOrder } from "@/api/order";
 import { merchantList } from "@/api/business.js";
 import { channelList } from "@/api/channel.js";
-
 import { storesList } from "@/api/business";
 
 const DefaultTableQuery = {
@@ -138,6 +138,9 @@ export default {
         },
       ],
       filterOptions: [
+        {
+          format: "mulDate",
+        },
         {
           type: "multiSelect",
           placeholder: "商户",
@@ -255,6 +258,7 @@ export default {
         // 选择数据回调
         handleFilter: this.handleFilter,
         handleFilterButton: this.handleFilterButton,
+        changeDate: this.changeDate,
         clickSearch: this.clickSearch,
       };
     },
@@ -271,22 +275,10 @@ export default {
         pageNum: 0,
       };
       merchantList(params).then((res) => {
-        this.filterOptions[0].options = res.data.list.map((val) => {
+        this.filterOptions[1].options = res.data.list.map((val) => {
           return {
             value: val.merchantId,
             label: val.merchantName,
-          };
-        });
-        this.filterOptions[0].options.unshift({
-          value: "",
-          label: "所有",
-        });
-      });
-      channelList(params).then((res) => {
-        this.filterOptions[1].options = res.data.list.map((val) => {
-          return {
-            value: val.channelId,
-            label: val.channelName,
           };
         });
         this.filterOptions[1].options.unshift({
@@ -294,11 +286,11 @@ export default {
           label: "所有",
         });
       });
-      storesList(params).then((res) => {
+      channelList(params).then((res) => {
         this.filterOptions[2].options = res.data.list.map((val) => {
           return {
-            value: val.storeId,
-            label: val.storeName,
+            value: val.channelId,
+            label: val.channelName,
           };
         });
         this.filterOptions[2].options.unshift({
@@ -306,8 +298,20 @@ export default {
           label: "所有",
         });
       });
+      storesList(params).then((res) => {
+        this.filterOptions[3].options = res.data.list.map((val) => {
+          return {
+            value: val.storeId,
+            label: val.storeName,
+          };
+        });
+        this.filterOptions[3].options.unshift({
+          value: "",
+          label: "所有",
+        });
+      });
       if ([3, 4].includes(this.type)) {
-        this.filterOptions[3].options = [
+        this.filterOptions[4].options = [
           {
             value: null,
             label: "所有",
@@ -341,7 +345,7 @@ export default {
           4: "过期",
         };
         const operationStatusStatusType = {};
-        if ([1,2].includes(this.type)) {
+        if ([1, 2].includes(this.type)) {
           operationStatusStatusType[0] = "作废";
           if ([1].includes(this.type)) {
             operationStatusStatusType[1] = "冲正";
@@ -367,7 +371,7 @@ export default {
         this.tableData = data.list || [];
         if ([3, 4].includes(this.type)) {
           this.tableConfig = this.tableConfig.filter(
-            (item) => !["channelName",'advancePayment'].includes(item.value)
+            (item) => !["channelName", "advancePayment"].includes(item.value)
           );
         }
         if ([2].includes(this.type)) {
@@ -379,6 +383,12 @@ export default {
       } catch (error) {
         console.log(error);
       }
+    },
+    changeDate(val) {
+      console.log("🚀 ~ changeDate ~ val:", val);
+      this.params.startDate = val[0];
+      this.params.endDate = val[1];
+      // this.dateValue = val;
     },
     handleFilter(val) {
       console.log(
@@ -392,13 +402,12 @@ export default {
       this.params.storeId =
         val.placeholder === "门店" ? val.selectValue : this.params.storeId;
       this.params.status =
+        // val.placeholder === "状态" ? (val.selectValue ? +val.selectValue : null) : +this.params.status;
         val.placeholder === "状态"
-          ? val.selectValue
+          ? val.selectValue !== null
             ? +val.selectValue
             : null
-          : this.params.status
-          ? +this.params.status
-          : null;
+          : this.params.status;
     },
     // 多选框
     handleSelectionChange(val) {
@@ -500,17 +509,18 @@ export default {
       if (this.multipleSelection.length) {
         arr = this.multipleSelection;
       } else {
-        const { data } = await orderList({
-          pageSize: 1000,
-          pageNum: 0,
-        });
-        data.list.forEach((item) => {
-          item.status = item.status.toString();
-          item.amount = item.amount / 100;
-          item.advancePayment = item.advancePayment / 100;
-          item.merchantSettlement = item.merchantSettlement / 100;
-        });
-        arr = data.list;
+        // const { data } = await orderList({
+        //   pageSize: 1000,
+        //   pageNum: 0,
+        // });
+        // data.list.forEach((item) => {
+        //   item.status = item.status.toString();
+        //   item.amount = item.amount / 100;
+        //   item.advancePayment = item.advancePayment / 100;
+        //   item.merchantSettlement = item.merchantSettlement / 100;
+        // });
+        // arr = data.list;
+        arr = this.tableData;
       }
       exportData = arr.map((item) => {
         item.specialStatus = statusType[item.status];
@@ -545,7 +555,7 @@ export default {
       XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
 
       // 导出文件
-      XLSX.writeFile(wb, "table_export.xlsx");
+      XLSX.writeFile(wb, `订单记录${getPathName()}.xlsx`);
     },
     // 点击右上角添加门店或者删除门店按钮
     async handleFilterButton(val) {
