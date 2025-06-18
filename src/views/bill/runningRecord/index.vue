@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-16 16:07:31
+ * @LastEditTime: 2025-06-18 11:09:54
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/bill/runningRecord/index.vue
 -->
@@ -273,16 +273,7 @@ export default {
       if (this.multipleSelection.length) {
         arr = this.multipleSelection;
       } else {
-        const { data } = await billSerialList({
-          pageSize: 1000,
-          pageNum: 0,
-          date: this.dateValue,
-        });
-        data.list.forEach((item) => {
-          item.couponAmount = item.couponAmount / 100;
-          item.amount = item.amount / 100;
-        });
-        arr = data.list;
+        arr = this.tableData;
       }
       exportData = arr.map((item) => {
         return keys.map((key) => item[key]);
@@ -302,6 +293,7 @@ export default {
         { wch: 20 },
         { wch: 15 },
         { wch: 10 },
+        { wch: 30 },
         { wch: 15 },
         { wch: 12 },
         { wch: 21 },

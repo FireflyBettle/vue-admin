@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-18 10:36:01
+ * @LastEditTime: 2025-06-18 15:18:42
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/order/orderList/index.vue
 -->
@@ -161,6 +161,7 @@ export default {
           noShowInput: true,
           options: [],
         },
+        +Cookies.get('type') === 2 ? {} :
         {
           type: "multiSelect",
           placeholder: "门店",
@@ -298,18 +299,20 @@ export default {
           label: "所有",
         });
       });
-      storesList(params).then((res) => {
-        this.filterOptions[3].options = res.data.list.map((val) => {
-          return {
-            value: val.storeId,
-            label: val.storeName,
-          };
+      if (![2].includes(this.type)) {
+        storesList(params).then((res) => {
+          this.filterOptions[3].options = res.data.list.map((val) => {
+            return {
+              value: val.storeId,
+              label: val.storeName,
+            };
+          });
+          this.filterOptions[3].options.unshift({
+            value: "",
+            label: "所有",
+          });
         });
-        this.filterOptions[3].options.unshift({
-          value: "",
-          label: "所有",
-        });
-      });
+      }
       if ([3, 4].includes(this.type)) {
         this.filterOptions[4].options = [
           {

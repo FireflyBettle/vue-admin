@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-16 16:05:38
+ * @LastEditTime: 2025-06-18 11:29:53
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/businessManage/businessList/detail.vue
 -->
@@ -169,7 +169,7 @@ export default {
         },
         {
           title: "状态:",
-          placeholder: "请输入邮箱",
+          placeholder: "",
           type: "radio",
           value: "status",
           disabled: true,
@@ -341,7 +341,7 @@ export default {
         },
         {
           title: "状态:",
-          placeholder: "请输入邮箱",
+          placeholder: "",
           type: "radio",
           value: "status",
         },
@@ -571,6 +571,8 @@ export default {
               this.dialogForm.AppSecret = item.AppSecret;
             }
             item.status = item.status.toString();
+            item.statusDes = +item.status === 0 ? '启用' : '暂停';
+            console.log("🚀 ~ data.list.forEach ~ item.status:", item.status)
             item.trimStoreAddr = item.storeAddr.split(' ').join('');
           });
         }
@@ -829,15 +831,7 @@ export default {
       if (this.multipleSelection.length) {
         arr = this.multipleSelection;
       } else {
-        this.params.pageSize = 1000;
-        this.params.pageNum = 0;
-        const { data } = await storesList(this.params);
-        data.list.forEach((item) => {
-          item.amount = item.amount / 100;
-          item.statusDes = +item.status === 0 ? "启用" : "暂停";
-          item.trimStoreAddr = item.storeAddr.split(' ').join('');
-        });
-        arr = data.list;
+        arr = this.tableData;
       }
       exportData = arr.map((item) => {
         return keys.map((key) => item[key]);
