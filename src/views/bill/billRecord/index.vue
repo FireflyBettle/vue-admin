@@ -570,7 +570,14 @@ export default {
       if (this.multipleSelection.length) {
         arr = this.multipleSelection;
       } else {
-        arr = this.tableData;
+        const { data } = await billRecordList({
+          pageSize: 1000,
+          pageNum: 0,
+          startDate: this.params.startDate,
+          endDate: this.params.endDate,
+        });
+        this.getListFilter(data.list);
+        arr = data.list;
       }
       exportData = arr.map((item) => {
         return keys.map((key) => item[key]);

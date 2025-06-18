@@ -23,7 +23,7 @@ import Detail from "@/components/Detail/index.vue";
 import Search from "@/components/Search/index.vue";
 import XLSX from "xlsx";
 import { getPathName } from "@/utils/index.js";
-import Cookies from 'js-cookie'
+import Cookies from "js-cookie";
 
 import { billSerialList } from "@/api/bill";
 
@@ -51,7 +51,7 @@ export default {
           value: "operationType",
         },
         {
-          label: "券码金额",
+          label: '券码金额',
           width: "80",
           value: "couponAmount",
         },
@@ -66,7 +66,7 @@ export default {
           value: "financialOperations",
         },
         {
-          label: [3, 4].includes(+Cookies.get('type')) ? '金额' : "预付款",
+          label: '',
           width: "95",
           value: "amount",
         },
@@ -137,8 +137,8 @@ export default {
         },
       ],
       multipleSelection: [],
-      dateValue: '',
-      type: +Cookies.get('type')
+      dateValue: "",
+      type: +Cookies.get("type"),
     };
   },
   computed: {
@@ -182,6 +182,17 @@ export default {
         clickSearch: this.clickSearch,
       };
     },
+    amountDes() {
+      return function (val) {
+        const obj = {
+          1: "预付款",
+          2: "渠道金额",
+          3: "商户金额",
+          4: "门店金额",
+        };
+        return obj[val];
+      };
+    },
   },
   created() {
     this.getList();
@@ -207,6 +218,21 @@ export default {
         this.listQueryParams.total = data.total;
         // 数据给表格
         this.tableData = data.list || [];
+        this.tableConfig.forEach((item) => {
+          if (item.value === "amount") {
+            item.label = this.amountDes(this.type);
+          }
+        });
+        if ([3, 4].includes(this.type)) {
+          this.tableConfig = this.tableConfig.filter(
+            (item) => !["channelName"].includes(item.value)
+          );
+        }
+        if ([2].includes(this.type)) {
+          this.tableConfig = this.tableConfig.filter(
+            (item) => !["merchantName"].includes(item.value)
+          );
+        }
         this.loadingStatus = false;
       } catch (error) {
         console.log(error);
@@ -238,12 +264,12 @@ export default {
       this.getList();
     },
     async exportExcel() {
-      const headers = [
+      let headers = [
         "操作类型",
         "券码金额",
         "券码ID",
         "资金操作",
-        [3, 4].includes(this.type) ? '金额' : "预付款",
+        this.amountDes(this.type),
         "商户",
         "渠道",
         "流水号",
@@ -253,7 +279,7 @@ export default {
         "操作端",
         "操作时间",
       ];
-      const keys = [
+      let keys = [
         "operationType",
         "couponAmount",
         "voucherId",
@@ -268,12 +294,37 @@ export default {
         "operatorTerminal",
         "operatorTime",
       ];
+      if ([3, 4].includes(this.type)) {
+        keys = keys.filter((item) => {
+          return !["channelName"].includes(item);
+        });
+        headers = headers.filter((item) => {
+          return !["渠道"].includes(item);
+        });
+      }
+      if ([2].includes(this.type)) {
+        keys = keys.filter((item) => {
+          return !["merchantName"].includes(item);
+        });
+        headers = headers.filter((item) => {
+          return !["商户"].includes(item);
+        });
+      }
       let exportData = [];
       let arr = [];
       if (this.multipleSelection.length) {
         arr = this.multipleSelection;
       } else {
-        arr = this.tableData;
+        const { data } = await billSerialList({
+          pageSize: 1000,
+          pageNum: 0,
+          date: this.dateValue,
+        });
+        data.list.forEach((item) => {
+          item.couponAmount = item.couponAmount / 100;
+          item.amount = item.amount / 100;
+        });
+        arr = data.list;
       }
       exportData = arr.map((item) => {
         return keys.map((key) => item[key]);
@@ -292,8 +343,8 @@ export default {
         { wch: 12 },
         { wch: 20 },
         { wch: 15 },
-        { wch: 10 },
-        { wch: 30 },
+        { wch: 25 },
+        { wch: 25 },
         { wch: 15 },
         { wch: 12 },
         { wch: 21 },
@@ -303,7 +354,7 @@ export default {
       XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
 
       // 导出文件
-      XLSX.writeFile(wb,`流水记录${getPathName()}.xlsx`);
+      XLSX.writeFile(wb, `流水记录${getPathName()}.xlsx`);
     },
     // 点击右上角添加门店或者删除门店按钮
     async handleFilterButton(val) {
