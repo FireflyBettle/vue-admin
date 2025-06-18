@@ -9,15 +9,33 @@
 
 #### 安装教程
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+## 本地运行
 
-#### 使用说明
+```bash
+# 克隆项目
+git clone https://gitee.com/oyewn/qft-web.git
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+# 进入目录
+cd vue-admin-template-master
+
+# 下载依赖
+npm install
+
+# 本地运行项目
+npm run dev
+```
+
+将会打开 http://localhost:8080
+
+## 构建打包
+
+```bash
+# 构建打包测试环境
+npm run build:stage
+
+# 构建打包生产环境
+npm run build:prod
+```
 
 #### 参与贡献
 

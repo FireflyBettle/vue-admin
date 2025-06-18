@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-18 15:18:42
+ * @LastEditTime: 2025-06-18 16:46:25
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/order/orderList/index.vue
 -->
@@ -151,27 +151,30 @@ export default {
           // selectWidth: "110px",
           options: [],
         },
-        {
-          type: "multiSelect",
-          placeholder: "渠道",
-          inputValue: "",
-          isSearch: false,
-          // inputWidth: "150px",
-          // selectWidth: "110px",
-          noShowInput: true,
-          options: [],
-        },
-        +Cookies.get('type') === 2 ? {} :
-        {
-          type: "multiSelect",
-          placeholder: "门店",
-          inputValue: "",
-          isSearch: false,
-          // inputWidth: "150px",
-          // selectWidth: "110px",
-          noShowInput: true,
-          options: [],
-        },
+        +Cookies.get("type") === 2
+          ? {}
+          : {
+              type: "multiSelect",
+              placeholder: "渠道",
+              inputValue: "",
+              isSearch: false,
+              // inputWidth: "150px",
+              // selectWidth: "110px",
+              noShowInput: true,
+              options: [],
+            },
+        +Cookies.get("type") === 6
+          ? {}
+          : {
+              type: "multiSelect",
+              placeholder: "门店",
+              inputValue: "",
+              isSearch: false,
+              // inputWidth: "150px",
+              // selectWidth: "110px",
+              noShowInput: true,
+              options: [],
+            },
         {
           type: "multiSelect",
           placeholder: "状态",
@@ -287,19 +290,19 @@ export default {
           label: "所有",
         });
       });
-      channelList(params).then((res) => {
-        this.filterOptions[2].options = res.data.list.map((val) => {
-          return {
-            value: val.channelId,
-            label: val.channelName,
-          };
-        });
-        this.filterOptions[2].options.unshift({
-          value: "",
-          label: "所有",
-        });
-      });
       if (![2].includes(this.type)) {
+        channelList(params).then((res) => {
+          this.filterOptions[2].options = res.data.list.map((val) => {
+            return {
+              value: val.channelId,
+              label: val.channelName,
+            };
+          });
+          this.filterOptions[2].options.unshift({
+            value: "",
+            label: "所有",
+          });
+        });
         storesList(params).then((res) => {
           this.filterOptions[3].options = res.data.list.map((val) => {
             return {
