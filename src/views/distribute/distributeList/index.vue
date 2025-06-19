@@ -908,9 +908,7 @@ export default {
   .filter-container {
     @include flex;
     justify-content: space-between;
-    padding: 0 24px;
     width: 100%;
-    height: 80px;
     background: #fff;
   }
   .show-pwd {

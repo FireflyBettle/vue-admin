@@ -268,7 +268,7 @@ export default {
         if (valid) {
           const params = {
             channelId: this.dialogForm.channelId,
-            amount: +this.dialogForm.amount * 100,
+            amount: Math.trunc(this.dialogForm.amount * 100),
             remark: this.dialogForm.remark,
           };
           let des = "";

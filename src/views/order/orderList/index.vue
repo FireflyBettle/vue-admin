@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-18 17:26:03
+ * @LastEditTime: 2025-06-19 12:25:38
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/order/orderList/index.vue
 -->
@@ -45,6 +45,7 @@ export default {
   data() {
     return {
       // 参数
+      type: +Cookies.get("type"),
       listQueryParams: { ...DefaultTableQuery },
       tableData: [],
       tableConfig: [
@@ -54,8 +55,8 @@ export default {
           value: "voucherId",
         },
         {
-          label: "金额",
-          width: "60",
+          label: "券码金额",
+          width: "80",
           value: "amount",
         },
         {
@@ -74,8 +75,8 @@ export default {
           value: "storeName",
         },
         {
-          label: "商户结款",
-          width: "77",
+          label: "商户金额",
+          width: "80",
           value: "merchantSettlement",
         },
         {
@@ -84,8 +85,8 @@ export default {
           value: "channelName",
         },
         {
-          label: "预付款",
-          width: "70",
+          label: "渠道金额",
+          width: "80",
           value: "advancePayment",
         },
         {
@@ -141,19 +142,20 @@ export default {
         {
           format: "mulDate",
         },
-        {
-          type: "multiSelect",
-          placeholder: "商户",
-          inputValue: "",
-          isSearch: false,
-          noShowInput: true,
-          // inputWidth: "150px",
-          // selectWidth: "110px",
-          options: [],
-        },
-        +Cookies.get("type") === 2
+        [3, 4].includes(+Cookies.get("type"))
           ? {}
           : {
+              type: "multiSelect",
+              placeholder: "商户",
+              inputValue: "",
+              isSearch: false,
+              noShowInput: true,
+              // inputWidth: "150px",
+              // selectWidth: "110px",
+              options: [],
+            },
+        +Cookies.get("type") === 1
+          ? {
               type: "multiSelect",
               placeholder: "渠道",
               inputValue: "",
@@ -162,7 +164,8 @@ export default {
               // selectWidth: "110px",
               noShowInput: true,
               options: [],
-            },
+            }
+          : {},
         +Cookies.get("type") === 2
           ? {}
           : {
@@ -211,11 +214,26 @@ export default {
           ],
         },
         {
+          type: "multiSelect",
+          placeholder: "请选择",
+          selectValue: "voucherId",
+          inputValue: "",
+          isSearch: false,
+          inputWidth: "264px",
+          selectWidth: "105px",
+          options: [
+            {
+              label: "券码ID",
+              width: "120",
+              value: "voucherId",
+            },
+          ],
+        },
+        {
           type: "button",
         },
       ],
       multipleSelection: [],
-      type: +Cookies.get("type"),
     };
   },
   computed: {
@@ -266,6 +284,17 @@ export default {
         clickSearch: this.clickSearch,
       };
     },
+    amountDes() {
+      return function (val) {
+        const obj = {
+          1: "预付款",
+          2: "渠道金额",
+          3: "商户金额",
+          4: "门店金额",
+        };
+        return obj[val];
+      };
+    },
   },
   created() {
     this.init();
@@ -278,31 +307,37 @@ export default {
         pageSize: 1000,
         pageNum: 0,
       };
-      merchantList(params).then((res) => {
-        this.filterOptions[1].options = res.data.list.map((val) => {
-          return {
-            value: val.merchantId,
-            label: val.merchantName,
-          };
-        });
-        this.filterOptions[1].options.unshift({
-          value: "",
-          label: "所有",
-        });
-      });
-      if (![2].includes(this.type)) {
-        channelList(params).then((res) => {
-          this.filterOptions[2].options = res.data.list.map((val) => {
+      if ([1, 2].includes(this.type)) {
+        merchantList(params).then((res) => {
+          this.filterOptions[1].options = res.data.list.map((val) => {
             return {
-              value: val.channelId,
-              label: val.channelName,
+              value: val.merchantId,
+              label: val.merchantName,
             };
           });
-          this.filterOptions[2].options.unshift({
+          this.filterOptions[1].options.unshift({
             value: "",
             label: "所有",
           });
         });
+      }
+      // 渠道 去掉渠道，
+      // 商户，门店   去掉渠道，商户，门店
+      if ([1, 3, 4].includes(this.type)) {
+        if ([1].includes(this.type)) {
+          channelList(params).then((res) => {
+            this.filterOptions[2].options = res.data.list.map((val) => {
+              return {
+                value: val.channelId,
+                label: val.channelName,
+              };
+            });
+            this.filterOptions[2].options.unshift({
+              value: "",
+              label: "所有",
+            });
+          });
+        }
         storesList(params).then((res) => {
           this.filterOptions[3].options = res.data.list.map((val) => {
             return {
@@ -375,11 +410,24 @@ export default {
         this.listQueryParams.total = data.total;
         // 数据给表格
         this.tableData = data.list || [];
+        this.tableConfig.forEach((item) => {
+          if ([3, 4].includes(this.type)) {
+            if (item.value === "merchantSettlement") {
+              item.label = this.amountDes(this.type);
+            }
+          }
+          if ([2].includes(this.type)) {
+            if (item.value === "advancePayment") {
+              item.label = this.amountDes(this.type);
+            }
+          }
+        });
         if ([3, 4].includes(this.type)) {
           this.tableConfig = this.tableConfig.filter(
             (item) => !["channelName", "advancePayment"].includes(item.value)
           );
         }
+        // 隐藏商户金额
         if ([2].includes(this.type)) {
           this.tableConfig = this.tableConfig.filter(
             (item) => !["merchantSettlement"].includes(item.value)
@@ -463,19 +511,21 @@ export default {
       this.getList();
     },
     clickSearch(val) {
+      this.params.voucherId = val.inputValue;
+      console.log("🚀 ~ clickSearch ~ val:", val.inputValue)
       this.listQueryParams.pageNum = 1; // 重置页码
       this.getList();
     },
     async exportExcel() {
       let headers = [
         "券码ID",
-        "金额",
+        "券码金额",
         "券码名称",
         "商户",
         "核销门店",
-        "商户结款",
+        [3, 4].includes(this.type) ? this.amountDes(this.type) : "商户金额",
         "渠道",
-        "预付款",
+        [2].includes(this.type) ? this.amountDes(this.type) : "渠道金额",
         "创建时间",
         "过期时间",
         "操作时间",
@@ -504,10 +554,21 @@ export default {
       };
       if ([3, 4].includes(this.type)) {
         keys = keys.filter((item) => {
-          return !["channelName", "advancePayment"].includes(item);
+          return ![
+            "channelName",
+            "advancePayment",
+          ].includes(item);
         });
         headers = headers.filter((item) => {
-          return !["渠道", "预付款"].includes(item);
+          return !["渠道", "渠道金额"].includes(item);
+        });
+      }
+      if ([2].includes(this.type)) {
+        keys = keys.filter((item) => {
+          return !["merchantSettlement"].includes(item);
+        });
+        headers = headers.filter((item) => {
+          return !["商户金额"].includes(item);
         });
       }
       let exportData = [];
@@ -515,18 +576,18 @@ export default {
       if (this.multipleSelection.length) {
         arr = this.multipleSelection;
       } else {
-        // const { data } = await orderList({
-        //   pageSize: 1000,
-        //   pageNum: 0,
-        // });
-        // data.list.forEach((item) => {
-        //   item.status = item.status.toString();
-        //   item.amount = item.amount / 100;
-        //   item.advancePayment = item.advancePayment / 100;
-        //   item.merchantSettlement = item.merchantSettlement / 100;
-        // });
-        // arr = data.list;
-        arr = this.tableData;
+        const { data } = await orderList({
+          ...this.params,
+          pageSize: 1000,
+          pageNum: 0,
+        });
+        data.list.forEach((item) => {
+          item.status = item.status.toString();
+          item.amount = item.amount / 100;
+          item.advancePayment = item.advancePayment / 100;
+          item.merchantSettlement = item.merchantSettlement / 100;
+        });
+        arr = data.list;
       }
       exportData = arr.map((item) => {
         item.specialStatus = statusType[item.status];
@@ -545,7 +606,7 @@ export default {
         { wch: 15 },
         { wch: 15 },
         { wch: 15 },
-        { wch: 10 },
+        { wch: this.type === 2 ? 21 :10 },
         { wch: 21 },
         { wch: 21 },
         { wch: 21 },
@@ -553,7 +614,7 @@ export default {
       ];
       if ([3, 4].includes(this.type)) {
         ws["!cols"] = ws["!cols"].filter((col, index) => {
-          return ![6, 7].includes(index); // 移除渠道和预付款列
+          return ![6, 7].includes(index); // 移除渠道和渠道金额列
         });
       }
       const wb = XLSX.utils.book_new();
@@ -583,6 +644,11 @@ export default {
       .el-input__inner {
         height: 32px;
         line-height: 32px;
+      }
+    }
+    .select-item:nth-child(6) {
+      .el-input {
+        width: 100px;
       }
     }
     .el-select {
@@ -641,9 +707,9 @@ export default {
   .filter-container {
     @include flex;
     justify-content: space-between;
-    padding: 0 24px;
+    // padding: 0 24px;
     width: 100%;
-    height: 80px;
+    // height: 80px;
     background: #fff;
   }
   .show-pwd {

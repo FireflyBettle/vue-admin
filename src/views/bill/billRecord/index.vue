@@ -570,7 +570,14 @@ export default {
       if (this.multipleSelection.length) {
         arr = this.multipleSelection;
       } else {
-        arr = this.tableData;
+        const { data } = await billRecordList({
+          pageSize: 1000,
+          pageNum: 0,
+          startDate: this.params.startDate,
+          endDate: this.params.endDate,
+        });
+        this.getListFilter(data.list);
+        arr = data.list;
       }
       exportData = arr.map((item) => {
         return keys.map((key) => item[key]);
@@ -695,14 +702,6 @@ export default {
 <style lang="scss" scoped>
 @import "~@/styles/mixin.scss";
 .bill-list {
-  .filter-container {
-    @include flex;
-    justify-content: space-between;
-    padding: 0 24px;
-    width: 100%;
-    height: 80px;
-    background: #fff;
-  }
   .show-pwd {
     position: absolute;
     right: 60px;

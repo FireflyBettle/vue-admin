@@ -831,7 +831,15 @@ export default {
       if (this.multipleSelection.length) {
         arr = this.multipleSelection;
       } else {
-        arr = this.tableData;
+        this.params.pageSize = 1000;
+        this.params.pageNum = 0;
+        const { data } = await storesList(this.params);
+        data.list.forEach((item) => {
+          item.amount = item.amount / 100;
+          item.statusDes = +item.status === 0 ? "启用" : "暂停";
+          item.trimStoreAddr = item.storeAddr.split(' ').join('');
+        });
+        arr = data.list;
       }
       exportData = arr.map((item) => {
         return keys.map((key) => item[key]);

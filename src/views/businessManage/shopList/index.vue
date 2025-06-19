@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-16 10:04:07
+ * @LastEditTime: 2025-06-19 11:04:00
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/businessManage/shopList/index.vue
 -->
@@ -741,9 +741,7 @@ export default {
   .filter-container {
     @include flex;
     justify-content: space-between;
-    padding: 0 24px;
     width: 100%;
-    height: 80px;
     background: #fff;
   }
   .show-pwd {

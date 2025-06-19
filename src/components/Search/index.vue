@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-12 17:36:48
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-10 16:12:08
+ * @LastEditTime: 2025-06-19 11:29:16
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/components/Search/index.vue
 -->
@@ -101,7 +101,10 @@
             </el-select>
           </template>
           <template v-else-if="item.type === 'button'">
-            <el-button type="primary" @click="clickSearch">搜索</el-button>
+            <el-button type="primary" @click="clickSearch({
+                    selectValue: item.selectValue,
+                    inputValue: input,
+                  })">搜索</el-button>
           </template>
         </div>
       </template>
@@ -188,15 +191,17 @@ export default {
 .filter-container {
   @include flex;
   justify-content: space-between;
-  padding: 0 24px;
+  padding: 19px 24px 19px;
   width: 100%;
-  height: 80px;
+  // height: 80px;
   background: #fff;
   margin-bottom: 20px;
   &__left {
+    width: 85%;
     display: flex;
+    flex-wrap: wrap;
     .select-item {
-      margin-right: 4px;
+      margin: 5px 5px 5px 0;
     }
     .el-select {
       margin-right: 0px;
@@ -222,8 +227,10 @@ export default {
   .el-date-editor--daterange {
     width: 265px;
   }
-  .el-range-editor.el-input__inner,.el-date-editor .el-range-separator,.el-input__icon {
-    height:32px;
+  .el-range-editor.el-input__inner,
+  .el-date-editor .el-range-separator,
+  .el-input__icon {
+    height: 32px;
   }
   .el-range-editor .el-range-input {
     width: 100px;
@@ -258,6 +265,7 @@ export default {
     padding: 12px;
   }
   &__right {
+    display: flex;
     .el-button {
       width: 88px;
       height: 32px;
