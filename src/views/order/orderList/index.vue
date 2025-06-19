@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-18 16:46:25
+ * @LastEditTime: 2025-06-18 17:26:03
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/order/orderList/index.vue
 -->
@@ -163,7 +163,7 @@ export default {
               noShowInput: true,
               options: [],
             },
-        +Cookies.get("type") === 6
+        +Cookies.get("type") === 2
           ? {}
           : {
               type: "multiSelect",
