@@ -45,3 +45,12 @@ export function billStoreList(data) {
     data
   })
 }
+
+// 核心指标展示
+export function coreDisplay(data) {
+  return request({
+    url: '/web/core/display',
+    method: 'post',
+    data
+  })
+}

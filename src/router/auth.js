@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-04-25 16:44:47
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-04 15:46:40
+ * @LastEditTime: 2025-06-26 17:26:06
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/router/auth.js
  */
@@ -156,18 +156,36 @@ const asyncRoutes = [
       icon: 'el-icon-discount'
     },
     children: [
-      {
-        path: '/bill/billRecord',
-        component: () => import('@/views/bill/billRecord/index'),
-        name: 'billRecord',
-        meta: { title: '账单记录', icon: 'edit' }
-      },
+      // {
+      //   path: '/bill/billRecord',
+      //   component: () => import('@/views/bill/billRecord/index'),
+      //   name: 'billRecord',
+      //   meta: { title: '账单记录', icon: 'edit' }
+      // },
       {
         path: '/bill/runningRecord',
         component: () => import('@/views/bill/runningRecord/index'),
         name: 'runningRecord',
-        meta: { title: '流水记录', icon: 'list' }
+        meta: { title: '流水记录', icon: 'el-icon-discount' }
       }
+    ]
+  },
+  {
+    path: '/core',
+    component: Layout,
+    redirect: '/core/coreMetrics',
+    meta: {
+      title: '核心指标',
+      icon: 'el-icon-s-data'
+    },
+    hidden: [2,3,4].includes(type),
+    children: [
+      {
+        path: '/core/coreMetrics',
+        component: () => import('@/views/core/coreMetrics/index'),
+        name: 'coreMetrics',
+        meta: { title: '核心指标', icon: 'el-icon-s-data' }
+      },
     ]
   },
 ];

@@ -2,7 +2,7 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-19 12:25:38
+ * @LastEditTime: 2025-06-26 14:28:52
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/order/orderList/index.vue
 -->
@@ -422,9 +422,14 @@ export default {
             }
           }
         });
-        if ([3, 4].includes(this.type)) {
+        if ([3].includes(this.type)) {
           this.tableConfig = this.tableConfig.filter(
             (item) => !["channelName", "advancePayment"].includes(item.value)
+          );
+        }
+        if ([4].includes(this.type)) {
+          this.tableConfig = this.tableConfig.filter(
+            (item) => !["channelName", "advancePayment", 'merchantSettlement'].includes(item.value)
           );
         }
         // 隐藏商户金额
@@ -552,7 +557,7 @@ export default {
         3: "作废",
         4: "过期",
       };
-      if ([3, 4].includes(this.type)) {
+      if ([3].includes(this.type)) {
         keys = keys.filter((item) => {
           return ![
             "channelName",
@@ -561,6 +566,18 @@ export default {
         });
         headers = headers.filter((item) => {
           return !["渠道", "渠道金额"].includes(item);
+        });
+      }
+      if ([4].includes(this.type)) {
+        keys = keys.filter((item) => {
+          return ![
+            "channelName",
+            "advancePayment",
+            'merchantSettlement'
+          ].includes(item);
+        });
+        headers = headers.filter((item) => {
+          return !["渠道", "渠道金额",'门店金额'].includes(item);
         });
       }
       if ([2].includes(this.type)) {
@@ -604,8 +621,8 @@ export default {
         { wch: 25 },
         { wch: 15 },
         { wch: 15 },
-        { wch: 15 },
-        { wch: 15 },
+        { wch: 20 },
+        { wch: 20 },
         { wch: this.type === 2 ? 21 :10 },
         { wch: 21 },
         { wch: 21 },

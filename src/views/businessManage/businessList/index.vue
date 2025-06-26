@@ -2,13 +2,13 @@
  * @Author: chenyourong
  * @Date: 2025-05-08 18:06:50
  * @LastEditors: chenyourong
- * @LastEditTime: 2025-06-16 10:00:59
+ * @LastEditTime: 2025-06-26 12:05:16
  * @Description: 
  * @FilePath: /vue-admin-template-master/src/views/businessManage/businessList/index.vue
 -->
 <template>
   <div class="business-list">
-    <Search v-bind="filterAttrs" v-on="filterEvent"></Search>
+    <Search v-bind="filterAttrs" v-on="filterEvent" v-if="type !== 4"></Search>
     <Table
       :list-query-params.sync="listQueryParams"
       v-bind="tableAttrs"
